@@ -24,9 +24,9 @@ java开发调度系统，需要非常多的线程，一般会达到几百，甚�
 
 ## 结构设计
 * doc文档类
-* jobor_common 公共代码
-* jobor_ops 控制台
-* jobor_server 实际运行项目的节点
+* common 公共代码
+* ops 控制台
+* server 实际运行项目的节点
 
 ## 技术选型
 
