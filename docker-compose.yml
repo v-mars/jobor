@@ -19,16 +19,21 @@ services:
         depends_on:
           - master
     mysql:
-        image: mysql:latest
+        image: mysql:5.7
+#        command: [mysqld, --character-set-server=utf8, --collation-server=utf8_bin]
         environment:
-            MYSQL_ROOT_PASSWORD: "xxx"
-            MYSQL_DATABASE: "xxx"
-        # volumes: 
-        #   - "/data:/usr/lib/mysql"   # mysql数据持久化
-        ports: 
+            MYSQL_ROOT_PASSWORD: "jobor123"
+            MYSQL_DATABASE: "jobor"
+        volumes:
+          - "./mysql_data/var/lib/mysql:/var/lib/mysql:rw"
+          - "./mysql_data/etc/mysql/my.cnf:/etc/mysql/my.cnf"
+          - "/etc/localtime:/etc/localtime:ro"
+        ports:
           - 3306:3306
+
     redis:
-        image: redis:latest
+        image: redis:5
+#        image: redis:latest
         restart: always
         ports: 
           - 6379:6379
