@@ -1,0 +1,34 @@
+version: '3.5'
+services:
+  controller:
+        image: xxxxx
+        container_name: jobor_controller
+        restart: always
+        ports: 
+          - 8000:8000
+        volumes: 
+          - ./core_docker.toml:/app/core.toml
+        depends_on:
+          - mysql
+          - redis
+    worker:
+        image: xxxx
+        container_name: jobor_worker
+        volumes: 
+            - $PWD/core_docker.toml:/app/core.toml
+        depends_on:
+          - master
+    mysql:
+        image: mysql:latest
+        environment:
+            MYSQL_ROOT_PASSWORD: "xxx"
+            MYSQL_DATABASE: "xxx"
+        # volumes: 
+        #   - "/data:/usr/lib/mysql"   # mysql数据持久化
+        ports: 
+          - 3306:3306
+    redis:
+        image: redis:latest
+        restart: always
+        ports: 
+          - 6379:6379
