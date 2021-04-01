@@ -7,7 +7,7 @@ services:
         ports: 
           - 8000:8000
         volumes: 
-          - ./core_docker.toml:/app/core.toml
+          - ./docker_config.toml:/app/core.toml
         depends_on:
           - mysql
           - redis
@@ -15,7 +15,7 @@ services:
         image: xxxx
         container_name: jobor_worker
         volumes: 
-            - $PWD/core_docker.toml:/app/core.toml
+            - ./docker_config.toml:/app/core.toml
         depends_on:
           - master
     mysql:
