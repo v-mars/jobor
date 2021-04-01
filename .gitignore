@@ -15,8 +15,51 @@
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
-.idea/*
 
-go.sum
+*.iml
+.idea/**
 
+# For Mac OS X
+*~
+.DS_Store
+
+# For GoLand IDE
+.idea/
+.vscode/tasks.json
+
+# For Go vendor
+.cache/
+
+# For Project
+#/pkg
+/bin
+/build
+
+
+*.o
+*.a
+
+_obj
+_test
+*.cgo1.go
+*.cgo2.c
+_cgo_defun.c
+_cgo_gotypes.go
+_cgo_export.*
+_testmain.go
+*.prof
+*.log
+.DS_Store?
+.Trashes
+.svn
+*.pid
+*.bak
+*.[568vq]
+[568vq].out
+#cmd/*
+cmd/apibox
+
+internal/tmp
+logs
+test/
 go.sum
