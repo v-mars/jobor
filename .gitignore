@@ -63,3 +63,5 @@ internal/tmp
 logs
 test/
 go.sum
+jobor-frontend/mock
+jobor-frontend/node_modules
