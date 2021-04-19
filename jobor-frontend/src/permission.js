@@ -27,6 +27,7 @@ router.beforeEach(async(to, from, next) => {
       NProgress.done()
     } else {
       const hasGetUserInfo = store.state.user.username
+      console.log("hasGetUserInfo:",hasGetUserInfo)
       if (hasGetUserInfo) {
         next()
       } else {
