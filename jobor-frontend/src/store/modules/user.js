@@ -42,6 +42,7 @@ const mutations = {
     setTokenType(data.token_type)
     setTokenExpires(data.expires_at)
   },
+
   RESET_STATE: (state) => {
     Object.assign(state, getDefaultState())
     removeToken()
@@ -49,6 +50,7 @@ const mutations = {
     removeRefreshToken()
     removeExpires()
   },
+  
   SET_TOKEN: (state, token) => {
     state.token = token
     setToken(token)
