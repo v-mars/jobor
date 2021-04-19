@@ -50,7 +50,7 @@ const mutations = {
     removeRefreshToken()
     removeExpires()
   },
-  
+
   SET_TOKEN: (state, token) => {
     state.token = token
     setToken(token)
@@ -88,11 +88,9 @@ const actions = {
       Get(store.state.urls.user_info_url, {}).then(response => {
         // console.log("user getInfo:", response.data)
         if (response.data.code === 200) {
-          commit('SET_TOKEN', response.data.data.token)
-          commit('SET_LOGIN_DATA', response.data.data)
           commit('SET_USER_DATA', response.data.data)
           const roles = response.data.data.roles
-          // store.dispatch('generateRoutes', {roles}).then(r => {})
+          store.dispatch('generateRoutes', {roles}).then(r => {})
           resolve(response)
         } else {
           resolve(response)
