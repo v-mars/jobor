@@ -15,9 +15,10 @@
     "svgo": "svgo -f src/icons/svg --config=src/icons/svgo.yml"
   },
   "dependencies": {
-    "axios": "0.18.1",
+    "axios": "^0.21.1",
     "cron-validator": "^1.2.1",
     "element-ui": "2.13.0",
+    "iview": "^3.5.4",
     "js-cookie": "2.2.0",
     "node-sass": "^5.0.0",
     "normalize.css": "7.0.0",
@@ -25,6 +26,7 @@
     "path-to-regexp": "2.4.0",
     "sass-loader": "10.1.0",
     "vue": "2.6.10",
+    "vue-axios": "^3.2.4",
     "vue-router": "3.0.6",
     "vue2-ace-editor": "^0.0.15",
     "vuex": "3.1.0"

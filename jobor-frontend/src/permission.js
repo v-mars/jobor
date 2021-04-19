@@ -5,6 +5,7 @@ import NProgress from 'nprogress' // progress bar
 import 'nprogress/nprogress.css' // progress bar style
 import getPageTitle from '@/utils/get-page-title'
 import { getToken } from '@/utils/user_token'
+import {hasPermission} from "@/utils/common";
 
 NProgress.configure({ showSpinner: false }) // NProgress Configuration
 
@@ -30,13 +31,16 @@ router.beforeEach(async(to, from, next) => {
       const hasGetUserInfo = store.state.user.username
       // console.log("hasGetUserInfo:",hasGetUserInfo)
       if (hasGetUserInfo) {
-        next()
+        if (hasPermission(store.state.user.roles, to.meta.roles)) {
+          next()
+        } else {
+          next({ path: '/401', replace: true, query: { noGoBack: true }})
+        }
       } else {
         try {
           // get user info
           await store.dispatch('user/getInfo')
-
-          next()
+          next({ ...to, replace: true }) // hack方法 确保addRoutes已完成
         } catch (error) {
           // remove token and go to login page to re-login
           await store.dispatch('user/resetToken')

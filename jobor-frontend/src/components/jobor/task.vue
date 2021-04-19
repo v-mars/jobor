@@ -444,9 +444,9 @@ console.log("run nodejs")`,
     codeInitEditor: function(editor) {
       editor.setAutoScrollEditorIntoView(true)
       editor.setShowPrintMargin(false)
-      editor.on('dblclick', function() {
-        editor.container.webkitRequestFullscreen()
-      })
+      // editor.on('dblclick', function() {
+      //   editor.container.webkitRequestFullscreen()
+      // })
       require('brace/ext/language_tools')
       // require("brace/mode/text");
       // require("brace/mode/json");

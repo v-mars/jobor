@@ -14,7 +14,7 @@
       </router-link>
     </div>
 
-    <div v-if="showTitle" class="title-container" @click="ShowDrawer=true">
+    <div v-if="showTitle" class="title-container">
       <el-link :underline="false" style="color: #FFFFFF;">
         <!--        <svg-icon icon-class="component" style="width: 14px;height: 14px;" />-->
         <i class="el-icon-menu" />
