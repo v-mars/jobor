@@ -1,23 +1,55 @@
-import { login, logout, getInfo } from '@/api/user'
-import { getToken, setToken, removeToken } from '@/utils/auth'
-import { resetRouter } from '@/router'
+// eslint-disable-next-line no-unused-vars
+import { Get, Other, Request } from '@/api/request'
+// eslint-disable-next-line no-unused-vars
+import router, { resetRouter } from '@/router'
+import store from '@/store'
 
 const getDefaultState = () => {
   return {
-    token: getToken(),
+    password_url: '/api/v1/sys/user-set-password',
+    // token: getToken(),
     name: '',
-    avatar: ''
+    username: '',
+    nickname: '',
+    avatar: '',
+    token_type: '',
+    token: '',
+    refresh_token: '',
+    expires_at: 0,
+    roles: []
   }
 }
 
 const state = getDefaultState()
 
 const mutations = {
+  SET_USER_DATA: (state, data) => {
+    state.name = data.nickname
+    state.nickname = data.nickname
+    state.username = data.username
+    state.expires_at = data.expires_at
+    state.roles = data.roles || []
+    // console.log("SET_USER_DATA:", data, state.roles)
+  },
+
+  SET_LOGIN_DATA: (state, data) => {
+    state.refresh_token = data.refresh_token
+    state.token_type = data.token_type
+    localStorage.setItem('refresh_token', data.refresh_token)
+    localStorage.setItem('token_type', data.token_type)
+    localStorage.setItem('expires_at', data.expires_at)
+  },
   RESET_STATE: (state) => {
     Object.assign(state, getDefaultState())
+    localStorage.removeItem('token')
+    localStorage.removeItem('refresh_token')
+    localStorage.removeItem('token_type')
+    localStorage.removeItem('expires_at')
   },
   SET_TOKEN: (state, token) => {
     state.token = token
+    localStorage.setItem('token', token)
+    // console.log("token:", token)
   },
   SET_NAME: (state, name) => {
     state.name = name
@@ -29,14 +61,16 @@ const mutations = {
 
 const actions = {
   // user login
-  login({ commit }, userInfo) {
-    const { username, password } = userInfo
+  login({ state, commit }, data) {
     return new Promise((resolve, reject) => {
-      login({ username: username.trim(), password: password }).then(response => {
-        const { data } = response
-        commit('SET_TOKEN', data.token)
-        setToken(data.token)
-        resolve()
+      Other(data.url, data.method, data.data).then(response => {
+        // console.log("response:", response)
+        commit('SET_USER_DATA', response.data.data)
+        commit('SET_TOKEN', response.data.data.token)
+        commit('SET_LOGIN_DATA', response.data.data)
+        const roles = response.data.data.roles
+        // store.dispatch('generateRoutes', {roles}).then(r => {})
+        resolve(response)
       }).catch(error => {
         reject(error)
       })
@@ -46,18 +80,16 @@ const actions = {
   // get user info
   getInfo({ commit, state }) {
     return new Promise((resolve, reject) => {
-      getInfo(state.token).then(response => {
-        const { data } = response
-
-        if (!data) {
-          reject('Verification failed, please Login again.')
+      Get(store.state.urls.user_info_url, {}).then(response => {
+        // console.log("user getInfo:", response.data)
+        if (response.data.code === 200) {
+          commit('SET_USER_DATA', response.data.data)
+          const roles = response.data.data.roles
+          // store.dispatch('generateRoutes', {roles}).then(r => {})
+          resolve(response)
+        } else {
+          resolve(response)
         }
-
-        const { name, avatar } = data
-
-        commit('SET_NAME', name)
-        commit('SET_AVATAR', avatar)
-        resolve(data)
       }).catch(error => {
         reject(error)
       })
@@ -66,13 +98,23 @@ const actions = {
 
   // user logout
   logout({ commit, state }) {
+    commit('RESET_STATE')
+  },
+
+  // 刷新token
+  refreshToken({ state, commit }) {
     return new Promise((resolve, reject) => {
-      logout(state.token).then(() => {
-        removeToken() // must remove  token  first
-        resetRouter()
-        commit('RESET_STATE')
-        resolve()
+      Other(store.state.urls.refresh_token_url, 'POST', { token: localStorage.getItem('refresh_token') }).then(response => {
+        // console.log("response:", response)
+        if (response.data.code === 200 && response.data.data.token) {
+          commit('SET_TOKEN', response.data.data.token)
+          commit('SET_LOGIN_DATA', response.data.data)
+          resolve(response)
+        } else {
+          resolve(response)
+        }
       }).catch(error => {
+        // console.log("refresh error:", error)
         reject(error)
       })
     })
@@ -80,10 +122,16 @@ const actions = {
 
   // remove token
   resetToken({ commit }) {
-    return new Promise(resolve => {
-      removeToken() // must remove  token  first
-      commit('RESET_STATE')
-      resolve()
+    commit('RESET_STATE')
+  },
+
+  setPassword({ commit, state }, data) {
+    return new Promise((resolve, reject) => {
+      Other(data.url, 'POST', data.data).then(response => {
+        resolve(response)
+      }).catch(error => {
+        reject(error)
+      })
     })
   }
 }

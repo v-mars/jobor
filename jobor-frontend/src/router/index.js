@@ -5,6 +5,7 @@ Vue.use(Router)
 
 /* Layout */
 import Layout from '@/layout'
+import layout_jobor from '@/layout/layout_jobor'
 
 /**
  * Note: sub-menu only appear when route children.length >= 1
@@ -30,6 +31,61 @@ import Layout from '@/layout'
  * a base page that does not have permission requirements
  * all roles can be accessed
  */
+
+export const jobor = [
+  {
+    path: '/jobor/index',
+    component: layout_jobor,
+    redirect: '/jobor/index',
+    name: '概览',
+    meta: { title: '持续集成概览', icon: '', roles: ['devops'] },
+    children: [
+      {
+        path: '',
+        name: 'joborDashboard',
+        component: () => import('@/views/jobor/dashboard'),
+        meta: { title: '概览', icon: '', roles: ['jobor'] }
+      }
+    ]
+  },
+  {
+    path: '/jobor',
+    component: layout_jobor,
+    redirect: '/jobor/task',
+    name: 'disTask',
+    meta: { title: '定时任务', icon: '', roles: ['devops'] },
+    children: [
+      {
+        path: 'task',
+        name: '任务管理',
+        component: () => import('@/components/jobor/task'),
+        meta: { title: '任务管理', icon: '', roles: ['jobor'] }
+      },
+      {
+        path: 'log',
+        name: 'joborLog',
+        component: () => import('@/components/jobor/log'),
+        meta: { title: '执行记录', icon: '', roles: ['jobor'] }
+      }
+    ]
+  },
+  {
+    path: '/jobor/help',
+    component: layout_jobor,
+    redirect: '/jobor/help',
+    name: 'jobor帮助',
+    meta: { title: '帮助', icon: '', roles: ['devops'] },
+    children: [
+      {
+        path: '',
+        name: 'joborHelp',
+        component: () => import('@/views/jobor/help'),
+        meta: { title: '帮助', icon: '', roles: ['jobor'] }
+      }
+    ]
+  }
+]
+
 export const constantRoutes = [
   {
     path: '/login',
@@ -45,123 +101,26 @@ export const constantRoutes = [
 
   {
     path: '/',
-    component: Layout,
+    component: layout_jobor,
     redirect: '/dashboard',
     children: [{
       path: 'dashboard',
       name: 'Dashboard',
-      component: () => import('@/views/dashboard/index'),
+      component: () => import('@/views/jobor/dashboard'),
       meta: { title: 'Dashboard', icon: 'dashboard' }
     }]
   },
 
-  {
-    path: '/example',
-    component: Layout,
-    redirect: '/example/table',
-    name: 'Example',
-    meta: { title: 'Example', icon: 'example' },
-    children: [
-      {
-        path: 'table',
-        name: 'Table',
-        component: () => import('@/views/table/index'),
-        meta: { title: 'Table', icon: 'table' }
-      },
-      {
-        path: 'tree',
-        name: 'Tree',
-        component: () => import('@/views/tree/index'),
-        meta: { title: 'Tree', icon: 'tree' }
-      }
-    ]
-  },
+  // 404 page must be placed at the end !!!
+  // { path: '*', redirect: '/404', hidden: true }
+]
 
-  {
-    path: '/form',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        name: 'Form',
-        component: () => import('@/views/form/index'),
-        meta: { title: 'Form', icon: 'form' }
-      }
-    ]
-  },
-
-  {
-    path: '/nested',
-    component: Layout,
-    redirect: '/nested/menu1',
-    name: 'Nested',
-    meta: {
-      title: 'Nested',
-      icon: 'nested'
-    },
-    children: [
-      {
-        path: 'menu1',
-        component: () => import('@/views/nested/menu1/index'), // Parent router-view
-        name: 'Menu1',
-        meta: { title: 'Menu1' },
-        children: [
-          {
-            path: 'menu1-1',
-            component: () => import('@/views/nested/menu1/menu1-1'),
-            name: 'Menu1-1',
-            meta: { title: 'Menu1-1' }
-          },
-          {
-            path: 'menu1-2',
-            component: () => import('@/views/nested/menu1/menu1-2'),
-            name: 'Menu1-2',
-            meta: { title: 'Menu1-2' },
-            children: [
-              {
-                path: 'menu1-2-1',
-                component: () => import('@/views/nested/menu1/menu1-2/menu1-2-1'),
-                name: 'Menu1-2-1',
-                meta: { title: 'Menu1-2-1' }
-              },
-              {
-                path: 'menu1-2-2',
-                component: () => import('@/views/nested/menu1/menu1-2/menu1-2-2'),
-                name: 'Menu1-2-2',
-                meta: { title: 'Menu1-2-2' }
-              }
-            ]
-          },
-          {
-            path: 'menu1-3',
-            component: () => import('@/views/nested/menu1/menu1-3'),
-            name: 'Menu1-3',
-            meta: { title: 'Menu1-3' }
-          }
-        ]
-      },
-      {
-        path: 'menu2',
-        component: () => import('@/views/nested/menu2/index'),
-        meta: { title: 'menu2' }
-      }
-    ]
-  },
-
-  {
-    path: 'external-link',
-    component: Layout,
-    children: [
-      {
-        path: 'https://panjiachen.github.io/vue-element-admin-site/#/',
-        meta: { title: 'External Link', icon: 'link' }
-      }
-    ]
-  },
-
+export let asyncRouterMap = [
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
 ]
+// eslint-disable-next-line no-const-assign
+asyncRouterMap = asyncRouterMap.concat(jobor)
 
 const createRouter = () => new Router({
   // mode: 'history', // require service support

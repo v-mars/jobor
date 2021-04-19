@@ -54,6 +54,16 @@ npm run lint
 npm run lint -- --fix
 ```
 
+```bash
+npm uninstall sass-loader
+npm uninstall node-sass
+yarn remove node-sass
+yarn remove sass-loader
+yarn add sass-loader@10.1.0
+yarn add node-sass
+yarn install
+```
+
 Refer to [Documentation](https://panjiachen.github.io/vue-element-admin-site/guide/essentials/deploy.html) for more information
 
 ## Demo
