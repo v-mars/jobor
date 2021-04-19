@@ -51,7 +51,7 @@ const mutations = {
   },
   SET_TOKEN: (state, token) => {
     state.token = token
-    setToken(data.token)
+    setToken(token)
     // console.log("token:", token)
   },
   SET_NAME: (state, name) => {
