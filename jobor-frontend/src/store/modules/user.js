@@ -2,6 +2,8 @@
 import { Get, Other, Request } from '@/api/request'
 // eslint-disable-next-line no-unused-vars
 import router, { resetRouter } from '@/router'
+import { setRefreshToken, setToken, setTokenExpires, setTokenType,
+  removeExpires, removeRefreshToken, removeToken, removeTokenType } from '@/utils/user_token'
 import store from '@/store'
 
 const getDefaultState = () => {
@@ -35,20 +37,21 @@ const mutations = {
   SET_LOGIN_DATA: (state, data) => {
     state.refresh_token = data.refresh_token
     state.token_type = data.token_type
-    localStorage.setItem('refresh_token', data.refresh_token)
-    localStorage.setItem('token_type', data.token_type)
-    localStorage.setItem('expires_at', data.expires_at)
+    setRefreshToken(data.refresh_token)
+    setToken(data.token)
+    setTokenType(data.token_type)
+    setTokenExpires(data.expires_at)
   },
   RESET_STATE: (state) => {
     Object.assign(state, getDefaultState())
-    localStorage.removeItem('token')
-    localStorage.removeItem('refresh_token')
-    localStorage.removeItem('token_type')
-    localStorage.removeItem('expires_at')
+    removeToken()
+    removeTokenType()
+    removeRefreshToken()
+    removeExpires()
   },
   SET_TOKEN: (state, token) => {
     state.token = token
-    localStorage.setItem('token', token)
+    setToken(data.token)
     // console.log("token:", token)
   },
   SET_NAME: (state, name) => {
@@ -69,7 +72,7 @@ const actions = {
         commit('SET_TOKEN', response.data.data.token)
         commit('SET_LOGIN_DATA', response.data.data)
         const roles = response.data.data.roles
-        // store.dispatch('generateRoutes', {roles}).then(r => {})
+        store.dispatch('generateRoutes', {roles}).then(r => {})
         resolve(response)
       }).catch(error => {
         reject(error)
@@ -83,6 +86,8 @@ const actions = {
       Get(store.state.urls.user_info_url, {}).then(response => {
         // console.log("user getInfo:", response.data)
         if (response.data.code === 200) {
+          commit('SET_TOKEN', response.data.data.token)
+          commit('SET_LOGIN_DATA', response.data.data)
           commit('SET_USER_DATA', response.data.data)
           const roles = response.data.data.roles
           store.dispatch('generateRoutes', {roles}).then(r => {})

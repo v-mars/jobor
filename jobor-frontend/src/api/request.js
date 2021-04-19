@@ -2,6 +2,7 @@ import axios from 'axios'
 import {Message, MessageBox} from "element-ui";
 import store from '@/store'
 import router from '../router'
+import {getToken, getTokenExpires, getTokenType} from '@/utils/user_token'
 
 //异步请求前在header里加入token
 axios.interceptors.request.use(
@@ -10,9 +11,9 @@ axios.interceptors.request.use(
     if (config.url === '/api/login' || config.url === '/api/v1/login' || config.url === '/api/v1/refresh-token') {  //如果是登录和注册操作，则不需要携带header里面的token
     }
     else {
-      let token = localStorage.getItem("token")
-      let token_type = localStorage.getItem("token_type")
-      let expire_at = localStorage.getItem("expires_at") || 0
+      let token = getToken()
+      let token_type = getTokenType()
+      let expire_at = getTokenExpires() || 0
       let curr_timestamp = Date.parse(new Date()) / 1000;
       // expire_at + 3600 refresh_token 过期时间
       // console.log("timestamp:",curr_timestamp < (expire_at + 3600), expire_at, curr_timestamp, Number(expire_at) - curr_timestamp )
