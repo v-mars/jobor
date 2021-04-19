@@ -85,7 +85,7 @@ const actions = {
         if (response.data.code === 200) {
           commit('SET_USER_DATA', response.data.data)
           const roles = response.data.data.roles
-          // store.dispatch('generateRoutes', {roles}).then(r => {})
+          store.dispatch('generateRoutes', {roles}).then(r => {})
           resolve(response)
         } else {
           resolve(response)
