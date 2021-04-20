@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"time"
 
-	"ops-go/pkg/notify"
+	"jobor/pkg/notify"
 )
 
 // Slack send conf

@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"github.com/gin-gonic/gin"
-	"ops-go/internal/app/models"
+	"jobor/internal/app/models"
 )
 
 type CommonInterfaces interface {

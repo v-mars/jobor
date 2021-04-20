@@ -3,7 +3,7 @@ package utils
 import (
 	"fmt"
 	_ "fmt"
-	"ops-go/pkg/convert"
+	"jobor/pkg/convert"
 	"strings"
 	_ "strings"
 )

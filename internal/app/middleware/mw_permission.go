@@ -3,7 +3,7 @@ package middleware
 import (
 	"errors"
 	"github.com/gin-gonic/gin"
-	"ops-go/internal/app/response"
+	"jobor/internal/app/response"
 )
 
 // PermissionMiddleware 权限中间件

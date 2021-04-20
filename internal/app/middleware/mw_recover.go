@@ -3,7 +3,7 @@ package middleware
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"ops-go/internal/app/response"
+	"jobor/internal/app/response"
 )
 
 // RecoveryMiddleware 崩溃恢复中间件

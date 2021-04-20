@@ -2,7 +2,7 @@ package email
 
 import (
 	"crypto/tls"
-	"ops-go/pkg/utils"
+	"jobor/pkg/utils"
 
 	"encoding/base64"
 	"fmt"
@@ -10,7 +10,7 @@ import (
 	"strings"
 
 	//"github.com/labulaka521/crocodile/common/log"
-	"ops-go/pkg/notify"
+	"jobor/pkg/notify"
 )
 
 // SMTP is email conf

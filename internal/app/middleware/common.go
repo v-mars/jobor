@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
-	"ops-go/internal/config"
-	"ops-go/pkg/jwt"
+	"jobor/internal/config"
+	"jobor/pkg/jwt"
 	"time"
 )
 

@@ -3,10 +3,10 @@ package middleware
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"ops-go/internal/app/controllers/sys/user"
-	"ops-go/internal/app/response"
-	"ops-go/internal/app/utils/casbin"
-	"ops-go/pkg/utils"
+	"jobor/internal/app/controllers/sys/user"
+	"jobor/internal/app/response"
+	"jobor/internal/app/utils/casbin"
+	"jobor/pkg/utils"
 )
 
 // 权限检查中间件

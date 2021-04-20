@@ -11,7 +11,7 @@ import (
 	"strconv"
 	"time"
 
-	"ops-go/pkg/notify"
+	"jobor/pkg/notify"
 )
 
 // getsign generate a sign when secure level is needsign

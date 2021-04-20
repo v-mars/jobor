@@ -2,7 +2,7 @@ package middleware
 
 import (
 	"github.com/gin-gonic/gin"
-	"ops-go/internal/app/response"
+	"jobor/internal/app/response"
 )
 
 // UserAuthMiddleware 用户授权中间件

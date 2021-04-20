@@ -7,7 +7,7 @@ import (
 	"time"
 
 	tb "gopkg.in/tucnak/telebot.v2"
-	"ops-go/pkg/notify"
+	"jobor/pkg/notify"
 )
 
 var (

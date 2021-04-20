@@ -1,0 +1,44 @@
+[Server]
+Mode = "debug"
+IP = "0.0.0.0"
+Port = "3000"
+#LogPath = "./logs"
+
+
+[MySQL]
+DBName = "ops"
+User = "ocean"
+Password = "123456"
+Host = "127.0.0.1"
+Port = 3306
+Parameters = "charset=utf8mb4&parseTime=True&loc=Asia%2FShanghai"
+
+
+[Gorm]
+Debug = false
+DBType = "mysql"
+TablePrefix = ""
+MaxLifetime = 100
+MaxOpenConn = 200
+MaxIdleConn = 200
+
+[Redis]
+Host = "127.0.0.1:6379" # "xxxx:6379,xxxx:6379"
+Password = ""
+DB = 1
+
+[JWT]
+TokenType = "Bearer"     # Bearer
+TokenKey = "jS2SnJdSmTKRNQYh"
+RefreshKey = "jreJdSmT0kenYh"
+Age = 360000
+
+[LDAP]
+addr = "ad.example.org:389"
+baseDn = "dc=example,dc=org"
+bindDn = "manager@example.org"
+bindPass = "password"
+authFilter = "(&(sAMAccountName=%s))"
+attributes = ["sAMAccountName", "displayName", "mail"]
+tls = false
+startTLS = false

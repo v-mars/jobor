@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"ops-go/pkg/notify"
+	"jobor/pkg/notify"
 	"strings"
 	"time"
 )

@@ -66,21 +66,7 @@ func (r TreeNode) GetAllMark(c *gin.Context) {
 // @Failure 400 object response.Data {"code": 4001, "status": "error", "message": "error", "data": ""}
 // @Router /api/v1/sys/tree_node/{id} [get]
 func (r TreeNode) Get(c *gin.Context) {
-	_id := c.Params.ByName("id")
-	var obj tbs.Host
-	o := r.Option()
-	o.Where = "id = ?"
-	o.Value = append(o.Value, _id)
-	o.First = true
-	o.NullError = true
-	err := models.Get(r.DB,&obj, o, &obj)
-	if err!= nil {
-		response.Error(c, err)
-		return
-	} else {
-		response.Success(c,&obj)
-		return
-	}
+	_ = c.Params.ByName("id")
 }
 
 // @Tags 树形结构管理

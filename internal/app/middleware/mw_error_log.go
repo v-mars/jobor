@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"io/ioutil"
 	"net/http"
-	"ops-go/pkg/logger"
+	"jobor/pkg/logger"
 	"time"
 )
 
