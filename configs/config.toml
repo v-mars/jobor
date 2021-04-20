@@ -6,9 +6,9 @@ Port = "3000"
 
 
 [MySQL]
-DBName = "ops"
-User = "ocean"
-Password = "123456"
+DBName = "jobor"
+User = "xxx"
+Password = "xxxx"
 Host = "127.0.0.1"
 Port = 3306
 Parameters = "charset=utf8mb4&parseTime=True&loc=Asia%2FShanghai"
@@ -29,8 +29,8 @@ DB = 1
 
 [JWT]
 TokenType = "Bearer"     # Bearer
-TokenKey = "jS2SnJdSmTKRNQYh"
-RefreshKey = "jreJdSmT0kenYh"
+TokenKey = "jS2SnJdxxmTKRNQYh"
+RefreshKey = "jreJdXxT0kenYh"
 Age = 360000
 
 [LDAP]
