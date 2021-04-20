@@ -3,7 +3,7 @@ import { Get, Other, Request } from '@/api/request'
 // eslint-disable-next-line no-unused-vars
 import router, { resetRouter } from '@/router'
 import { setRefreshToken, setToken, setTokenExpires, setTokenType,
-  removeExpires, removeRefreshToken, removeToken, removeTokenType } from '@/utils/user_token'
+  removeExpires, removeRefreshToken, removeToken, removeTokenType, getRefreshToken } from '@/utils/user_token'
 import store from '@/store'
 
 const getDefaultState = () => {
@@ -105,7 +105,7 @@ const actions = {
   // 刷新token
   refreshToken({ state, commit }) {
     return new Promise((resolve, reject) => {
-      Other(store.state.urls.refresh_token_url, 'POST', { token: localStorage.getItem('refresh_token') }).then(response => {
+      Other(store.state.urls.refresh_token_url, 'POST', { token: getRefreshToken() }).then(response => {
         // console.log("response:", response)
         if (response.data.code === 200 && response.data.data.token) {
           commit('SET_TOKEN', response.data.data.token)
