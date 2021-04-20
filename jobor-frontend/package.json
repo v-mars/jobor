@@ -1,8 +1,8 @@
 {
-  "name": "vue-admin-template",
+  "name": "jobor-ui",
   "version": "4.2.1",
-  "description": "A vue admin template with Element UI & axios & iconfont & permission control & lint",
-  "author": "Pan <panfree23@gmail.com>",
+  "description": "A jobor admin with Element UI & axios & iconfont & permission control & lint",
+  "author": "Ocean <429472406@qq.com>",
   "license": "MIT",
   "scripts": {
     "dev": "vue-cli-service serve",
