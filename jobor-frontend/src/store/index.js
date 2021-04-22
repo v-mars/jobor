@@ -6,7 +6,7 @@ import settings from './modules/settings'
 import user from './modules/user'
 import permission from './modules/permission'
 import urls from './modules/urls'
-import apiRest from './modules/common'
+import common from './modules/common'
 
 Vue.use(Vuex)
 
@@ -16,7 +16,7 @@ const store = new Vuex.Store({
     settings,
     permission,
     urls,
-    apiRest,
+    common: common,
     user
   },
   getters

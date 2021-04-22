@@ -15,6 +15,27 @@
     <div style="margin-top: 10px">
       <el-table border :data="data_list" size="small" v-loading="loading">
 <!--        <el-table-column type="selection" width="45" align="center"></el-table-column>-->
+        <el-table-column label="" type="expand">
+          <template slot-scope="props">
+            <div>
+              <label>执行内容:</label>
+              <pre style="white-space: pre-wrap;word-wrap: break-word;">{{ props.row.data.data }}</pre>
+            </div>
+            <div>
+              <label>返回结果:</label>
+              <pre style="white-space: pre-wrap;word-wrap: break-word;">{{ props.row.resp }}</pre>
+            </div>
+            <div>
+              <label>err_code:</label>
+              <div><span v-if="props.row.result!=='success'">{{ props.row.err_code }}</span></div>
+            </div>
+            <div>
+              <label>错误信息:</label>
+              <pre style="white-space: pre-wrap;word-wrap: break-word;">{{ props.row.err_msg }}</pre>
+            </div>
+
+          </template>
+        </el-table-column>
         <el-table-column label="ID" prop="id" width="60"></el-table-column>
         <el-table-column label="名称" prop="name" width="150"></el-table-column>
         <el-table-column label="类型" prop="lang" width="80"></el-table-column>

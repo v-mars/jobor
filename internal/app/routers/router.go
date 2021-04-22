@@ -14,6 +14,7 @@ import (
 	"jobor/pkg/logger"
 	"jobor/pkg/utils"
 	"log"
+	"net/http"
 	"os"
 	"strings"
 )
@@ -64,7 +65,7 @@ func InitRouter(RunMode string, addr string)  {
 
 	// 登录验证 及信息提取
 	var notCheckLoginUrlArr = []string{
-		"/favicon.ico","/ping","/swager/*","/debug/pprof","/metrics","/api/code",
+		"/","/favicon.ico","/ping","/swager/*","/debug/pprof","/metrics","/api/code",
 		"/gin/routes",
 		"/api/v1/login","/api/v1/token","/api/v1/refresh-token","/api/login","/api/user/logout",
 		}
@@ -75,11 +76,13 @@ func InitRouter(RunMode string, addr string)  {
 	notCheckPermissionUrlArr = append(notCheckPermissionUrlArr, notCheckLoginUrlArr...)
 	Engine.Use(middleware.CasbinMiddleware(middleware.AllowPathPrefixSkipper(notCheckPermissionUrlArr...)))
 
-	//Engine.LoadHTMLGlob(config.Web.StaticPath+"dist/*.html")
-	//Engine.Static("/static", config.Web.StaticPath+"dist/static")
-	//Engine.Static("/resource", config.Web.StaticPath+"resource")
-	//Engine.StaticFile("/favicon.ico", config.Web.StaticPath+"dist/favicon.ico")
-
+	Engine.LoadHTMLGlob("./static/dist/*.html")
+	Engine.Static("/static", "./static/dist/static")
+	Engine.Static("/resource", "./static/resource")
+	Engine.StaticFile("/favicon.ico", "./static/dist/favicon.ico")
+	Engine.GET("/", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "index.html", gin.H{})
+	})
 
 	// 注册路由
 	if err := RegisterRouter(Engine); err != nil{

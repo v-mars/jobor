@@ -32,19 +32,78 @@ import layout_jobor from '@/layout/layout_jobor'
  * all roles can be accessed
  */
 
+
+export const sys_routers = {
+  path: '/sys',
+  component: layout_jobor,
+  redirect: '/sys/user',
+  name: '系统管理',
+  meta: { title: '系统管理', icon: '', roles: ['devops', "system"] },
+  children: [
+    {
+      path: 'user',
+      name: '用户',
+      component: () => import('@/views/sys/user'),
+      meta: { title: '用户', icon: '', roles: ['devops', "system"] }
+    },
+    {
+      path: 'hostgroup',
+      name: '用户组',
+      component: () => import('@/views/sys/user-group'),
+      meta: { title: '用户组', icon: '', roles: ['devops', "system"] }
+    },
+    {
+      path: 'role',
+      name: '角色',
+      component: () => import('@/views/sys/role'),
+      meta: { title: '角色', icon: '', roles: ['devops', "system"] }
+    },
+    {
+      path: 'permission',
+      name: '权限',
+      component: () => import('@/views/sys/permission'),
+      meta: { title: '权限', icon: '', roles: ['devops', "system"] }
+    },
+    {
+      path: 'portal',
+      name: 'Portal',
+      component: () => import('@/views/sys/portal'),
+      meta: { title: 'Portal', icon: '', roles: ['devops', "system"] }
+    },
+    // {
+    //   path: 'tree',
+    //   name: '树管理',
+    //   component: () => import('@/views/fort/tree-node-test'),
+    //   meta: { title: '树管理', icon: '', roles: ['devops', "system"] }
+    // },
+    {
+      path: 'state',
+      name: '系统状态',
+      component: () => import('@/views/sys/sys_state'),
+      meta: { title: '系统状态', icon: '', roles: ['devops', "system"] }
+    },
+    // {
+    //   path: 'config',
+    //   name: '系统配置',
+    //   component: () => import('@/views/sys/config'),
+    //   meta: { title: '系统配置', icon: '', roles: ['devops', "system"] }
+    // },
+  ]
+}
+
 export const jobor = [
   {
     path: '/jobor/index',
     component: layout_jobor,
     redirect: '/jobor/index',
     name: '概览',
-    meta: { title: '持续集成概览', icon: '', roles: ['devops'] },
+    meta: { title: '持续集成概览', icon: '', roles: ['devops', 'admin'] },
     children: [
       {
         path: '',
         name: 'joborDashboard',
         component: () => import('@/views/jobor/dashboard'),
-        meta: { title: '概览', icon: '', roles: ['jobor'] }
+        meta: { title: '概览', icon: '', roles: ['jobor', 'admin'] }
       }
     ]
   },
@@ -53,34 +112,35 @@ export const jobor = [
     component: layout_jobor,
     redirect: '/jobor/task',
     name: 'disTask',
-    meta: { title: '定时任务', icon: '', roles: ['devops'] },
+    meta: { title: '定时任务', icon: '', roles: ['devops', 'admin'] },
     children: [
       {
         path: 'task',
         name: '任务管理',
         component: () => import('@/components/jobor/task'),
-        meta: { title: '任务管理', icon: '', roles: ['jobor'] }
+        meta: { title: '任务管理', icon: '', roles: ['jobor', 'admin'] }
       },
       {
         path: 'log',
         name: 'joborLog',
         component: () => import('@/components/jobor/log'),
-        meta: { title: '执行记录', icon: '', roles: ['jobor'] }
+        meta: { title: '执行记录', icon: '', roles: ['jobor', 'admin'] }
       }
     ]
   },
+  sys_routers,
   {
     path: '/jobor/help',
     component: layout_jobor,
     redirect: '/jobor/help',
     name: 'jobor帮助',
-    meta: { title: '帮助', icon: '', roles: ['devops'] },
+    meta: { title: '帮助', icon: '', roles: [] },
     children: [
       {
         path: '',
         name: 'joborHelp',
         component: () => import('@/views/jobor/help'),
-        meta: { title: '帮助', icon: '', roles: ['jobor'] }
+        meta: { title: '帮助', icon: '', roles: [] }
       }
     ]
   }
@@ -107,7 +167,7 @@ export const constantRoutes = [
       path: 'dashboard',
       name: 'Dashboard',
       component: () => import('@/views/jobor/dashboard'),
-      meta: { title: 'Dashboard', icon: 'dashboard' }
+      meta: { title: 'Dashboard', icon: '' }
     }]
   },
 

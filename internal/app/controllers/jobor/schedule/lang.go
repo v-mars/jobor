@@ -46,8 +46,8 @@ func getCmd(ctx context.Context, Lang string, code string) (*exec.Cmd, string, e
 		return runPython3(ctx, code)
 	case "golang":
 		return runGolang(ctx, code)
-	case "nodejs":
-		return runNodejsV1(ctx, code)
+	//case "nodejs":
+	//	return runNodejs(ctx, code)
 	case "windowsbat":
 		return runWindowsBat(ctx, code)
 	default:

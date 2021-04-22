@@ -64,6 +64,7 @@ type Config struct {
 	Redis       Redis
 	Session     Session
 	JWT 		JWT
+	Email		Email
 }
 
 // 站点配置参数
@@ -183,6 +184,17 @@ type JWT struct {
 	Age          int
 }
 
+type Email struct {
+	SMTPHost   string `json:"smtpHost"`
+	Port       int    `json:"port"`
+	Username   string `json:"username"`
+	Password   string `json:"password"`
+	From       string `json:"from"`
+	Tls        bool   `json:"tls"`
+	Anonymous  bool   `json:"anonymous"`
+	SkipVerify bool   `json:"skipVerify"`
+}
+
 
 //加载配置
 func LoadConfig(configPath string) (err error) {
@@ -229,10 +241,10 @@ func LoadConfig(configPath string) (err error) {
 		c.JWT.TokenType = "Bearer"
 	}
 	if c.JWT.TokenKey == "" {
-		c.JWT.TokenKey = "jS2SnJdSmTKRNQYh"
+		c.JWT.TokenKey = "jS2SnJdxxmTKRNQYh"
 	}
 	if c.JWT.RefreshKey == "" {
-		c.JWT.RefreshKey = "jreJdSmT0kenYh"
+		c.JWT.RefreshKey = "jreJdXxT0kenYh"
 	}
 	if c.JWT.Age == 0 {
 		c.JWT.Age = 60 * 60

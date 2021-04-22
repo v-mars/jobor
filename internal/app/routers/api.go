@@ -109,7 +109,7 @@ func RegisterRouter(engine *gin.Engine) error {
 			joborApp.POST("/task", joborTask.Create)
 			joborApp.PUT("/task/:id", joborTask.Update)
 			joborApp.PUT("/task/:id/:status", joborTask.RunOrStop)
-			joborApp.DELETE("/task", joborTask.Delete)
+			joborApp.DELETE("/task/:id", joborTask.Delete)
 
 			var joborTaskLog = joborlog.NewService(db.DB)
 			joborApp.GET("/log", joborTaskLog.Query)
@@ -152,7 +152,7 @@ func Ping(c *gin.Context)  {
 	logger.Infof("from client %s ping", c.ClientIP())
 	ips,_:= ServerIPv4s()
 	c.JSON(200, gin.H{
-		"app": "air cloud",
+		"app": "jobor.inc",
 		"message": "pong",
 		"status": "success",
 		"clientIP": c.ClientIP(),

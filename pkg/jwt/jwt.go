@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-const defaultKey = "jS2SnJdSmTKRNQYh"
+const defaultKey = "jS2SnJdxxmTKRNQYh"
 
 // tokenInfo 令牌信息
 type tokenInfo struct {

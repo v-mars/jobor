@@ -1,6 +1,7 @@
 package schedule
 
 import (
+	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 	"jobor/internal/app/controllers"
@@ -23,8 +24,7 @@ type Task struct {
 }
 
 func NewService(DB *gorm.DB) ITask {
-	if DB==nil{DB= db.DB
-	}
+	if DB==nil{DB=db.DB}
 	return Task{DB: DB}
 }
 
@@ -54,7 +54,7 @@ func (r Task) Query(c *gin.Context) {
 	o.Value = append(o.Value, "%"+param.Name+"%")
 	o.Order = "id desc"
 	//o.Scan = true
-	err := models.Query(r.DB,&obj, o, &pageData)
+	err := models.Query(r.DB,&tbs.JoborTask{}, o, &pageData)
 	if err != nil {
 		response.Error(c, err)
 		return
@@ -120,10 +120,12 @@ func (r Task) Update(c *gin.Context) {
 		return
 	}
 	var obj PutSchema
+
 	if err := c.ShouldBindJSON(&obj); err!=nil{
 		response.ParamFailed(c, err)
 		return
 	}
+
 	if obj.Name!=nil{
 		*obj.Name = strings.ToLower(*obj.Name)
 	}
@@ -139,6 +141,15 @@ func (r Task) Update(c *gin.Context) {
 		response.Error(c, err)
 		return
 	}
+	if obj.Data!=nil{
+		bytes,err:=json.Marshal(obj.Data)
+		if err!=nil{
+			response.Error(c, err)
+			return
+		}
+		MapData["data"]=string(bytes)
+	}
+
 	var res tbs.JoborTask
 	if err:= models.UpdateById(tx, &res,_id,MapData,ass, true);err!=nil{
 		response.Error(c, err)
@@ -233,12 +244,12 @@ func (r Task) Option() models.Option {
 
 func GetById(id interface{}) (tbs.JoborTask, error) {
 	var res tbs.JoborTask
-	err:= db.DB.First(&res,id).Error
+	err:=db.DB.First(&res,id).Error
 	return res,err
 }
 
 func GetAllRunningTask() ([]tbs.JoborTask, error) {
 	var resList []tbs.JoborTask
-	err:= db.DB.Where("status='running'").Find(&resList).Error
+	err:=db.DB.Where("status='running'").Find(&resList).Error
 	return resList,err
 }

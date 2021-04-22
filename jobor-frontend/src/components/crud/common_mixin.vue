@@ -40,7 +40,7 @@
           let param = Object.assign(data, this.searchForm, this.extraParam);
           this.loading = true
           try {
-            const response = await this.$store.dispatch("apiRest/Query", {url: this.url, data: param});
+            const response = await this.$store.dispatch("common/Query", {url: this.url, data: param});
             this.data_list = response.data.data.list
             this.total = response.data.data.total
           } catch (e) {

@@ -2,10 +2,10 @@ package auth
 
 import (
 	"fmt"
-	sys "ops-go/internal/app/controllers/sys/user"
-	"ops-go/internal/config"
-	"ops-go/pkg/convert"
-	goJWT "ops-go/pkg/jwt"
+	sys "jobor/internal/app/controllers/sys/user"
+	"jobor/internal/config"
+	"jobor/pkg/convert"
+	goJWT "jobor/pkg/jwt"
 	"testing"
 )
 

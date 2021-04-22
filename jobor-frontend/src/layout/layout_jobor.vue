@@ -16,7 +16,7 @@
           >
 <!--            <sidebar-item v-for="route in permission_routers" :key="route.path" :item="route" :base-path="route.path" />-->
 <!--            <sidebar-item v-for="route in permission_routers" :key="route.path" :item="route" :base-path="route.path" />-->
-            <sidebar-item v-for="route in routers.jobor" :key="route.path" :item="route" :base-path="route.path" />
+            <sidebar-item v-for="route in routers.routers" :key="route.path" :item="route" :base-path="route.path" />
           </el-menu>
         </el-aside>
         <el-main style="width: 100%;padding: 10px">
