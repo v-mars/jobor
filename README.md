@@ -2,6 +2,15 @@
 
 ### 火星计划之定时任务
 
+# 构建
+``vertica`
+make Makefile build
+make Makefile build-linux
+make Makefile build-mac
+or
+go build
+```
+
 # 命令
 ```
 ./app -h
