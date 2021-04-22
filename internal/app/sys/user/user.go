@@ -2,10 +2,10 @@ package user
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 	"jobor/internal/app"
-	"jobor/internal/errors"
 	"jobor/internal/models"
 	"jobor/internal/models/db"
 	"jobor/internal/models/tbs"
@@ -359,7 +359,7 @@ func GetUserInfo(c *gin.Context)  {
 	}
 	//fmt.Println("u:", u)
 	if u.Name == "" {
-		response.Error(c, errors.New("user info is null"))
+		response.Error(c, fmt.Errorf("user info is null"))
 	}
 	response.Success(c, u)
 	return

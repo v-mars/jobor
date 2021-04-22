@@ -276,12 +276,12 @@ func CronAddFuncCommon(evt,trigger string, t tbs.JoborTask)  {
 	_, err = buf.ReadFrom(out)
 	//fmt.Println("stdout: ",buf.String())
 	taskLog.Result="success"
-	taskLog.Resp=buf.String()
-	//if len(buf.String())>3000{
-	//	taskLog.Resp = fmt.Sprintf("%s\n……省略过多内容……\n%s", buf.String()[0:1499],buf.String()[len(buf.String())-1499:])
-	//}else {
-	//	taskLog.Resp=buf.String()
-	//}
+	//taskLog.Resp=buf.String()
+	if len(buf.String())>3000{
+		taskLog.Resp = fmt.Sprintf("%s\n……省略过多内容……\n%s", buf.String()[0:1499],buf.String()[len(buf.String())-1499:])
+	}else {
+		taskLog.Resp=buf.String()
+	}
 	//fmt.Println(out)
 }
 

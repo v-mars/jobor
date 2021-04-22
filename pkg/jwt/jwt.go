@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-const defaultKey = "jS2SnJdxxmTKRNQYh"
+const defaultKey = "jS2SnJdxxmTKRNQYa"
 
 // tokenInfo 令牌信息
 type tokenInfo struct {
@@ -64,6 +64,22 @@ func (a *JWTAuth)SetSigningMethod(method jwt.SigningMethod) {
 // SetSigningKey 设定签名key
 func (a *JWTAuth)SetSigningKey(key []byte) {
 	a.Options.SigningKey = key
+}
+
+// SetKeyFunc 设定签名keyFunc
+func (a *JWTAuth)SetKeyFunc(key []byte) {
+	a.Options.KeyFunc = func(t *jwt.Token) (interface{}, error) {
+		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, ErrInvalidToken
+		}
+		return key, nil
+	}
+}
+
+// SetKey 设定签名key
+func (a *JWTAuth)SetKey(key []byte) {
+	a.SetSigningKey(key)
+	a.SetKeyFunc(key)
 }
 
 // SetExpired 设定令牌过期时长(unit, default3600)

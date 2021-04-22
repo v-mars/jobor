@@ -12,9 +12,6 @@ import (
 
 func TokenData(c *gin.Context, headerTag string) (map[string]interface{}, error) {
 	hToken := c.Request.Header.Get(headerTag)
-	//fmt.Println("token:", hToken)
-	//fmt.Println("Header:", c.Request.Header)
-	//fmt.Println("config.Configs.JWT.TokenType:", config.Configs.JWT.TokenType)
 	var token string
 	ticketLen := len(config.Configs.JWT.TokenType+ " ") // Authorization AUTHORIZATION
 	if ticketLen < len(hToken){
@@ -22,9 +19,8 @@ func TokenData(c *gin.Context, headerTag string) (map[string]interface{}, error)
 	}else {
 		return nil, errors.New("token is none")
 	}
-	//fmt.Println("token:", token)
 	var j = jwt.New()
-	MapCla, err := j.ParseToken(token, "")
+	MapCla, err := j.ParseToken(token, config.Configs.JWT.TokenKey)
 	if err != nil {
 		return nil, err
 	}

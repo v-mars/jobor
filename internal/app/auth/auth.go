@@ -79,7 +79,8 @@ func RefreshToken(c *gin.Context)  {
 	}
 	//fmt.Println("obj.token:", obj.Token)
 	tokenApi := goJWT.New()
-	tokenApi.Options.SigningKey = []byte(config.Configs.JWT.RefreshKey)
+	tokenApi.SetKey([]byte(config.Configs.JWT.RefreshKey))
+	//tokenApi.Options.SigningKey = []byte(config.Configs.JWT.RefreshKey)
 	claims, err := tokenApi.ParseToken(obj.Token,config.Configs.JWT.RefreshKey)
 	if err !=nil{
 		response.Error(c, err)
@@ -169,6 +170,7 @@ func returnResult(c *gin.Context, username string, userType int)  {
 		return
 	}
 	tokenApi := goJWT.New()
+	tokenApi.SetKey([]byte(config.Configs.JWT.TokenKey))
 	tokenApi.SetClaims(cla)
 	//fmt.Println("cla:", cla)
 	//err := middleware.NewSession(c, cla)

@@ -63,9 +63,10 @@ func InitRouter(RunMode string, addr string)  {
 
 	//Engine.Use(sessions.Sessions("sessionid", store))
 
+	//var blockArr = []string{"/api", "/v1"}
 	// 登录验证 及信息提取
 	var notCheckLoginUrlArr = []string{
-		"/","/favicon.ico","/ping","/swager/*","/debug/pprof","/metrics","/api/code",
+		"/static","/favicon.ico","/ping","/swager/*","/debug/pprof","/metrics","/api/code",
 		"/gin/routes",
 		"/api/v1/login","/api/v1/token","/api/v1/refresh-token","/api/login","/api/user/logout",
 		}
