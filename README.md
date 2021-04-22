@@ -1,8 +1,6 @@
-# jobor
+# Jobor分布式定时任务
 
-### 火星计划之定时任务
-
-# 构建
+## 构建
 ```
 make Makefile build
 make Makefile build-linux
@@ -11,7 +9,7 @@ or
 go build
 ```
 
-# 命令
+## 命令
 ```
 ./app -h
 Usage:
@@ -30,7 +28,7 @@ Use " [command] --help" for more information about a command.
 
 ```
 
-# 启动Server
+## 启动Server
 ```
  
 ./app server -h
@@ -54,7 +52,7 @@ Flags:
 ./app server -p 5000 -c ./configs/config.toml -f ./logs
 ```
 
-# 启动Worker
+## 启动Worker
 ```
 ./app worker
 ```

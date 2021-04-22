@@ -2,9 +2,9 @@ package cmd
 
 import (
 	"github.com/spf13/cobra"
-	"jobor/internal/app"
-	"jobor/internal/app/routers"
+	"jobor/internal"
 	"jobor/internal/config"
+	"jobor/internal/routers"
 )
 
 func Server() *cobra.Command {
@@ -20,7 +20,7 @@ func Server() *cobra.Command {
 		Long:  `Welcome User Jobor Server`,
 		Example: `## 启动命令 ./app server -p 5000 -c ./configs/config.toml -f ./logs`,
 		Run: func(cmd *cobra.Command, args []string) {
-			app.Run(c.Server.ConfigFile)
+			internal.Run(c.Server.ConfigFile)
 			addr := c.Server.IP+":"+c.Server.Port
 			routers.InitRouter(c.Server.Mode, addr)
 			//if len(cfg) == 0 {
