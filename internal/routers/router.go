@@ -24,6 +24,14 @@ var (
 	Engine *gin.Engine
 )
 
+
+////go:embed dist/*
+//var f embed.FS
+////go:embed dist/favicon.ico
+//var ico embed.FS
+////go:embed dist/static/*
+//var static embed.FS
+
 func InitRouter(RunMode string, addr string)  {
 	//RunMode := gin.DebugMode
 	gin.SetMode(RunMode) //调试模式
@@ -76,6 +84,13 @@ func InitRouter(RunMode string, addr string)  {
 	var notCheckPermissionUrlArr = []string{"/api/v1/user-info", "/api/menu/menubuttonlist"}
 	notCheckPermissionUrlArr = append(notCheckPermissionUrlArr, notCheckLoginUrlArr...)
 	Engine.Use(middleware.CasbinMiddleware(middleware.AllowPathPrefixSkipper(notCheckPermissionUrlArr...)))
+
+	//tmpl := template.Must(template.New("").ParseFS(f, "dist/index.html"))
+	//Engine.SetHTMLTemplate(tmpl)
+	//Engine.StaticFS("/static", http.FS(static))
+	//Engine.StaticFS("/favicon.ico", http.FS(ico))
+	//tmpl := template.Must(template.New("").ParseFS(f,"views/*"))
+
 
 	Engine.LoadHTMLGlob("./static/dist/*.html")
 	Engine.Static("/static", "./static/dist/static")

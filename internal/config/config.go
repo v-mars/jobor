@@ -15,7 +15,7 @@ var Configs = Config{
 		Mode:     "DEBUG",
 		IP:       "0.0.0.0",
 		BindHost: "0.0.0.0",
-		Port:     "3000",
+		Port:     "5000",
 		RootPath: rootPath,
 		LogPath:  "./logs",
 		LogLevel: "DEBUG",

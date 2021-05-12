@@ -1,7 +1,7 @@
 [Server]
 Mode = "debug"
 IP = "0.0.0.0"
-Port = "3000"
+Port = "5000"
 #LogPath = "./logs"
 
 
