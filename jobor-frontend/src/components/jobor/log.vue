@@ -17,21 +17,20 @@
 <!--        <el-table-column type="selection" width="45" align="center"></el-table-column>-->
         <el-table-column label="" type="expand">
           <template slot-scope="props">
-            <div>
+            <div class="task-log-item">
               <label>执行内容:</label>
-              <pre style="white-space: pre-wrap;word-wrap: break-word;">{{ props.row.data.data }}</pre>
+              <pre style="white-space: pre-wrap;word-wrap: break-word;margin: 1px;">{{ props.row.data.data }}</pre>
             </div>
-            <div>
+            <div class="task-log-item">
               <label>返回结果:</label>
-              <pre style="white-space: pre-wrap;word-wrap: break-word;">{{ props.row.resp }}</pre>
+              <pre style="white-space: pre-wrap;word-wrap: break-word;margin: 1px;">{{ props.row.resp }}</pre>
             </div>
-            <div>
-              <label>err_code:</label>
-              <div><span v-if="props.row.result!=='success'">{{ props.row.err_code }}</span></div>
+            <div class="task-log-item">
+              <label>错误状态码:</label> <span v-if="props.row.result!=='success'">{{ props.row.err_code }}</span>
             </div>
-            <div>
+            <div class="task-log-item">
               <label>错误信息:</label>
-              <pre style="white-space: pre-wrap;word-wrap: break-word;">{{ props.row.err_msg }}</pre>
+              <pre style="white-space: pre-wrap;word-wrap: break-word;margin: 1px;">{{ props.row.err_msg }}</pre>
             </div>
 
           </template>
@@ -46,6 +45,7 @@
           </template>
         </el-table-column>
         <el-table-column label="表达式" prop="expr" width=""></el-table-column>
+        <el-table-column label="worker" prop="addr" width=""></el-table-column>
         <el-table-column label="耗时" prop="cost_time" width="100">
           <template slot-scope="scope">{{scope.row.cost_time}}s</template>
         </el-table-column>
@@ -57,6 +57,15 @@
             <div v-else-if="scope.row.result==='failed'">
               <Badge status="error" text="失败" />
             </div>
+            <div v-else-if="scope.row.result==='running'">
+              <Badge status="processing" text="运行中" />
+            </div>
+            <div v-else-if="scope.row.result==='timeout'">
+              <Badge status="error" text="超时" />
+            </div>
+            <div v-else-if="scope.row.result==='abort'">
+              <Badge status="warning" text="终止" />
+            </div>
             <div v-else>
               <Badge status="default" :text="scope.row.result" />
             </div>
@@ -65,7 +74,12 @@
         <el-table-column label="更新时间" prop="mtime" width="140"></el-table-column>
         <el-table-column label="操作" align="center" width="120">
           <template slot-scope="scope">
-            <detail_button title="详细"></detail_button>
+            <el-popconfirm icon="el-icon-info" :title="'确认开始手动执行任务吗？'" @onConfirm="abortTask(scope.row)">
+              <delete_button title="终止" slot="reference"
+                             v-if="['wait','running'].indexOf(scope.row.result)!==-1"></delete_button>
+            </el-popconfirm>
+
+            <detail_button title="详细" style="margin-left:10px"></detail_button>
           </template>
         </el-table-column>
       </el-table>
@@ -99,6 +113,18 @@
       }},
       methods: {
 
+        abortTask: async function (row) {
+          try {
+            let apiUrl = `${this.url}/${row.id}/abort`
+            const response = await this.$store.dispatch("common/Request",
+              {url: apiUrl,method:"POST", data: {}});
+            this.$message({message:response.data.message, type: "success"})
+            await this.getData()
+          } catch (e) {
+            this.$message({message:String(e), type: "error"})
+          } finally {
+          }
+        },
 
         changeStatus: function (row,status) {
           let statusName="<span style='color: #00c752'>运行</span>"
@@ -135,6 +161,8 @@
     }
 </script>
 
-<style scoped>
-
+<style lang="scss" scoped>
+  .task-log-item{
+    margin-bottom: 10px;
+  }
 </style>

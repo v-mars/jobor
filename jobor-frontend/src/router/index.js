@@ -64,12 +64,12 @@ export const sys_routers = {
       component: () => import('@/views/sys/permission'),
       meta: { title: '权限', icon: '', roles: ['devops', "system"] }
     },
-    {
-      path: 'portal',
-      name: 'Portal',
-      component: () => import('@/views/sys/portal'),
-      meta: { title: 'Portal', icon: '', roles: ['devops', "system"] }
-    },
+    // {
+    //   path: 'portal',
+    //   name: 'Portal',
+    //   component: () => import('@/views/sys/portal'),
+    //   meta: { title: 'Portal', icon: '', roles: ['devops', "system"] }
+    // },
     // {
     //   path: 'tree',
     //   name: '树管理',
@@ -125,7 +125,13 @@ export const jobor = [
         name: 'joborLog',
         component: () => import('@/components/jobor/log'),
         meta: { title: '执行记录', icon: '', roles: ['jobor', 'admin'] }
-      }
+      },
+      {
+        path: 'worker',
+        name: 'Worker',
+        component: () => import('@/components/jobor/worker'),
+        meta: { title: '节点', icon: '', roles: ['jobor'] }
+      },
     ]
   },
   sys_routers,
@@ -162,7 +168,7 @@ export const constantRoutes = [
   {
     path: '/',
     component: layout_jobor,
-    redirect: '/dashboard',
+    redirect: '/jobor/index',
     children: [{
       path: 'dashboard',
       name: 'Dashboard',

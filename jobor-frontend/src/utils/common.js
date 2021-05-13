@@ -1,6 +1,6 @@
 /*邮箱验证正则*/
 export function EmailReCheck(email){
-  var reg = new RegExp("^[a-z0-9]+([._\\-]*[a-z0-9])*@([a-z0-9]+[-a-z0-9]*[a-z0-9]+.){1,63}[a-z0-9]+$"); //正则表达式
+  let reg = new RegExp("^[a-z0-9]+([._\\-]*[a-z0-9])*@([a-z0-9]+[-a-z0-9]*[a-z0-9]+.){1,63}[a-z0-9]+$"); //正则表达式
   if(email === ""){ //输入不能为空
     //alert("输入不能为空!");
     return false;
@@ -11,6 +11,15 @@ export function EmailReCheck(email){
     //alert("通过！");
     return true;
   }
+}
+
+/*url验证正则*/
+export  function validateUrl(str) {
+  let oRegUrl = new RegExp();
+  //aa.bb.com
+  oRegUrl.compile("^[A-Za-z]+://[A-Za-z0-9-_]+\\.[A-Za-z0-9-_%&\?\/.=]+$");
+  return oRegUrl.test(str);
+
 }
 
 // js保存内容至本地文件
@@ -162,5 +171,6 @@ export default {
   hasPermission,
   // editorInit,
   templateFunc,
+  validateUrl,
 }
 

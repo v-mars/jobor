@@ -1,6 +1,7 @@
 package routers
 
 import (
+	"context"
 	"fmt"
 	"github.com/chenjiandongx/ginprom"
 	"github.com/gin-gonic/gin"
@@ -11,12 +12,16 @@ import (
 	"jobor/internal/middleware"
 	"jobor/internal/models/db"
 	"jobor/internal/models/tbs"
+	"jobor/internal/proto/service"
 	"jobor/pkg/logger"
 	"jobor/pkg/utils"
 	"log"
 	"net/http"
 	"os"
+	"os/signal"
 	"strings"
+	"syscall"
+	"time"
 )
 
 
@@ -62,15 +67,6 @@ func InitRouter(RunMode string, addr string)  {
 	// 日志
 	Engine.Use(gin.Logger())
 
-
-	// session
-	//store, _ := redis.NewStore(10, "tcp", "192.168.21.138:6379", "", []byte("secret"))
-	//store, _ := redis.NewStoreWithDB(200, "tcp", "192.168.21.138:6379", "", "1", []byte(""))
-	//store.Options(sessions.Options{MaxAge:60, Secure:false})
-	//_ = redis.SetKeyPrefix(store, "")
-
-	//Engine.Use(sessions.Sessions("sessionid", store))
-
 	//var blockArr = []string{"/api", "/v1"}
 	// 登录验证 及信息提取
 	var notCheckLoginUrlArr = []string{
@@ -109,17 +105,58 @@ func InitRouter(RunMode string, addr string)  {
 	//profile(Engine)
 
 	//pprof.Register(Engine)
-	//_ = Engine.RunV1(addr)
+
 	go func() {
-		log.Fatal(Engine.Run(addr))
+		if err:= service.MasterGRPC();err!=nil{
+			log.Fatal(err)
+		}
 	}()
+	fmt.Println(utils.Green("Jobor Master service start success, 地址："+ service.MasterGRPCPort))
+
+	srv := &http.Server{
+		Addr:    addr,
+		Handler: Engine,
+	}
+
+	go func() {
+		// 开启一个goroutine启动服务
+		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			log.Fatalf("listen: %s\n", err)
+		}
+	}()
+
+	//go func() {
+	//	log.Fatal(Engine.Run(addr))
+	//}()
 	msg := fmt.Sprintf("服务启动成功，运行模式：%s，版本号：%s，进程号：%d", RunMode, "release", os.Getpid())
 	fmt.Println(utils.Green(msg))
 	fmt.Println(utils.Green("访问地址 http://"+addr))
 	//log.Printf(utils.Green(msg, 1))
 	//InitUpdatePermissionByGinRoutes()
 	fmt.Println(utils.Green("[*] Waiting for messages. To exit press CTRL+C"))
-	select {}
+
+	// 等待中断信号来优雅地关闭服务器，为关闭服务器操作设置一个5秒的超时
+	quit := make(chan os.Signal, 1) // 创建一个接收信号的通道
+	// kill 默认会发送 syscall.SIGTERM 信号
+	// kill -2 发送 syscall.SIGINT 信号，我们常用的Ctrl+C就是触发系统SIGINT信号
+	// kill -9 发送 syscall.SIGKILL 信号，但是不能被捕获，所以不需要添加它
+	// signal.Notify把收到的 syscall.SIGINT或syscall.SIGTERM 信号转发给quit
+	signal.Notify(quit,
+		os.Interrupt, os.Kill,
+		syscall.SIGINT, syscall.SIGTERM,
+		syscall.SIGKILL,
+		syscall.SIGHUP, syscall.SIGQUIT, syscall.SIGILL, syscall.SIGTRAP,
+		syscall.SIGABRT)  // 此处不会阻塞
+	sig:=<-quit  // 阻塞在此，当接收到上述两种信号时才会往下执行
+	logger.Info(fmt.Sprintf("get signal %s, application will shutdown.", sig))
+	logger.Info("start shutdown server...")
+	// 创建一个5秒超时的context
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	// 5秒内优雅关闭服务（将未处理完的请求处理完再关闭服务），超过5秒就超时退出
+	if err := srv.Shutdown(ctx); err != nil {log.Fatal("server shutdown: ", err)}
+
+	log.Println("server exited")
 }
 
 

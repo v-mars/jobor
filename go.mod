@@ -14,7 +14,6 @@ require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/gin-contrib/sessions v0.0.3
 	github.com/gin-gonic/gin v1.7.1
-	github.com/go-kit/kit v0.8.0 // indirect
 	github.com/go-ldap/ldap/v3 v3.3.0
 	github.com/go-ole/go-ole v1.2.5 // indirect
 	github.com/go-redis/redis/v8 v8.8.0
@@ -39,6 +38,7 @@ require (
 	github.com/stretchr/testify v1.7.0
 	github.com/swaggo/gin-swagger v1.3.0
 	github.com/tklauser/go-sysconf v0.3.5 // indirect
+	golang.org/x/net v0.0.0-20201202161906-c7110b5ffcbb // indirect
 	golang.org/x/text v0.3.3
 	google.golang.org/grpc v1.37.1 // indirect
 	google.golang.org/protobuf v1.26.0 // indirect

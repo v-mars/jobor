@@ -168,7 +168,7 @@ func Ping(c *gin.Context)  {
 	})
 }
 
-// LocalIPs return all non-loopback IPv4 addresses
+// ServerIPv4s LocalIPs return all non-loopback IPv4 addresses
 func ServerIPv4s() ([]string, error) {
 	var ips []string
 	adders, err := net.InterfaceAddrs()

@@ -14,13 +14,23 @@
       </el-form>
     </div>
     <div style="margin-top: 10px">
-      <el-table border :data="data_list" size="small" v-loading="loading">
+      <el-table border :data="data_list" size="small" v-loading="loading" key="jobor_task">
 <!--        <el-table-column type="selection" width="45" align="center"></el-table-column>-->
         <el-table-column label="ID" prop="id" width="60"></el-table-column>
-        <el-table-column label="名称" prop="name" width="150"></el-table-column>
+        <el-table-column label="名称" prop="name" width="">
+          <template slot-scope="scope">
+            <span>{{scope.row.name}}</span>
+            <el-tooltip class="item" effect="dark"
+                        placement="top-start" style="margin-left: 3px">
+              <div v-html="'<pre>描述:\n'+scope.row.description+'</pre>'" slot="content"></div>
+              <i class="el-icon-info" v-if="scope.row.description"></i>
+            </el-tooltip>
+          </template>
+        </el-table-column>
         <el-table-column label="类型" prop="lang" width="80"></el-table-column>
-        <el-table-column label="表达式" prop="expr" width="120"></el-table-column>
-        <el-table-column label="任务脚本" prop="data" show-overflow-tooltip></el-table-column>
+        <el-table-column label="表达式" prop="expr" width=""></el-table-column>
+<!--        <el-table-column label="任务脚本" prop="data" show-overflow-tooltip></el-table-column>-->
+        <el-table-column label="routingKey" prop="routing_key"></el-table-column>
         <el-table-column label="状态" prop="" width="70" align="">
           <template slot-scope="scope">
             <el-popconfirm icon-color="red" icon="el-icon-info"
@@ -31,25 +41,18 @@
             <el-popconfirm icon="el-icon-info" v-else :title="'确认开始运行任务吗？'" @onConfirm="changeStatus(scope.row)">
               <el-switch v-model="scope.row.status==='running'" slot="reference"></el-switch>
             </el-popconfirm>
-<!--            <el-switch v-model="scope.row.status==='running'"></el-switch>-->
-<!--            <div style="vertical-align: middle;display:flex;flex-direction:row;align-items:center;" v-if="scope.row.status==='running'">-->
-<!--              <Badge status="success" text="运行" />-->
-<!--            </div>-->
-<!--            <div v-else-if="scope.row.status==='stop'">-->
-<!--              <Badge status="error" text="停止" />-->
-<!--            </div>-->
-<!--            <div v-else>-->
-<!--              <Badge status="warning" :text="scope.row.status" />-->
-<!--            </div>-->
           </template>
         </el-table-column>
 <!--        <el-table-column label="创建时间" prop="ctime" width="140"></el-table-column>-->
-        <el-table-column label="更新时间" prop="mtime" width="140"></el-table-column>
+        <el-table-column label="上次执行时间" prop="prev" width="160"></el-table-column>
         <el-table-column label="操作" align="center" width="200">
           <template slot-scope="scope">
-            <green_button title="运行"></green_button>
+            <el-popconfirm icon="el-icon-info" :title="'确认开始手动执行任务吗？'" @onConfirm="runTask(scope.row)">
+              <green_button title="运行" slot="reference"></green_button>
+            </el-popconfirm>
+
 <!--            <delete_button @click="changeStatus(scope.row,'stop')" v-if="scope.row.status==='running'" title="停止"></delete_button>-->
-            <edit_button @click="showEdit(scope.row)"></edit_button>
+            <edit_button @click="showEdit(scope.row)" style="margin-left:10px"></edit_button>
             <delete_button @click="confirmDelRows(scope.row, scope.row.name, true)"></delete_button>
           </template>
         </el-table-column>
@@ -125,7 +128,7 @@
                   </el-table-column>
                 </el-table>
                 <div style="margin-left:11px">
-                  <el-button :disabled="false" type="primary" size="mini" @click="rowData.data.api.header.push({})">添加</el-button>
+                  <el-button :disabled="false" type="text" size="mini" @click="rowData.data.api.header.push({})">添加</el-button>
                 </div>
               </div>
               <div v-if="['GET','HEAD'].includes(rowData.data.api.method) === false">
@@ -163,7 +166,7 @@
                     </el-table-column>
                   </el-table>
                   <div style="margin-left:11px">
-                    <el-button :disabled="false" type="primary" size="mini" @click="rowData.data.api.forms.push({})">添加</el-button>
+                    <el-button :disabled="false" type="text" size="mini" @click="rowData.data.api.forms.push({})">添加</el-button>
                   </div>
                 </div>
                 <div v-if="rowData.data.api.content_type === 'application/json'">
@@ -220,14 +223,17 @@
         <el-form-item label="超时时间" prop="timeout" :rules="[{required:true,message:'请输入', trigger: 'blur'}]">
           <el-input-number controls-position="right" :min="-1" :max="86400" v-model="rowData.timeout" style="width: auto"></el-input-number>
         </el-form-item>
-        <el-form-item label="失败重试" prop="retry" :rules="[{required:true,message:'请输入', trigger: 'blur'}]">
-          <el-input-number controls-position="right" :min="0" :max="20" v-model="rowData.retry" style="width: auto"></el-input-number>
-        </el-form-item>
+<!--        <el-form-item label="失败重试" prop="retry" :rules="[{required:true,message:'请输入', trigger: 'blur'}]">-->
+<!--          <el-input-number controls-position="right" :min="0" :max="20" v-model="rowData.retry" style="width: auto"></el-input-number>-->
+<!--        </el-form-item>-->
         <el-form-item label="期望返回码" prop="expect_code" :rules="[{required:true,message:'请输入期望返回码', trigger: 'blur'}]">
           <el-input-number controls-position="right" v-model="rowData.expect_code" style="width: auto"></el-input-number>
         </el-form-item>
         <el-form-item label="期望返回内容">
           <el-input type="textarea" :rows="2" placeholder="请输入期望返回内容" v-model="rowData.expect_context"></el-input>
+        </el-form-item>
+        <el-form-item label="告警通知" prop="notify">
+          <notify :notify.sync="rowData.notify"></notify>
         </el-form-item>
 
       </el-form>
@@ -248,7 +254,9 @@
   import edit_button from '@/components/crud/edit_button'
   import green_button from '@/components/crud/green_button'
   import user_select from '@/components/sys/user_select'
+  import notify from '@/components/jobor/notify'
   import common_mixin from '@/components/crud/common_mixin'
+  import {validateUrl,EmailReCheck} from '@/utils/common'
   import { isValidCron } from 'cron-validator'
     export default {
       name: "jobor_task",
@@ -262,11 +270,49 @@
           }
         }
 
+        const validateNotify = (rule, value, callback) => {
+          if(value.webhook && value.webhook.urls){
+            for(let i=0;i<value.webhook.urls.length;i++){
+              if(!validateUrl(value.webhook.urls[i])){
+                callback(new Error('webhook url格式不正确, 例：http://api.xx.com/ping'))
+              }
+            }
+          }
+          if(value.email && value.email.receivers){
+            for(let i=0;i<value.email.receivers.length;i++){
+              if(!EmailReCheck(value.email.receivers[i])){
+                callback(new Error('邮箱格式不正确, 例：zhangsan@email.com'))
+              }
+            }
+          }
+          if(value.lark && value.lark.webhooks){
+            for(let i=0;i<value.lark.webhooks.length;i++){
+              if(!validateUrl(value.lark.webhooks[i].webhook_url)){
+                callback(new Error('飞书 webhook url格式不正确, 例：http://lark.xx.com/ping'))
+              }
+            }
+          }
+          if(value.lark && value.dingding.webhooks){
+            for(let i=0;i<value.dingding.webhooks.length;i++){
+              if(!validateUrl(value.dingding.webhooks[i].webhook_url)){
+                callback(new Error('钉钉 webhook url格式不正确, 例：http://dingding.xx.com/ping'))
+              }
+            }
+          }
+          callback()
+        }
         return{
           taskRules: {
-            "expr": [{ required: true, trigger: 'blur', validator: validateCronExpr }]
+            "expr": [{ required: true, trigger: 'blur', validator: validateCronExpr }],
+            "notify": [{ required: false, trigger: 'blur', validator: validateNotify }]
           },
 
+          notify: {
+            email: {enable:false,receivers:[]},
+            webhook:{enable:false,urls:[]},
+            lark:{enable:false,webhooks:[]},
+            dingding:{enable:false,webhooks:[]}
+          },
           rowData: {
               name: "", lang: "shell",id: "",expr: "* * * * * *", timeout: -1,retry:0,
               expect_code: 0,expect_context: "",alarm_policy: 2, description: "",
@@ -278,7 +324,13 @@
                   payload: "",
                   header: [],
                   forms: [],
-                }}
+                }},
+              notify: {
+                email: {enable:false,receivers:[]},
+                webhook:{enable:false,urls:[]},
+                lark:{enable:false,webhooks:[]},
+                dingding:{enable:false,webhooks:[]}
+              },
           },
           url: this.$store.state.urls.jobor_task_url,
 
@@ -382,6 +434,7 @@
           this.rowData.id = row.id
           this.rowData.name = row.name
           this.rowData.data = row.data
+          this.rowData.notify = row.notify
           this.rowData.lang = row.lang
           this.rowData.timeout = Number(row.timeout)
           this.rowData.expr = row.expr
@@ -389,6 +442,10 @@
           this.rowData.expect_context = row.expect_context
           this.rowData.alarm_policy = row.alarm_policy
           this.rowData.description = row.description
+          if(!this.rowData.notify.email.receivers){this.rowData.notify.email.receivers=[]}
+          if(!this.rowData.notify.webhook.urls){this.rowData.notify.webhook.urls=[]}
+          if(!this.rowData.notify.lark.webhooks){this.rowData.notify.lark.webhooks=[]}
+          if(!this.rowData.notify.dingding.webhooks){this.rowData.notify.dingding.webhooks=[]}
         },
 
         newRow: function() {
@@ -412,6 +469,7 @@
               header: [],
               forms: [],
             }}
+          this.rowData.notify = JSON.parse(JSON.stringify(this.notify))
         },
 
         changeStatus: function (row) {
@@ -473,12 +531,25 @@
           require("brace/theme/solarized_dark");
         },
 
+        runTask: async function (row) {
+          try {
+            let apiUrl = `${this.url}/${row.id}/run`
+            const response = await this.$store.dispatch("common/Request",
+              {url: apiUrl,method:"POST", data: {}});
+            this.$message({message:response.data.message, type: "success"})
+            await this.getData()
+          } catch (e) {
+            this.$message({message:String(e), type: "error"})
+          } finally {
+          }
+        },
+
       },
       mounted () {
         this.getData()
       },
       components: {
-        pagination: pagination,
+        pagination: pagination,notify,
         delete_button,
         edit_button,
         user_select,
@@ -488,6 +559,8 @@
     }
 </script>
 
-<style scoped>
-
+<style lang="scss" scoped>
+  .add-btn{
+    margin-left: 5px;
+  }
 </style>

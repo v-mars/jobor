@@ -1,15 +1,15 @@
 package service
 
 import (
-	"jobor/internal/proto"
-	"jobor/internal/proto/pb"
-	"jobor/internal/proto/registry"
-	"jobor/pkg/logger"
 	"context"
 	"fmt"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/peer"
 	"google.golang.org/grpc/reflection"
+	"jobor/internal/proto"
+	"jobor/internal/proto/pb"
+	"jobor/internal/proto/registry"
+	"jobor/pkg/logger"
 	"log"
 	"math"
 	"net"

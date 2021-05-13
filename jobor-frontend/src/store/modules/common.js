@@ -1,4 +1,4 @@
-import { Get, Other} from '@/api/request'
+import { Get, Other, Request} from '@/api/request'
 
 
 const state = {

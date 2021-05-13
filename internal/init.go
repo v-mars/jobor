@@ -20,8 +20,6 @@ func Run(configPath string)  {
 		log.Fatal(err)
 	}
 	conf :=config.GetConf()
-	//fmt.Println(conf)
-
 
 	logger.Initial()
 	initDB(&conf)
