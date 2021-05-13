@@ -1,0 +1,94 @@
+syntax = "proto3";
+
+package jobor;
+
+option go_package = "./internal/proto/pb/";
+//protoc --go_out=plugins=grpc:. ./internal/proto/jobor.proto
+
+// The service definition.
+service TaskService {
+  // 定义服务
+  rpc RunRPC (TaskRequest) returns (Response) {}
+
+  rpc RunTask (TaskRequest) returns (stream StreamResponse) {};
+//  rpc RunTask (stream TaskRequest) returns (stream StreamResponse) {};
+
+  // run task return stream bytes
+//  rpc RunTask(TaskReq) returns (stream StreamResponse);
+
+//  rpc OrderList(OrderSearchParams) returns (stream OrderList){}; //服务端流式
+//  rpc UploadFile(stream ImageList) returns (uploadResponse){}; //客户端流式
+//  rpc SumData(stream SumData) returns (stream SumData){}; //双向流式
+
+  rpc GetStream (StreamReqData) returns (stream StreamResData){} //客户端推送 服务端
+  rpc PutStream (stream StreamReqData) returns (StreamResData){} //服务端推送 客户端
+  rpc AllStream (stream StreamReqData) returns (stream StreamResData){} //客户端与 服务端 互相 推送
+
+}
+
+//stream请求结构
+message StreamReqData {
+  string data = 1;
+}
+//stream返回结构
+message StreamResData {
+  string data = 1;
+}
+
+// The request message containing the user's name.
+message TaskRequest {
+  int32  task_id = 1;
+  int32 task_type = 2;
+  string task_lang = 3;
+  bytes task_data = 4;
+  string name = 5;
+}
+
+// The response message
+message Reply {
+  string message = 1;
+}
+
+message Response {
+  enum StatusCode {
+    UNDEFINED = 0;
+    SUCCESS = 200;
+    FAILURE = 500;
+  }
+  StatusCode code = 1;
+  Reply      msg  = 2;
+  Reply      data = 3;
+}
+
+message StreamResponse {
+  bytes resp = 1;
+}
+
+
+// worker send Heartbeat to master server
+service Heartbeat {
+  // registry worker
+  rpc RegistryWorker(RegistryReq) returns (Empty) {};
+  // SendHeartbeat send to server req to itself alive
+  rpc SendHeartbeat(HeartbeatReq) returns (Empty) {};
+}
+
+message RegistryReq {
+  string ip = 1;
+  int32 port = 2;
+  int32 weight = 3;
+  string hostname = 4;
+  string version = 5;
+  string hostGroup = 6;
+  string remark = 7;
+  string routingKey = 8;
+}
+
+message HeartbeatReq {
+  // string ip = 1;
+  int32 port = 2;
+  repeated string running_task = 3;
+}
+
+message Empty {}
+

@@ -1,0 +1,9 @@
+[Worker]
+mode = "debug"
+ip = "localhost"
+port = 30052
+routing_key = "default"
+weight = 100
+servers = ["localhost:50051"]
+#LogPath = "./logs"
+log_level = "debug"

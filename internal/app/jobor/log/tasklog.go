@@ -1,16 +1,21 @@
 package log
 
 import (
-	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
+	"jobor/internal/app/jobor/dispatcher"
 	"jobor/internal/models"
 	"jobor/internal/models/db"
 	"jobor/internal/models/tbs"
 	"jobor/internal/response"
+	"jobor/pkg/convert"
+	"fmt"
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
+	"time"
 )
 
 type ITaskLog interface {
 	Query(c *gin.Context)
+	Abort(c *gin.Context)
 }
 type TaskLog struct {
 	DB *gorm.DB
@@ -22,8 +27,8 @@ func NewService(DB *gorm.DB) ITaskLog {
 	return TaskLog{DB: DB}
 }
 
-
-// @Tags Jobor任务管理
+// Query
+// @Tags Jobor任务Log
 // @Summary JoborLog列表
 // @Description JoborLog列表
 // @Produce  json
@@ -53,6 +58,32 @@ func (r TaskLog) Query(c *gin.Context) {
 		response.Error(c, err)
 		return
 	} else {
-		response.PageSuccess(c, pageData)
+		for i,v:=range obj{
+			if v.Result == tbs.TaskLogStatusRunning || v.Result == tbs.TaskLogStatusWait{
+				obj[i].CostTime = float32(time.Now().Unix() - v.StartTime.Unix())
+			}
+		}
+		response.Success(c, pageData)
 	}
+}
+
+// Abort
+// @Tags Jobor任务Log
+// @Summary Abort Jobor task
+// @Description JoborLog列表
+// @Produce  json
+// @Security ApiKeyAuth
+// @Param id path int true "Jobor任务log id"
+// @Success 200 object response.Data {"code": 2000, "status": "ok", "message": "success", "data": ""}
+// @Failure 400 object response.Data {"code": 4001, "status": "error", "message": "error", "data": ""}
+// @Router /api/v1/jobor/log/{id}/abort [post]
+func (r TaskLog) Abort(c *gin.Context) {
+	_id := c.Params.ByName("id")
+	_,ok:=dispatcher.CacheTask.TaskLogs[convert.ToUint(_id)]
+	if !ok{
+		response.Error(c, fmt.Errorf("任务[%s]已经完成或不存在",_id), "")
+		return
+	}
+	dispatcher.CacheTask.TaskLogs[convert.ToUint(_id)].TaskCancel()
+	response.SuccessMsg(c, "任务终止成功", "")
 }

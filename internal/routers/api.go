@@ -3,8 +3,9 @@ package routers
 import (
 	"github.com/gin-gonic/gin"
 	"jobor/internal/app/auth"
+	"jobor/internal/app/jobor/dispatcher"
 	joborlog "jobor/internal/app/jobor/log"
-	"jobor/internal/app/jobor/schedule"
+	joborWorker "jobor/internal/app/jobor/worker"
 	"jobor/internal/app/sys/permission"
 	property2 "jobor/internal/app/sys/property"
 	role2 "jobor/internal/app/sys/role"
@@ -18,7 +19,7 @@ import (
 	"net"
 )
 
-// // RegisterRouter 注册/api路由
+// RegisterRouter 注册/api路由
 func RegisterRouter(engine *gin.Engine) error {
 	v1 := engine.Group("/api/v1")
 	{
@@ -104,15 +105,22 @@ func RegisterRouter(engine *gin.Engine) error {
 		// ################ Jobor ###################
 		joborApp := v1.Group("/jobor")
 		{
-			var joborTask = schedule.NewService(db.DB)
+			var joborTask = dispatcher.NewService(db.DB)
+			joborApp.GET("/dashboard", joborTask.Dashboard)
 			joborApp.GET("/task", joborTask.Query)
 			joborApp.POST("/task", joborTask.Create)
 			joborApp.PUT("/task/:id", joborTask.Update)
-			joborApp.PUT("/task/:id/:status", joborTask.RunOrStop)
+			joborApp.POST("/task/:id/run", joborTask.RunTask)
+			joborApp.PUT("/task/:id/:status", joborTask.RunOrStopStatus)
 			joborApp.DELETE("/task/:id", joborTask.Delete)
 
+			var iJoborWorker = joborWorker.NewService(db.DB)
+			joborApp.GET("/worker", iJoborWorker.Query)
+			joborApp.PUT("/worker/:id", iJoborWorker.Update)
+			joborApp.DELETE("/worker/:id", iJoborWorker.Delete)
 			var joborTaskLog = joborlog.NewService(db.DB)
 			joborApp.GET("/log", joborTaskLog.Query)
+			joborApp.POST("/log/:id/abort", joborTaskLog.Abort)
 		}
 
 
