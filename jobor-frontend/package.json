@@ -17,6 +17,7 @@
   "dependencies": {
     "axios": "^0.21.1",
     "cron-validator": "^1.2.1",
+    "echarts": "^5.1.1",
     "element-ui": "2.13.0",
     "iview": "^3.5.4",
     "js-cookie": "2.2.0",
@@ -27,6 +28,7 @@
     "sass-loader": "10.1.0",
     "vue": "2.6.10",
     "vue-axios": "^3.2.4",
+    "vue-count-to": "^1.0.13",
     "vue-router": "3.0.6",
     "vue2-ace-editor": "^0.0.15",
     "vuex": "3.1.0"
