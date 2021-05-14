@@ -92,21 +92,21 @@ export const sys_routers = {
 }
 
 export const jobor = [
-  {
-    path: '/jobor/index',
-    component: layout_jobor,
-    redirect: '/jobor/index',
-    name: '概览',
-    meta: { title: '持续集成概览', icon: '', roles: ['devops', 'admin'] },
-    children: [
-      {
-        path: '',
-        name: 'joborDashboard',
-        component: () => import('@/views/jobor/dashboard'),
-        meta: { title: '概览', icon: '', roles: ['jobor', 'admin'] }
-      }
-    ]
-  },
+  // {
+  //   path: '/jobor/index',
+  //   component: layout_jobor,
+  //   redirect: '/jobor/index',
+  //   name: '概览',
+  //   meta: { title: '持续集成概览', icon: '', roles: ['devops', 'admin'] },
+  //   children: [
+  //     {
+  //       path: '',
+  //       name: 'joborDashboard',
+  //       component: () => import('@/views/jobor/dashboard'),
+  //       meta: { title: '概览', icon: '', roles: ['jobor', 'admin'] }
+  //     }
+  //   ]
+  // },
   {
     path: '/jobor',
     component: layout_jobor,
@@ -168,13 +168,14 @@ export const constantRoutes = [
   {
     path: '/',
     component: layout_jobor,
-    redirect: '/jobor/index',
+    redirect: '/',
     children: [{
-      path: 'dashboard',
+      path: '',
       name: 'Dashboard',
       component: () => import('@/views/jobor/dashboard'),
-      meta: { title: 'Dashboard', icon: '' }
-    }]
+      meta: { title: '概览', icon: '' }
+    },
+    ]
   },
 
   // 404 page must be placed at the end !!!

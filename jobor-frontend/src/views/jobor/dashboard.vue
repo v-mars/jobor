@@ -16,7 +16,7 @@
           <el-col :xs="24" :sm="24" :lg="8" class="card-panel-col">
             <el-table size="mini" key="user-deployment" :data="data.task_run||[]" height="230">
 <!--              <el-table-column type="index" :index="index" width="50" label="排名" align="center"></el-table-column>-->
-              <el-table-column label="排行" prop="ord_num" width="50" align="center">
+              <el-table-column label="排名" prop="ord_num" width="50" align="center">
                 <template slot-scope="scope">
                   <span style="color: #ff4d4f" v-if="scope.row.ord_num===1">1</span>
                   <span style="color: #ffa940" v-else-if="scope.row.ord_num===2">2</span>
@@ -39,7 +39,7 @@
   import line_v1 from "@/components/echart/line_v1";
   import {echart_color} from "@/components/js/echart";
     export default {
-        name: "dashboard",
+      name: "dashboard",
       data(){return{
         url: this.$store.state.urls.jobor_dash_url,
         dateRange: [],
@@ -180,12 +180,10 @@
                 }
               }
             }
-            this.$refs.line_task_status.drawLine("line-task-status",1)
-
+            this.$refs.line_task_status.drawLine("line-task-status")
 
             // this.total = response.data.data.total
           } catch (e) {
-            this.$message.warning(e)
           } finally {
             this.loading = false
           }

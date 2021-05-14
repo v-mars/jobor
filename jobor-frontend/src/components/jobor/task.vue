@@ -22,7 +22,7 @@
             <span>{{scope.row.name}}</span>
             <el-tooltip class="item" effect="dark"
                         placement="top-start" style="margin-left: 3px">
-              <div v-html="'<pre>描述:\n'+scope.row.description+'</pre>'" slot="content"></div>
+              <div v-html="'<pre style=\'margin: 1px\'>描述:\n'+scope.row.description+'</pre>'" slot="content"></div>
               <i class="el-icon-info" v-if="scope.row.description"></i>
             </el-tooltip>
           </template>

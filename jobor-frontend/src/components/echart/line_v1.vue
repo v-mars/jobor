@@ -8,7 +8,6 @@
 
   import echarts from 'echarts'
   import macarons from 'echarts/theme/macarons'
-  import {echart_color} from "@/components/js/echart";
 
     export default {
       name: "line_echart_v1",
@@ -94,19 +93,6 @@
           }
         },
 
-        changeColor(myChart){
-          for(let i=0;this.data.series.length|| 0;i++){
-            let lineColor = myChart.getModel().getSeriesByIndex(i).getData().getVisual('color')
-            let data = JSON.parse(JSON.stringify(this.data||"{}"))
-            data.series[i].itemStyle = {normal: {areaStyle: {
-                  // type: 'default',
-                  color: echart_color(lineColor, 1),
-                }
-              }
-            }
-            this.$emit("update:data", data)
-          }
-        },
       },
       //调用
       mounted() {

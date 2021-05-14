@@ -17,7 +17,7 @@
   "dependencies": {
     "axios": "^0.21.1",
     "cron-validator": "^1.2.1",
-    "echarts": "^5.1.1",
+    "echarts": "4.9.0",
     "element-ui": "2.13.0",
     "iview": "^3.5.4",
     "js-cookie": "2.2.0",

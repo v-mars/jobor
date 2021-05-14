@@ -21,7 +21,7 @@ import (
 
 
 const (
-	MasterGRPCPort = ":50051"
+	MasterGRPCPort = ":50052"
 	//fmt.Sprintf("%s:%d", config.WorkerConfig.IP,config.WorkerConfig.Port)
 )
 
