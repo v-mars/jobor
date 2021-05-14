@@ -1,13 +1,13 @@
 version: '3.5'
 services:
-  controller:
+  master:
         image: xxxxx
-        container_name: jobor_controller
+        container_name: jobor_master
         restart: always
         ports: 
           - 8000:8000
         volumes: 
-          - ./docker_config.toml:/app/core.toml
+          - ./configs/config.toml:/data/config.toml
         depends_on:
           - mysql
           - redis
@@ -15,15 +15,17 @@ services:
         image: xxxx
         container_name: jobor_worker
         volumes: 
-            - ./docker_config.toml:/app/core.toml
+            - ./configs/worker.toml:/data/worker.toml
         depends_on:
           - master
     mysql:
         image: mysql:5.7
-#        command: [mysqld, --character-set-server=utf8, --collation-server=utf8_bin]
+        command: [mysqld, --character-set-server=utf8, --collation-server=utf8_bin]
         environment:
-            MYSQL_ROOT_PASSWORD: "jobor123"
+            MYSQL_ROOT_PASSWORD: "Jobor123"
             MYSQL_DATABASE: "jobor"
+            MYSQL_USER: "jobor_rw"
+            MYSQL_PASSWORD: "Jobor_rw"
         volumes:
           - "./mysql_data/var/lib/mysql:/var/lib/mysql:rw"
           - "./mysql_data/etc/mysql/my.cnf:/etc/mysql/my.cnf"
@@ -33,7 +35,6 @@ services:
 
     redis:
         image: redis:5
-#        image: redis:latest
         restart: always
         ports: 
           - 6379:6379
