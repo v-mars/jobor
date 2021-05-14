@@ -58,6 +58,7 @@ _testmain.go
 [568vq].out
 #cmd/*
 cmd/apibox
+*.toml
 
 internal/tmp
 logs
