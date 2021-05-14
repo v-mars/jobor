@@ -54,7 +54,7 @@ Flags:
 
 ## 启动Worker
 ```
-./app worker
+./app worker -c ./configs/worker.toml
 ```
 
 ## Jobor预览
@@ -62,3 +62,17 @@ Flags:
 ![avatar](./img/jobor-task.jpeg)
 ![avatar](./img/jobor-run.jpeg)
 ![avatar](./img/jobor-worker.jpeg)
+
+## TODO 
+### task
+- [x] master <-- gRPC --> worker
+- [x] task abort
+- [x] task timeout
+- [x] api/restful [GET, POST, PUT, DELETE] task
+- [x] shell task
+- [x] python3 task
+- [ ] golang task
+- [x] master task
+- [ ] father task
+- [ ] children task
+- [ ] 任务缓存执行
