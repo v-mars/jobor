@@ -56,3 +56,9 @@ Flags:
 ```
 ./app worker
 ```
+
+## Jobor预览
+![avatar](./img/jobor-dash.jpeg)
+![avatar](./img/jobor-task.jpeg)
+![avatar](./img/jobor-run.jpeg)
+![avatar](./img/jobor-worker.jpeg)
