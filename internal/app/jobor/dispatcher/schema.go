@@ -1,4 +1,4 @@
-package schedule
+package dispatcher
 
 import (
 	"jobor/internal/models"
@@ -25,6 +25,7 @@ type PostSchema struct {
 	Description   string       `json:"description"`
 	Lang          string       `json:"lang" binding:"required"`
 	Data          tbs.TaskData `json:"data" binding:"required"`
+	Notify        tbs.Notify   `json:"notify"`
 	Expr          string       `json:"Expr" binding:"required"`
 	Timeout       int          `json:"timeout"`
 	ExpectCode    int          `json:"expect_code"`
@@ -42,6 +43,7 @@ type PutSchema struct {
 	Description   *string       `json:"description"`
 	Lang          *string       `json:"lang"`
 	Data          *tbs.TaskData `json:"data" form:"data"`
+	Notify        *tbs.Notify   `json:"notify" form:"notify"`
 	Expr          *string       `json:"Expr"`
 	Timeout       *int          `json:"timeout"`
 	ExpectCode    *int          `json:"expect_code"`

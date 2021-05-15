@@ -8,13 +8,10 @@ import (
 )
 
 func main(){
-	//version.Commit = c
-	//version.Version = v
-	//version.BuildDate = d
 	rootCmd := &cobra.Command{Use: ""}
 	//rootCmd := &cobra.Command{Use: "jobor"}
 	rootCmd.AddCommand(cmd.Server())
-	rootCmd.AddCommand(cmd.Client())
+	rootCmd.AddCommand(cmd.Worker())
 	rootCmd.AddCommand(cmd.Version())
 	//rootCmd.AddCommand(cmd.GeneratePemKey())
 	if err := rootCmd.Execute(); err != nil {

@@ -100,7 +100,7 @@ func SendHeartbeatAndRegistryWorker(port int32,ttl int64) {
 			return
 
 		}
-		logger.Infof("worker registry success, master: %s", lastAddr)
+		logger.Infof("worker registry success, server: %s", lastAddr)
 
 		//var d = time.Second * time.Duration(ttl)
 		ticker := time.NewTicker(proto.DefaultHeartbeatInterval)
@@ -133,7 +133,7 @@ func SendHeartbeatAndRegistryWorker(port int32,ttl int64) {
 				}
 				canNotConn = 0
 				cancel()
-				logger.Debugf("send heartbeat success, master %s", lastAddr)
+				logger.Debugf("send heartbeat success, server %s", lastAddr)
 				ticker.Reset(proto.DefaultHeartbeatInterval)
 				//case <-stopHeatBeat:
 				//	log.Info("Stop Send HearBeat")

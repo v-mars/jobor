@@ -34,7 +34,7 @@ type Worker struct {
 	Version      string `json:"version"`
 }
 
-//加载配置
+// LoadWorkerConfig 加载配置
 func LoadWorkerConfig(configPath string) (err error) {
 	var config struct{
 		Worker *Worker
@@ -43,7 +43,7 @@ func LoadWorkerConfig(configPath string) (err error) {
 	c.Worker = &WorkerConfig
 	//var c = &WorkerConfig
 
-	if _, err := toml.DecodeFile(configPath, &c); err != nil {
+	if _, err = toml.DecodeFile(configPath, &c); err != nil {
 		log.Fatal("Worker加载配置失败:", err)
 	}
 

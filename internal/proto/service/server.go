@@ -6,6 +6,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/peer"
 	"google.golang.org/grpc/reflection"
+	"jobor/internal/config"
 	"jobor/internal/proto"
 	"jobor/internal/proto/pb"
 	"jobor/internal/proto/registry"
@@ -20,9 +21,8 @@ import (
 )
 
 
-const (
-	MasterGRPCPort = ":50052"
-	//fmt.Sprintf("%s:%d", config.WorkerConfig.IP,config.WorkerConfig.Port)
+var (
+	ServerGRPCPort = fmt.Sprintf("%s:%d", config.Configs.Server.IP,config.Configs.Server.GRPCPort)
 )
 
 // Auth check rpc request valid
@@ -78,9 +78,9 @@ func (hs *HeartbeatService) SendHeartbeat(ctx context.Context, hb *pb.HeartbeatR
 }
 
 
-func MasterGRPC() error {
+func ServerGRPC() error {
 	//绑定端口
-	lis, err := net.Listen("tcp", MasterGRPCPort)
+	lis, err := net.Listen("tcp", ServerGRPCPort)
 	if err != nil{
 		log.Fatal("gRPC fail to listen")
 		return err

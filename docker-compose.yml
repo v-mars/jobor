@@ -1,8 +1,8 @@
 version: '3.5'
 services:
-  master:
+  server:
         image: xxxxx
-        container_name: jobor_master
+        container_name: jobor_server
         restart: always
         ports: 
           - 8000:8000
@@ -17,7 +17,7 @@ services:
         volumes: 
             - ./configs/worker.toml:/data/worker.toml
         depends_on:
-          - master
+          - server
     mysql:
         image: mysql:5.7
         command: [mysqld, --character-set-server=utf8, --collation-server=utf8_bin]

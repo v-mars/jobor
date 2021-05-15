@@ -16,7 +16,7 @@ Usage:
    [command]
 
 Available Commands:
-  client      Start Run jobor client
+  worker      Start Run jobor worker
   help        Help about any command
   server      Start Run Jobor Server
   version     Print the version of Jobor
@@ -65,14 +65,14 @@ Flags:
 
 ## TODO 
 ### task
-- [x] master <-- gRPC --> worker
+- [x] server <-- gRPC --> worker
 - [x] task abort
 - [x] task timeout
 - [x] api/restful [GET, POST, PUT, DELETE] task
 - [x] shell task
 - [x] python3 task
 - [ ] golang task
-- [x] master task
+- [x] server task
 - [ ] father task
 - [ ] children task
 - [ ] 任务缓存执行

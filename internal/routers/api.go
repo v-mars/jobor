@@ -7,10 +7,8 @@ import (
 	joborlog "jobor/internal/app/jobor/log"
 	joborWorker "jobor/internal/app/jobor/worker"
 	"jobor/internal/app/sys/permission"
-	property2 "jobor/internal/app/sys/property"
 	role2 "jobor/internal/app/sys/role"
 	"jobor/internal/app/sys/server"
-	"jobor/internal/app/sys/tree_node"
 	user2 "jobor/internal/app/sys/user"
 	"jobor/internal/app/sys/usergroup"
 	"jobor/internal/models/db"
@@ -75,27 +73,6 @@ func RegisterRouter(engine *gin.Engine) error {
 			sys.PUT("/permission/:id", permissionM.Update)
 			sys.DELETE("/permission", permissionM.Delete)
 
-			var tree = tree_node.NewService(db.DB)
-			sys.GET("/tree_node_mark", tree.GetAllMark)
-			sys.GET("/tree_node", tree.Query)
-			sys.POST("/tree_node", tree.Create)
-			sys.PUT("/tree_node/:id/rename", tree.Rename)
-			sys.PUT("/tree_node", tree.Update)
-			sys.DELETE("/tree_node/:id/:mark", tree.Delete)
-
-			var property = property2.NewService(db.DB)
-
-			sys.GET("/property", property.Query)
-			sys.GET("/ldap", property.QueryLDAP)
-			sys.POST("/ldap", property.CreateOrUpdateLDAP)
-			sys.GET("/email", property.QueryEmail)
-			sys.POST("/email", property.CreateOrUpdateEmail)
-			sys.GET("/aliyun", property.QueryAliYun)
-			sys.POST("/aliyun", property.CreateOrUpdateAliYun)
-			sys.GET("/gitlab", property.QueryGitlab)
-			sys.POST("/gitlab", property.CreateOrUpdateGitlab)
-			sys.GET("/jenkins", property.QueryJenkins)
-			sys.POST("/jenkins", property.CreateOrUpdateJenkins)
 
 			var state = server.NewService(db.DB)
 			sys.GET("/state", state.Get)

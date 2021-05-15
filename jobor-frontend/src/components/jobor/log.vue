@@ -6,6 +6,32 @@
         <el-form-item label="">
           <el-input v-model="searchForm.name" placeholder="名称" @keyup.enter.native="getData"></el-input>
         </el-form-item>
+        <el-form-item label="">
+          <el-select v-model="searchForm.lang" clearable placeholder="任务类型">
+            <el-option value="shell" label="Shell"></el-option>
+            <el-option value="python3" label="Python3"></el-option>
+            <el-option value="api" label="Api"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="">
+          <el-select v-model="searchForm.trigger" clearable placeholder="触发方式">
+            <el-option value="auto" label="自动"></el-option>
+            <el-option value="manual" label="手动"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="">
+          <el-input v-model="searchForm.worker" placeholder="运行地址" @keyup.enter.native="getData"></el-input>
+        </el-form-item>
+        <el-form-item label="">
+          <el-select v-model="searchForm.status" clearable placeholder="状态">
+            <el-option value="running" label="运行"></el-option>
+            <el-option value="success" label="成功"></el-option>
+            <el-option value="timeout" label="超时"></el-option>
+            <el-option value="abort" label="终止"></el-option>
+            <el-option value="wait" label="等待"></el-option>
+            <el-option value="unknown" label="未知"></el-option>
+          </el-select>
+        </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="getData">查询</el-button>
           <el-button style="float: right" @click="getData">刷新</el-button>
@@ -110,6 +136,7 @@
       data(){return{
 
         url: this.$store.state.urls.jobor_log_url,
+        searchForm: {name: "",lang:"",worker:"",trigger:"",status:""},
       }},
       methods: {
 

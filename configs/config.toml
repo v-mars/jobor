@@ -3,6 +3,7 @@ Mode = "debug"
 IP = "0.0.0.0"
 Port = "5000"
 #LogPath = "./logs"
+GRPCPort = 50052
 
 
 [MySQL]

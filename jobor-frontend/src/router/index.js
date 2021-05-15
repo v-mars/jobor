@@ -103,7 +103,7 @@ export const jobor = [
   //       path: '',
   //       name: 'joborDashboard',
   //       component: () => import('@/views/jobor/dashboard'),
-  //       meta: { title: '概览', icon: '', roles: ['jobor', 'admin'] }
+  //       meta: { title: '概览', icon: '', roles: ['jobor', 'normal'] }
   //     }
   //   ]
   // },
@@ -112,25 +112,25 @@ export const jobor = [
     component: layout_jobor,
     redirect: '/jobor/task',
     name: 'disTask',
-    meta: { title: '定时任务', icon: '', roles: ['devops', 'admin'] },
+    meta: { title: '定时任务', icon: '', roles: ['devops', 'normal'] },
     children: [
       {
         path: 'task',
         name: '任务管理',
         component: () => import('@/components/jobor/task'),
-        meta: { title: '任务管理', icon: '', roles: ['jobor', 'admin'] }
+        meta: { title: '任务管理', icon: '', roles: ['jobor', 'normal'] }
       },
       {
         path: 'log',
         name: 'joborLog',
         component: () => import('@/components/jobor/log'),
-        meta: { title: '执行记录', icon: '', roles: ['jobor', 'admin'] }
+        meta: { title: '执行记录', icon: '', roles: ['jobor', 'normal'] }
       },
       {
         path: 'worker',
         name: 'Worker',
         component: () => import('@/components/jobor/worker'),
-        meta: { title: '节点', icon: '', roles: ['jobor'] }
+        meta: { title: '节点', icon: '', roles: ['jobor','normal'] }
       },
     ]
   },

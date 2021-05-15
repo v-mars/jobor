@@ -107,11 +107,11 @@ func InitRouter(RunMode string, addr string)  {
 	//pprof.Register(Engine)
 
 	go func() {
-		if err:= service.MasterGRPC();err!=nil{
+		if err:= service.ServerGRPC();err!=nil{
 			log.Fatal(err)
 		}
 	}()
-	fmt.Println(utils.Green("Jobor Master service start success, 地址："+ service.MasterGRPCPort))
+	fmt.Println(utils.Green("Jobor server service start success, 地址："+ service.ServerGRPCPort))
 
 	srv := &http.Server{
 		Addr:    addr,

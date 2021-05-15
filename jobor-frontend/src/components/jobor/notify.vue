@@ -23,7 +23,7 @@
                   placeholder="请输入邮箱地址" style="max-width: 360px">
           <template slot="prepend">邮箱地址</template>
         </el-input>
-        <el-button :disabled="false" size="mini" @click="Notify.webhook.receivers.splice(index, 1)"
+        <el-button :disabled="false" size="mini" @click="Notify.email.receivers.splice(index, 1)"
                    icon="el-icon-delete" type="danger" circle class="add-btn"></el-button>
       </div>
 

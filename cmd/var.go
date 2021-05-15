@@ -3,17 +3,23 @@ package cmd
 import (
 	"fmt"
 	"github.com/spf13/cobra"
+	"time"
+)
+
+var (
+	Ver = "1.0.1"
+	BuildDate = time.Now().Format("2006.01.02")
 )
 
 func Version() *cobra.Command {
 	versionCmd := &cobra.Command{
 		Use:   "version",
 		Short: "Print the version of Jobor",
-		Long:  `This is Mars plan jobor cron`,
+		Long:  `This is mars jobor`,
 		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Printf("Version   : %s\n", "v1.0.0")
+			fmt.Printf("CmdVersion   : %s\n", Ver)
 			fmt.Printf("Commit    : %s\n", "")
-			fmt.Printf("BuildDate : %s\n", "2021.4.3")
+			fmt.Printf("BuildDate : %s\n", BuildDate)
 		},
 	}
 	return versionCmd

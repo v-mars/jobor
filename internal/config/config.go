@@ -19,6 +19,7 @@ var Configs = Config{
 		RootPath: rootPath,
 		LogPath:  "./logs",
 		LogLevel: "DEBUG",
+		GRPCPort: 50052,
 	},
 	JWT: JWT{
 		TokenType: "Bearer",
@@ -67,7 +68,7 @@ type Config struct {
 	Email		Email
 }
 
-// 站点配置参数
+// Web 站点配置参数
 type Web struct {
 	Domain       string
 	StaticPath   string
@@ -86,6 +87,7 @@ type Server struct {
 	IP           string
 	BindHost     string
 	Port         string
+	GRPCPort     int
 
 	LogPath      string
 	LogLevel     string
@@ -121,7 +123,7 @@ type MySQL struct {
 	Charset    string   `default:"utf8mb4"`
 }
 
-// MySQL 数据库连接串
+// DSN MySQL 数据库连接串
 func (a MySQL) DSN() string {
 	return fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?%s",
 		a.User, a.Password, a.Host, a.Port, a.DBName, a.Parameters)
@@ -136,7 +138,7 @@ type Sqlite3 struct {
 	Path string
 }
 
-// Sqlite3 数据库连接串
+// DSN Sqlite3 数据库连接串
 func (a Sqlite3) DSN() string {
 	return a.Path
 }
@@ -195,8 +197,7 @@ type Email struct {
 	SkipVerify bool   `json:"skipVerify"`
 }
 
-
-//加载配置
+// LoadConfig 加载配置
 func LoadConfig(configPath string) (err error) {
 	var c = &Configs
 	var server = c.Server

@@ -4,7 +4,10 @@
       <!-- 搜索 -->
       <el-form :inline="true" :model="searchForm" size="small" class="demo-form-inline" @submit.native.prevent>
         <el-form-item label="">
-          <el-input v-model="searchForm.name" placeholder="名称" @keyup.enter.native="getData"></el-input>
+          <el-input v-model="searchForm.hostname" placeholder="主机名" @keyup.enter.native="getData"></el-input>
+        </el-form-item>
+        <el-form-item label="">
+          <el-input v-model="searchForm.addr" placeholder="地址" @keyup.enter.native="getData"></el-input>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="getData">查询</el-button>
@@ -81,6 +84,7 @@
       mixins: [common_mixin],
       data(){return{
         url: this.$store.state.urls.jobor_worker_url,
+        searchForm: {addr: "",hostname:""},
       }},
       methods: {
         changeWorkerStatus: async function (row, action) {

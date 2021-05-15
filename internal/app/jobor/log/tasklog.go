@@ -1,15 +1,15 @@
 package log
 
 import (
+	"fmt"
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 	"jobor/internal/app/jobor/dispatcher"
 	"jobor/internal/models"
 	"jobor/internal/models/db"
 	"jobor/internal/models/tbs"
 	"jobor/internal/response"
 	"jobor/pkg/convert"
-	"fmt"
-	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 	"time"
 )
 
@@ -41,7 +41,11 @@ func (r TaskLog) Query(c *gin.Context) {
 	var obj []tbs.JoborLog
 	var pageData = response.InitPageData(c, &obj, false)
 	type Param struct {
-		Name       string `form:"Name"` // `form:"Name" binding:"required"`
+		Name       string `form:"name"` // `form:"name" binding:"required"`
+		Lang       string `form:"lang"`
+		Trigger    string `form:"trigger"`
+		Worker     string `form:"worker"`
+		Status     string `form:"status"`
 	}
 	var param Param
 	if err := c.ShouldBindQuery(&param); err!=nil{
@@ -49,8 +53,20 @@ func (r TaskLog) Query(c *gin.Context) {
 		return
 	}
 	var o = models.Option{}
-	o.Where = "Name like ?"
-	o.Value = append(o.Value, "%"+param.Name+"%")
+	o.Where = "name like ? and addr like ?"
+	o.Value = append(o.Value, "%"+param.Name+"%","%"+param.Worker+"%")
+	if len(param.Lang)>0{
+		o.Where = o.Where + " and lang=?"
+		o.Value = append(o.Value,param.Lang)
+	}
+	if len(param.Trigger)>0{
+		o.Where = o.Where + " and trigger_method=?"
+		o.Value = append(o.Value,param.Trigger)
+	}
+	if len(param.Status)>0{
+		o.Where = o.Where + " and result=?"
+		o.Value = append(o.Value,param.Status)
+	}
 	o.Order = "id desc"
 	o.Scan = true
 	err := models.Query(r.DB,&obj, o, &pageData)

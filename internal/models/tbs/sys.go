@@ -69,31 +69,6 @@ type Portal struct {
 	BaseTime
 }
 
-type Property struct {
-	BaseID
-	Name     string   `gorm:"type:varchar(128);unique_index:idx_name_code;comment:'名称'" json:"name" form:"name"`
-	K        string   `gorm:"column:k;type:varchar(128);comment:'key'" json:"k" form:"k"`
-	V        string   `gorm:"column:v;type:varchar(256);comment:'value'" json:"v" form:"v"`
-	BaseByUpdate
-	BaseTime
-}
-
-type TreeV1 struct {
-	BaseID
-	Name     string  `gorm:"unique_index;type:varchar(128);comment:'节点名'" json:"name" form:"name"`
-	ParentID *uint   `gorm:"column:parent_id;index:parent_id;comment:'父节点'" json:"parent_id" form:"parent_id"`
-	Mark     string  `gorm:"type:varchar(128);comment:'标识'" json:"mark" form:"mark"`
-}
-
-type TreeNode struct {
-	BaseID
-	ParentID uint   `gorm:"index:parent_id;comment:'父节点'" json:"parent_id" form:"parent_id"`
-	Lft      int    `gorm:"comment:'left'" json:"lft" form:"lft"`
-	Rgt      int    `gorm:"comment:'Right'" json:"rgt" form:"rgt"`
-	Name     string `gorm:"unique_index;type:varchar(128);comment:'节点名'" json:"name" form:"name"`
-	Mark     string `gorm:"index:mark;type:varchar(128);not null;comment:'标识'" json:"mark" form:"mark"`
-}
-
 
 
 

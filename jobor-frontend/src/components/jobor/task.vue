@@ -6,6 +6,15 @@
         <el-form-item label="">
           <el-input v-model="searchForm.name" placeholder="名称" @keyup.enter.native="getData"></el-input>
         </el-form-item>
+        <el-form-item label="">
+          <el-input v-model="searchForm.routing_key" placeholder="路由标识" @keyup.enter.native="getData"></el-input>
+        </el-form-item>
+        <el-form-item label="">
+          <el-select v-model="searchForm.status" clearable>
+            <el-option value="running" label="运行"></el-option>
+            <el-option value="stop" label="停止"></el-option>
+          </el-select>
+        </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="getData">查询</el-button>
           <el-button type="primary" @click="newRow">新增</el-button>
@@ -30,7 +39,7 @@
         <el-table-column label="类型" prop="lang" width="80"></el-table-column>
         <el-table-column label="表达式" prop="expr" width=""></el-table-column>
 <!--        <el-table-column label="任务脚本" prop="data" show-overflow-tooltip></el-table-column>-->
-        <el-table-column label="routingKey" prop="routing_key"></el-table-column>
+        <el-table-column label="路由标识" prop="routing_key"></el-table-column>
         <el-table-column label="状态" prop="" width="70" align="">
           <template slot-scope="scope">
             <el-popconfirm icon-color="red" icon="el-icon-info"
@@ -302,6 +311,7 @@
           callback()
         }
         return{
+          searchForm: {name: "",routing_key:"",status:""},
           taskRules: {
             "expr": [{ required: true, trigger: 'blur', validator: validateCronExpr }],
             "notify": [{ required: false, trigger: 'blur', validator: validateNotify }]
