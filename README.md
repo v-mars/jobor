@@ -61,6 +61,8 @@ Flags:
 username: admin
 password: admin
 
+## db: utf8mb4
+
 ## Jobor预览
 ![avatar](./img/jobor-dash.jpeg)
 ![avatar](./img/jobor-task.jpeg)

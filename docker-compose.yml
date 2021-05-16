@@ -1,7 +1,7 @@
 version: '3.5'
 services:
   server:
-        image: xxxxx
+        image: iocean/z-mars-jobor-server:v1.0.1
         container_name: jobor_server
         restart: always
         ports: 
@@ -12,7 +12,7 @@ services:
           - mysql
           - redis
     worker:
-        image: xxxx
+        image: iocean/z-mars-jobor-worker:v1.0.1
         container_name: jobor_worker
         volumes: 
             - ./configs/worker.toml:/data/worker.toml
