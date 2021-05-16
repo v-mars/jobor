@@ -235,6 +235,9 @@
 <!--        <el-form-item label="失败重试" prop="retry" :rules="[{required:true,message:'请输入', trigger: 'blur'}]">-->
 <!--          <el-input-number controls-position="right" :min="0" :max="20" v-model="rowData.retry" style="width: auto"></el-input-number>-->
 <!--        </el-form-item>-->
+        <el-form-item label="路由标识" prop="routing_key" :rules="[{required:true,message:'请输入', trigger: 'blur'}]">
+          <el-input controls-position="right" :min="0" :max="20" v-model="rowData.routing_key" style="width: auto"></el-input>
+        </el-form-item>
         <el-form-item label="期望返回码" prop="expect_code" :rules="[{required:true,message:'请输入期望返回码', trigger: 'blur'}]">
           <el-input-number controls-position="right" v-model="rowData.expect_code" style="width: auto"></el-input-number>
         </el-form-item>
@@ -325,6 +328,7 @@
           },
           rowData: {
               name: "", lang: "shell",id: "",expr: "* * * * * *", timeout: -1,retry:0,
+              routing_key:"",
               expect_code: 0,expect_context: "",alarm_policy: 2, description: "",
               data:{"data": "",
                 api:{
@@ -448,6 +452,7 @@
           this.rowData.lang = row.lang
           this.rowData.timeout = Number(row.timeout)
           this.rowData.expr = row.expr
+          this.rowData.routing_key = row.routing_key
           this.rowData.expect_code = row.expect_code
           this.rowData.expect_context = row.expect_context
           this.rowData.alarm_policy = row.alarm_policy
@@ -469,6 +474,7 @@
           this.rowData.retry = 0
           this.rowData.expect_code = 0
           this.rowData.expect_context = ""
+          this.rowData.routing_key = ""
           this.rowData.alarm_policy = 2
           this.rowData.description = ""
           this.rowData.data = {data:this.langExample[this.rowData.lang],api:{
