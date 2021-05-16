@@ -3,10 +3,12 @@ package service
 import (
 	"context"
 	"fmt"
+	"github.com/grpc-ecosystem/go-grpc-middleware"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/peer"
 	"google.golang.org/grpc/reflection"
 	"jobor/internal/config"
+	"jobor/internal/middleware"
 	"jobor/internal/proto"
 	"jobor/internal/proto/pb"
 	"jobor/internal/proto/registry"
@@ -52,7 +54,7 @@ func (hs *HeartbeatService) RegistryWorker(ctx context.Context, req *pb.Registry
 		Version: req.Version,RoutingKey: req.RoutingKey,Addr: addr}
 	var regCenter = registry.GetRegistryCenter(registry.MysqlCenter, subscriptions)
 	if err:= regCenter.Keepalive(5);err!=nil{
-		logger.Fatal(err)
+		logger.Errorf(err.Error())
 	}
 	logger.Infof("New Worker SendHeartbeatAndRegistryWorker Success addr %s", addr)
 	return &pb.Empty{}, nil
@@ -71,7 +73,7 @@ func (hs *HeartbeatService) SendHeartbeat(ctx context.Context, hb *pb.HeartbeatR
 	var registryStore registry.Center = &registry.Mysql{Subscriptions: subscriptions}
 
 	if err:= registryStore.Keepalive(5);err!=nil{
-		logger.Fatal(err)
+		logger.Errorf(err.Error())
 	}
 
 	return &pb.Empty{}, nil
@@ -89,11 +91,11 @@ func ServerGRPC() error {
 	// 默认单次接收最大消息长度为`1024*1024*4`bytes(4M)，单次发送消息最大长度为`math.MaxInt32`bytes
 	// grpcServer := service.NewServer(service.MaxRecvMsgSize(1024*1024*4), service.MaxSendMsgSize(math.MaxInt32))
 	serverOptions := []grpc.ServerOption{
-		//grpcMiddleware.WithUnaryServerChain(
-			//middleware.RecoveryInterceptor,
-			//middleware.LoggerInterceptor,
+		grpc_middleware.WithUnaryServerChain(
+			middleware.RecoveryInterceptor,
+			middleware.LoggerInterceptor,
 			//middleware.CheckSecretInterceptor,
-		//),
+		),
 		grpc.MaxRecvMsgSize(1024 * 1024 * 18),
 		grpc.MaxSendMsgSize(math.MaxInt32),
 		grpc.KeepaliveEnforcementPolicy(proto.Kaep),

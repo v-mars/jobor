@@ -51,7 +51,7 @@ func CasbinMiddlewareV2(allowSkipper, allowNoSkipper SkipperFunc) gin.HandlerFun
 	}
 }
 
-// 权限检查中间件
+// CasbinMiddleware 权限检查中间件
 // PermissionMiddleware 权限中间件
 func CasbinMiddleware(skippers ...SkipperFunc) gin.HandlerFunc  {
 	return func(c *gin.Context) {

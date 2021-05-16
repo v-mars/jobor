@@ -1,8 +1,10 @@
 package service
 
 import (
+	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	"jobor/internal/app/jobor/dispatcher"
 	"jobor/internal/config"
+	"jobor/internal/middleware"
 	"jobor/internal/proto"
 	"jobor/internal/proto/pb"
 	"jobor/internal/proto/registry"
@@ -159,11 +161,11 @@ func WorkerGRPC() error {
 		return err
 	}
 	serverOptions := []grpc.ServerOption{
-		//grpcMiddleware.WithUnaryServerChain(
-			//middleware.RecoveryInterceptor,
-			//middleware.LoggerInterceptor,
+		grpc_middleware.WithUnaryServerChain(
+			middleware.RecoveryInterceptor,
+			middleware.LoggerInterceptor,
 			//middleware.CheckSecretInterceptor,
-		//),
+		),
 		grpc.MaxRecvMsgSize(1024 * 1024 * 18),
 		grpc.MaxSendMsgSize(math.MaxInt32),
 		grpc.KeepaliveEnforcementPolicy(proto.Kaep),

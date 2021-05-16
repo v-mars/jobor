@@ -57,6 +57,10 @@ Flags:
 ./app worker -c ./configs/worker.toml
 ```
 
+## 默认
+username: admin
+password: admin
+
 ## Jobor预览
 ![avatar](./img/jobor-dash.jpeg)
 ![avatar](./img/jobor-task.jpeg)

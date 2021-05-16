@@ -166,6 +166,7 @@ func (r Permission) Update(c *gin.Context) {
 	response.UpdateSuccess(c, res)
 }
 
+// Delete
 // @Tags 权限管理
 // @Summary 删除权限
 // @Description Permission
@@ -241,21 +242,21 @@ func (r Permission) UpdatePermission(conditions []tbs.Permission) error {
 	// 过滤出需要删除的列表
 	var deleteList []tbs.Permission
 	var deleteIdList []uint
-	if err:=tx.Find(&deleteList, "id not in (?)", existIdList).Error;err!=nil{return err}
+	if err=tx.Find(&deleteList, "id not in (?)", existIdList).Error;err!=nil{return err}
 
 	for _,v:=range deleteList{
 		deleteIdList = append(deleteIdList, v.ID)
-		if _, err := casbin.Enforcer.RemoveFilteredNamedPolicy("p", 1, dom, v.Path, v.Method);err!=nil{return err}
+		if _, err = casbin.Enforcer.RemoveFilteredNamedPolicy("p", 1, dom, v.Path, v.Method);err!=nil{return err}
 	}
-	if err:=tx.Exec("DELETE FROM role_permissions WHERE permission_id in (?)", deleteIdList).Error;err!=nil{return err}
-	if err:=tx.Delete(&tbs.Permission{}, "id in (?)", deleteIdList).Error;err!=nil{return err}
+	if err=tx.Exec("DELETE FROM role_permissions WHERE permission_id in (?)", deleteIdList).Error;err!=nil{return err}
+	if err=tx.Delete(&tbs.Permission{}, "id in (?)", deleteIdList).Error;err!=nil{return err}
 	if len(newRows)>0 {
 		err=tx.CreateInBatches(newRows, 100).Error
 		//err = BatchSave(tx, newRows)
 		if err!=nil{return err}
 	}
 
-	if err:=tx.Commit().Error; err!=nil{
+	if err=tx.Commit().Error; err!=nil{
 		tx.Rollback()
 		return err
 	}

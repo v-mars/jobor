@@ -30,7 +30,7 @@
           // "avatar",
           // "name",
           // "permission_routers",
-          // "routers",
+          // "router",
         ]),
 
         // layout index

@@ -112,25 +112,25 @@ export const jobor = [
     component: layout_jobor,
     redirect: '/jobor/task',
     name: 'disTask',
-    meta: { title: '定时任务', icon: '', roles: ['devops', 'normal'] },
+    meta: { title: '定时任务', icon: '', roles: [] },
     children: [
       {
         path: 'task',
         name: '任务管理',
         component: () => import('@/components/jobor/task'),
-        meta: { title: '任务管理', icon: '', roles: ['jobor', 'normal'] }
+        meta: { title: '任务管理', icon: '', roles: [] }
       },
       {
         path: 'log',
         name: 'joborLog',
         component: () => import('@/components/jobor/log'),
-        meta: { title: '执行记录', icon: '', roles: ['jobor', 'normal'] }
+        meta: { title: '执行记录', icon: '', roles: [] }
       },
       {
         path: 'worker',
         name: 'Worker',
         component: () => import('@/components/jobor/worker'),
-        meta: { title: '节点', icon: '', roles: ['jobor','normal'] }
+        meta: { title: '节点', icon: '', roles: ['jobor','system'] }
       },
     ]
   },

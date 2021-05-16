@@ -6,7 +6,7 @@ import (
 	"jobor/internal"
 	"jobor/internal/config"
 	"jobor/internal/proto/service"
-	"jobor/internal/routers"
+	"jobor/internal/router"
 	"jobor/pkg/logger"
 	"log"
 	"os"
@@ -30,7 +30,7 @@ func Server() *cobra.Command {
 			//}
 			internal.Run(c.Server.ConfigFile)
 			addr := fmt.Sprintf("%s:%s",c.Server.IP,c.Server.Port)
-			routers.InitRouter(c.Server.Mode, addr)
+			router.InitRouter(c.Server.Mode, addr)
 			//config.Init(cfg)
 		},
 		PostRunE: func(cmd *cobra.Command, args []string) error {

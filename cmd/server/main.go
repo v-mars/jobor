@@ -6,7 +6,7 @@ import (
 	Cmd "jobor/cmd"
 	"jobor/internal"
 	"jobor/internal/config"
-	"jobor/internal/routers"
+	"jobor/internal/router"
 	"os"
 )
 
@@ -21,7 +21,7 @@ var (
 		Run: func(cmd *cobra.Command, args []string) {
 			internal.Run(c.Server.ConfigFile)
 			addr := fmt.Sprintf("%s:%s",c.Server.IP,c.Server.Port)
-			routers.InitRouter(c.Server.Mode, addr)
+			router.InitRouter(c.Server.Mode, addr)
 			//if len(cfg) == 0 {
 			//	_ = cmd.Help()
 			//	os.Exit(0)

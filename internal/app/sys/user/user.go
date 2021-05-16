@@ -18,7 +18,7 @@ import (
 
 type IUser interface {
 	GetAll(c *gin.Context)
-	SetPassWord(c *gin.Context)
+	SetPassword(c *gin.Context)
 	app.CommonInterfaces
 }
 var dom = "sys"
@@ -32,6 +32,7 @@ func NewService(DB *gorm.DB) IUser {
 	return SUser{DB: DB}
 }
 
+// Get
 // @Tags 用户管理
 // @Summary 用户详细
 // @Description 用户
@@ -61,6 +62,7 @@ func (r SUser) Get(c *gin.Context) {
 	}
 }
 
+// GetAll
 // @Tags 用户管理
 // @Summary 所有用户列表
 // @Description 用户
@@ -89,6 +91,7 @@ func (r SUser) GetAll(c *gin.Context) {
 
 }
 
+// Query
 // @Tags 用户管理
 // @Summary 用户列表
 // @Description 用户
@@ -136,6 +139,7 @@ func (r SUser) Query(c *gin.Context) {
 	}
 }
 
+// Create
 // @Tags 用户管理
 // @Summary 创建用户
 // @Description 用户
@@ -184,6 +188,7 @@ func (r SUser) Create(c *gin.Context) {
 	response.CreateSuccess(c, newRow)
 }
 
+// Update
 // @Tags 用户管理
 // @Summary 更新用户
 // @Description 用户
@@ -264,6 +269,7 @@ func (r SUser) Update(c *gin.Context) {
 	response.UpdateSuccess(c, user)
 }
 
+// Delete
 // @Tags 用户管理
 // @Summary 删除用户
 // @Description 用户
@@ -307,7 +313,7 @@ func (r SUser) Delete(c *gin.Context) {
 	response.DeleteSuccess(c)
 }
 
-func (r SUser) SetPassWord (c *gin.Context)  {
+func (r SUser) SetPassword(c *gin.Context)  {
 	type Param struct {
 		ID       uint   `json:"id" binding:"required"`
 		Password string `json:"password" binding:"required"`
@@ -377,4 +383,23 @@ func GetUserValue(c *gin.Context) (InfoUser, error) {
 		return u, err
 	}
 	return u, nil
+}
+
+func AddUser(DB *gorm.DB,user tbs.User) error {
+	user.Password = utils.SHA256HashString(user.Password)
+	tx :=DB.Begin()
+	defer func() {tx.Rollback()}()
+	//if err:= tx.Model(&tbs.Role{}).Where("id in (?)", user.Roles).Select("id,name").Scan(&user.Roles).Error;err!=nil{
+	//	return err
+	//}
+	for _,v:=range user.Roles{
+		_, err := casbin.Enforcer.AddGroupingPolicy(user.Username,v.Name, dom) // user role dom
+		if err!=nil{
+			return err
+		}
+	}
+	if err:= models.Create(tx, &user, true);err!=nil{
+		return err
+	}
+	return nil
 }

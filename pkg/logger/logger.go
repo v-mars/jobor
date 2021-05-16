@@ -13,8 +13,8 @@ import (
 )
 
 var (
-	Jobor      = logrus.New()
 	logger     = logrus.New()
+	Jobor      = logrus.New()
 	Casbin     = logrus.New()
 	Gin        = logrus.New()
 	L400X      = logrus.New()

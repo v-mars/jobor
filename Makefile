@@ -29,7 +29,7 @@ build:
 
 #swagger:
 #  bash swag init --generalInfo cmd/main/main.go --exclude cmd/main/test
-#       swag init -g ./internal/app/routers/swagger.go -o ./docs/swagger
+#       swag init -g ./internal/app/router/swagger.go -o ./docs/swagger
 #
 
 test:
