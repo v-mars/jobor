@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/go-ldap/ldap/v3"
 	"golang.org/x/text/encoding/unicode"
+	"jobor/internal/config"
 	"jobor/internal/errors"
 	"time"
 )
@@ -20,11 +21,11 @@ type option struct {
 }
 
 var defaultOptions = option{
-	Addr:    fmt.Sprintf("%s:%s", "10.30.108.52", "389"),
-	Config:  tls.Config{InsecureSkipVerify: true},
-	BaseDN:  "dc=ocean,dc=cn",
-	AuthFilter:  "(&(sAMAccountName=%s))",		// (&(objectclass=group)(cn=%s*))
-	Domain:  "ocean.cn",
+	Addr:    fmt.Sprintf("%s", config.Configs.Ldap.Addr), //x.x.x.x:389
+	Config:  tls.Config{InsecureSkipVerify: !config.Configs.Ldap.Tls},
+	BaseDN:  config.Configs.Ldap.BaseDn, //"dc=ocean,dc=cn"
+	AuthFilter:  config.Configs.Ldap.AuthFilter, //"(&(sAMAccountName=%s))",		// (&(objectclass=group)(cn=%s*))
+	Domain:  config.Configs.Ldap.Domain,
 }
 
 func NewLDAP() *LDAP {

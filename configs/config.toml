@@ -1,5 +1,5 @@
 [Server]
-Mode = "debug"
+Mode = "release"
 IP = "0.0.0.0"
 Port = "5000"
 #LogPath = "./logs"
@@ -42,7 +42,7 @@ bindPass = "password"
 authFilter = "(&(sAMAccountName=%s))"
 attributes = ["sAMAccountName", "displayName", "mail"]
 tls = false
-startTLS = false
+domain = "example.com"
 
 [email]
 smtpHost = "smtp.qq.com"

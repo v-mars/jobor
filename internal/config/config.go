@@ -27,6 +27,7 @@ var Configs = Config{
 		RefreshKey: "",
 		Age: 3600,
 	},
+	Ldap: Ldap{},
 }
 
 func getDefaultName() string {
@@ -66,6 +67,7 @@ type Config struct {
 	Session     Session
 	JWT 		JWT
 	Email		Email
+	Ldap		Ldap
 }
 
 // Web 站点配置参数
@@ -99,6 +101,17 @@ type Server struct {
 	JenkinsToken string
 	JenkinsHost  string
 	JenkinsJob   string
+}
+
+type Ldap struct {
+	Addr       string `json:"addr"`
+	BaseDn     string `json:"baseDn"`
+	BindDn     string `json:"bindDn"`
+	BindPass   string `json:"bindPass"`
+	AuthFilter string `json:"authFilter"`
+	Attributes string `json:"attributes"`
+	Domain     string `json:"domain"`
+	Tls        bool   `json:"tls"`
 }
 
 // Gorm gorm配置参数

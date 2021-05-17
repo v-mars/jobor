@@ -182,6 +182,11 @@ func (r Task) Update(c *gin.Context) {
 		response.Error(c, err)
 		return
 	}
+	//err = EventFunc(Event{TaskID: res.ID, TE: ChangeEvent},res)
+	//if err != nil {
+	//	response.Error(c, err)
+	//	return
+	//}
 	response.UpdateSuccess(c, res)
 }
 
@@ -204,6 +209,11 @@ func (r Task) Delete(c *gin.Context) {
 		response.Error(c, err)
 		return
 	}
+	//err := EventFunc(Event{TaskID: convert.ToUint(_id), TE: DeleteEvent},res)
+	//if err != nil {
+	//	response.Error(c, err)
+	//	return
+	//}
 	if err:= r.DB.Where("id in (?)", _id).Delete(&obj).Error;err!=nil{
 		response.Error(c, err)
 		return

@@ -9,6 +9,13 @@ or
 go build
 ```
 
+## 二进制部署
+tar -zxvf jobor-1.0.1.tar.gz
+cd jobor-1.0.1
+server:
+./bin/jobor server -c configs/config.toml
+./bin/jobor worker -c configs/worker.toml
+
 ## 命令
 ```
 ./app -h
