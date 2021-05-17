@@ -30,7 +30,7 @@ func JSONPost(method, url string, data interface{}, client *http.Client) ([]byte
 	if err != nil {
 		return nil, err
 	}
-	req.Header.Set("Content-TypeV1", "application/json;charset=utf-8")
+	req.Header.Set("Content-Type", "application/json;charset=utf-8")
 
 	resp, err := client.Do(req)
 	if err != nil {

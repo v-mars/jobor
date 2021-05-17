@@ -47,19 +47,21 @@ func LoginAuth(c *gin.Context)  {
 		return
 	}
 
-	var ldap = NewLDAP()
-	ldapAuthErr := ldap.Bind(obj.Username, obj.Password)
-	//fmt.Println("ldapAuth:", ldapAuth)
-	if ldapAuthErr ==  nil {
-		returnResult(c, obj.Username, 2)
-		return
-	} else {
-		//logger.Errorf("ldap auth err: %s", ldapAuthErr)
-		logger.Errorf(fmt.Sprintf("[%s]认证失败，用户名或密码不对,请重新输入！", obj.Username))
-		response.Error(c, fmt.Errorf("[%s]认证失败，用户名或密码不对,请重新输入！", obj.Username))
-		//response.Error(c, fmt.Errorf("%s", ldapAuthErr))
-		return
+	if len(config.Configs.Ldap.Addr)>0{
+		var ldap = NewLDAP()
+		ldapAuthErr := ldap.Bind(obj.Username, obj.Password)
+		//fmt.Println("ldapAuth:", ldapAuth)
+		if ldapAuthErr ==  nil {
+			returnResult(c, obj.Username, 2)
+			return
+		} else {
+			logger.Errorf("ldap auth err: %s", ldapAuthErr)
+		}
 	}
+	logger.Errorf(fmt.Sprintf("[%s]认证失败，用户名或密码不对,请重新输入！", obj.Username))
+	response.Error(c, fmt.Errorf("[%s]认证失败，用户名或密码不对,请重新输入！", obj.Username))
+	//response.Error(c, fmt.Errorf("%s", ldapAuthErr))
+	return
 
 }
 

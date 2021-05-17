@@ -126,7 +126,6 @@ func EventFunc(ed Event,t tbs.JoborTask) error {
 		}
 		logger.Jobor.Infof("jobor cron taskId=%d add event [name=%s, expr=\"%s\"] add task is success", ed.TaskID, t.Name,t.Expr)
 	case ChangeEvent:
-		fmt.Printf("%++v", t)
 		logger.Jobor.Debugf("jobor cron taskId=%d change event [name=%s, expr=\"%s\"] is start", ed.TaskID,t.Name,t.Expr)
 		o, ok := RegistryDispatcher.cron[ed.TaskID]
 		o.Lock()
@@ -523,7 +522,7 @@ Worker：%s
 	}
 	if s.Task.Notify.DingDing.Enable  {
 		for _,v:=range s.Task.Notify.DingDing.Webhooks{
-			notify := dingding.NewDing(v.WebhookUrl,1, v.Secret)
+			notify := dingding.NewDing(v.WebhookUrl,2, v.Secret)
 			err := notify.Send([]string{}, title, msg)
 			if err != nil {
 				return err

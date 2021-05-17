@@ -85,13 +85,13 @@ func NewDing(webhookurl string, sl Secrue, secret string) notify.Sender {
 
 // Send to notify tos is phone number
 func (d *Ding) Send(tos []string, title string, content string) error {
-	var requrl = d.webhookurl
-	if d.sl == Sign {
+	var reqUrl = d.webhookurl
+	if d.sl == Sign && len(d.secret)>0{
 		now := strconv.FormatInt(time.Now().UnixNano()/1e6, 10)
 		sign := getsign(d.secret, now)
-		requrl += fmt.Sprintf("&timestamp=%s&sign=%s", now, sign)
+		reqUrl += fmt.Sprintf("&timestamp=%s&sign=%s", now, sign)
 	}
-	sendmsg := SendMsg{
+	sendMsg := SendMsg{
 		MsgType: "text",
 		Text: text{
 			Content: title + "\n" + content + "\n",
@@ -102,7 +102,7 @@ func (d *Ding) Send(tos []string, title string, content string) error {
 		},
 	}
 
-	resp, err := notify.JSONPost(http.MethodPost, requrl, sendmsg, http.DefaultClient)
+	resp, err := notify.JSONPost(http.MethodPost, reqUrl, sendMsg, http.DefaultClient)
 	if err != nil {
 		return err
 	}

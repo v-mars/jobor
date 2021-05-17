@@ -104,14 +104,14 @@ type Server struct {
 }
 
 type Ldap struct {
-	Addr       string `json:"addr"`
-	BaseDn     string `json:"baseDn"`
-	BindDn     string `json:"bindDn"`
-	BindPass   string `json:"bindPass"`
-	AuthFilter string `json:"authFilter"`
-	Attributes string `json:"attributes"`
-	Domain     string `json:"domain"`
-	Tls        bool   `json:"tls"`
+	Addr       string   `json:"addr"`
+	BaseDn     string   `json:"baseDn"`
+	BindDn     string   `json:"bindDn"`
+	BindPass   string   `json:"bindPass"`
+	AuthFilter string   `json:"authFilter"`
+	Attributes []string `json:"attributes"`
+	Domain     string   `json:"domain"`
+	Tls        bool     `json:"tls"`
 }
 
 // Gorm gorm配置参数
