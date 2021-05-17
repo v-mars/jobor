@@ -11,6 +11,7 @@ go build
 
 ## 二进制部署
 ```
+下载链接：https://github.com/v-mars/jobor/releases
 tar -zxvf jobor-1.0.1.tar.gz
 cd jobor-1.0.1
 server:
@@ -81,6 +82,7 @@ password: admin
 
 ## TODO 
 ### task
+- [x] ldap
 - [x] server <-- gRPC --> worker
 - [x] task abort
 - [x] task timeout
@@ -92,3 +94,13 @@ password: admin
 - [ ] father task
 - [ ] children task
 - [ ] 任务缓存执行
+
+## 支持
+1、希望大家多多支持，给项目一个star
+2、该项目花费了作者大量时间，如果你觉的该项目对你有用，希望可以友情赞助一下
+
+<img src="./img/wechat.jpeg" width=100 height=100>
+
+
+## 交流联系
+VX id: boen1990
