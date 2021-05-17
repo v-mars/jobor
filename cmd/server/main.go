@@ -12,7 +12,6 @@ import (
 
 var (
 	c = &config.Configs
-	//cfg string
 	rootCmd = &cobra.Command{
 		Use:   "server",
 		Short: "Start Run Jobor Server",

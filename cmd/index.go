@@ -13,9 +13,6 @@ import (
 )
 
 func Server() *cobra.Command {
-	var (
-		//cfg string
-	)
 	var c = &config.Configs
 
 	cmdServer := &cobra.Command{
@@ -31,7 +28,6 @@ func Server() *cobra.Command {
 			internal.Run(c.Server.ConfigFile)
 			addr := fmt.Sprintf("%s:%s",c.Server.IP,c.Server.Port)
 			router.InitRouter(c.Server.Mode, addr)
-			//config.Init(cfg)
 		},
 		PostRunE: func(cmd *cobra.Command, args []string) error {
 

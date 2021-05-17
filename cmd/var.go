@@ -17,7 +17,7 @@ func Version() *cobra.Command {
 		Short: "Print the version of Jobor",
 		Long:  `This is mars jobor`,
 		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Printf("CmdVersion   : %s\n", Ver)
+			fmt.Printf("Version   : %s\n", Ver)
 			fmt.Printf("Commit    : %s\n", "")
 			fmt.Printf("BuildDate : %s\n", BuildDate)
 		},

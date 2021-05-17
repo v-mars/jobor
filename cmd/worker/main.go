@@ -53,7 +53,6 @@ func init() {
 	rootCmd.Flags().StringVarP(&c.Mode, "mode", "m", DefaultMode, "启动模式(release, debug, test e.g)")
 	rootCmd.Flags().StringVarP(&c.LogPath, "log", "f", DefaultLog, "日志目录(/data/logs e.g)")
 	rootCmd.Flags().StringVarP(&c.LogLevel, "level", "l", DefaultLevel, "日志级别(DEBUG, INFO, WARNING e.g)")
-	//cmdServer.Flags().StringVarP(&cfg, "conf", "c", "", "server config [toml]")
 	if cfg == "" {
 		cfg = "./configs/worker.toml"
 		//fmt.Println("请使用\"-c\"指定配置文件")
