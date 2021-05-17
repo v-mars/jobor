@@ -97,6 +97,7 @@ password: admin
 
 ## 支持
 1、希望大家多多支持，给项目一个star
+
 2、该项目花费了作者大量时间，如果你觉的该项目对你有用，希望可以友情赞助一下
 
 <img src="./img/wechat.jpeg" width=200 height=200>
