@@ -37,11 +37,9 @@ func LoginAuth(c *gin.Context)  {
 	var localAuth int64
 	if err:= db.DB.Model(&tbs.User{}).Where("username = ? and password = ? and user_type_id = ?",
 		obj.Username, utils.SHA256HashString(obj.Password), 1).Count(&localAuth).Error;err!=nil {
-		//fmt.Println("gorm.IsRecordNotFoundError(err) localAuth", gorm.IsRecordNotFoundError(err))
 		response.Error(c, err)
 		return
 	}
-	//fmt.Println("localAuth:", localAuth)
 	if localAuth > 0 {
 		returnResult(c, obj.Username, 1)
 		return
@@ -59,8 +57,7 @@ func LoginAuth(c *gin.Context)  {
 		}
 	}
 	logger.Errorf(fmt.Sprintf("[%s]认证失败，用户名或密码不对,请重新输入！", obj.Username))
-	response.Error(c, fmt.Errorf("[%s]认证失败，用户名或密码不对,请重新输入！", obj.Username))
-	//response.Error(c, fmt.Errorf("%s", ldapAuthErr))
+	response.ErrorNoLog(c, fmt.Errorf("[%s]认证失败，用户名或密码不对,请重新输入！", obj.Username))
 	return
 
 }

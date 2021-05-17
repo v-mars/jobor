@@ -72,6 +72,11 @@ func Error(c *gin.Context, err error, v...interface{}) {
 	ResJSON(c, http.StatusOK, &ret)
 }
 
+func ErrorNoLog(c *gin.Context, err error, v...interface{}) {
+	ret := Data{Code: FAIL_CODE,Status:"error", Message: err.Error(), Data: v}
+	ResJSON(c, http.StatusOK, &ret)
+}
+
 func ParamFailed(c *gin.Context, err error, v...interface{}) {
 	errStr := err.Error()
 	// Key: 'QueryParam.K8sClusterID' Error:Field validation for 'K8sClusterID' failed on the 'required' tag
