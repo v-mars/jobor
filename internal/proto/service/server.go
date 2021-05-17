@@ -22,10 +22,9 @@ import (
 	"time"
 )
 
-
-var (
-	ServerGRPCPort = fmt.Sprintf("%s:%d", config.Configs.Server.IP,config.Configs.Server.GRPCPort)
-)
+func ServerGRPCPort() string {
+	return fmt.Sprintf("%s:%d", config.Configs.Server.IP,config.Configs.Server.GRPCPort)
+}
 
 // Auth check rpc request valid
 type Auth struct {
@@ -82,7 +81,7 @@ func (hs *HeartbeatService) SendHeartbeat(ctx context.Context, hb *pb.HeartbeatR
 
 func ServerGRPC() error {
 	//绑定端口
-	lis, err := net.Listen("tcp", ServerGRPCPort)
+	lis, err := net.Listen("tcp", ServerGRPCPort())
 	if err != nil{
 		log.Fatal("gRPC fail to listen")
 		return err

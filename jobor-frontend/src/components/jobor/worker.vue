@@ -22,7 +22,7 @@
         <el-table-column label="主机名称" prop="hostname" width="150"></el-table-column>
         <el-table-column label="地址" prop="addr" width="160"></el-table-column>
 <!--        <el-table-column label="表达式" prop="expr" width=""></el-table-column>-->
-        <el-table-column label="routingKey" prop="routing_key" width=""></el-table-column>
+        <el-table-column label="路由标识" prop="routing_key" width=""></el-table-column>
         <el-table-column label="权重" prop="weight" width="100"></el-table-column>
         <el-table-column label="状态" prop="" width="100" align="">
           <template slot-scope="scope">
@@ -54,7 +54,7 @@
                            @onConfirm="changeWorkerStatus(scope.row, 'stop')">
               <edit_button title="禁用" slot="reference"></edit_button>
             </el-popconfirm>
-<!--            <delete_button title="删除" @click="changeWorkerStatus(scope.row)"></delete_button>-->
+            <delete_button title="删除" @click="confirmDelRows(scope.row,scope.row.addr,scope.row.id)"></delete_button>
           </template>
         </el-table-column>
       </el-table>

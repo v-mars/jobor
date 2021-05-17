@@ -16,6 +16,7 @@ import (
 type ITaskLog interface {
 	Query(c *gin.Context)
 	Abort(c *gin.Context)
+	Delete(c *gin.Context)
 }
 type TaskLog struct {
 	DB *gorm.DB
@@ -102,4 +103,39 @@ func (r TaskLog) Abort(c *gin.Context) {
 	}
 	dispatcher.CacheTask.TaskLogs[convert.ToUint(_id)].TaskCancel()
 	response.SuccessMsg(c, "任务终止成功", "")
+}
+
+// Delete
+// @Tags Jobor任务Log
+// @Summary 删除 Jobor task log
+// @Description 删除 Jobor task log
+// @Produce  json
+// @Security ApiKeyAuth
+// //@Param id path int true "Jobor任务log id"
+// @Success 200 object response.Data {"code": 2000, "status": "ok", "message": "success", "data": ""}
+// @Failure 400 object response.Data {"code": 4001, "status": "error", "message": "error", "data": ""}
+// @Router /api/v1/jobor/log [delete]
+func (r TaskLog) Delete(c *gin.Context) {
+	var data map[string][]int
+	if err:= c.ShouldBindJSON(&data);err!=nil{
+		response.Error(c, err)
+		return
+	}
+	//rows["rows"]
+	tx :=r.DB.Begin()
+	defer func() {
+		tx.Rollback()
+	}()
+	for _,_id := range data["rows"]{
+		if err:= models.DeleteById(tx, &tbs.JoborLog{}, _id, []string{}, false); err!=nil{
+			response.Error(c, err)
+			return
+		}
+	}
+	err := tx.Commit().Error
+	if err!=nil{
+		response.Error(c, err)
+		return
+	}
+	response.DeleteSuccess(c)
 }

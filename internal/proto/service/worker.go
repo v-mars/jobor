@@ -23,10 +23,6 @@ import (
 )
 
 
-var (
-	WorkerGRPCPort = fmt.Sprintf("%s:%d", config.WorkerConfig.IP,config.WorkerConfig.Port)
-)
-
 type myServer struct{}
 
 func (s *myServer) RunTask(request *pb.TaskRequest, server pb.TaskService_RunTaskServer) error {
@@ -40,7 +36,7 @@ func (s *myServer) RunTask(request *pb.TaskRequest, server pb.TaskService_RunTas
 		return err
 	}
 	out:=runner.Run(taskCtx)
-	logger.Jobor.Debugf("runner run start")
+	logger.Jobor.Debugf("task=[%d] lang=%s runner run start", request.TaskId, request.TaskLang)
 	defer func(out io.ReadCloser) {
 		err := out.Close()
 		if err != nil {
@@ -155,6 +151,10 @@ func (s *myServer) RunRPC(ctx context.Context, in *pb.TaskRequest) (*pb.Response
 
 func WorkerGRPC() error {
 	//绑定端口
+	var (
+		WorkerGRPCPort = fmt.Sprintf("%s:%d", config.WorkerConfig.IP,config.WorkerConfig.Port)
+	)
+
 	lis, err := net.Listen("tcp", WorkerGRPCPort)
 	if err != nil{
 		log.Fatal("gRPC fail to listen")

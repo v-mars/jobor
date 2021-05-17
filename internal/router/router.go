@@ -110,7 +110,7 @@ func InitRouter(RunMode string, addr string)  {
 			log.Fatal(err)
 		}
 	}()
-	fmt.Println(utils.Green("Jobor server service start success, 地址："+ service.ServerGRPCPort))
+	fmt.Println(utils.Green("Jobor server service start success, 地址："+ service.ServerGRPCPort()))
 
 	srv := &http.Server{
 		Addr:    addr,

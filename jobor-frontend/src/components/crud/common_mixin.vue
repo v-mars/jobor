@@ -106,6 +106,31 @@
             })
           }).catch(() => {this.$message({type: 'info', message: '已取消删除'})});
         },
+
+        confirmDelBulkRows: function(rows) {
+          console.log(rows);
+          if (rows&&rows.length>0){
+            let row_ids= []
+            for (let i=0;rows.length>i;i++){row_ids.push(rows[i].id)}
+            this.$confirm('确认批量删除数据ID为['+String(row_ids)+'] 吗？', '提示', {
+              confirmButtonText: '确定',
+              cancelButtonText: '取消',
+              type: 'warning'
+            }).then(() => {
+              this.action_loading = true
+              let api_url = this.url
+              this.$store.dispatch("common/Delete",{url: api_url,"data": {rows: row_ids}}).then((response) => {
+                // console.log('createOrUpdate:',response.data);
+                this.$message.success(response.data.message)
+                this.getData()
+                this.action_loading = false
+              }).catch((response) => {
+                this.action_loading = false
+              })
+            }).catch(() => {this.$message({type: 'info', message: '已取消删除'})});
+          }
+
+        },
       },
 
     }

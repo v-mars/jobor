@@ -23,6 +23,8 @@ BINARY_UNIX=$(BINARY_NAME)_unix
 
 all: clean build build-linux build-windows
 
+build-linux-drawin: build-linux build-mac
+
 # -ldflags "-w -s"
 build:
 	go build -o $(BUILD_PATH)$(BINARY_NAME) $(MAIN_PATH)

@@ -72,7 +72,17 @@ Flags:
 username: admin
 password: admin
 
-## db: utf8mb4
+## db
+```
+字符集：utf8mb4
+在配置文件最后一行粘贴以下语句
+/etc/mysql/conf.d/mysql.cnf
+
+[mysqld]
+sql_mode=STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION
+
+```
+
 
 ## Jobor预览
 ![avatar](./img/jobor-dash.jpeg)

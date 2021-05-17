@@ -39,8 +39,9 @@
       </el-form>
     </div>
     <div style="margin-top: 10px">
-      <el-table border :data="data_list" size="small" v-loading="loading">
+      <el-table border :data="data_list" size="small" v-loading="loading" ref="tasklog">
 <!--        <el-table-column type="selection" width="45" align="center"></el-table-column>-->
+        <el-table-column type="selection" width="45" align="center"></el-table-column>
         <el-table-column label="" type="expand">
           <template slot-scope="props">
             <div class="task-log-item">
@@ -71,7 +72,7 @@
           </template>
         </el-table-column>
         <el-table-column label="表达式" prop="expr" width=""></el-table-column>
-        <el-table-column label="worker" prop="addr" width=""></el-table-column>
+        <el-table-column label="Worker" prop="addr" width=""></el-table-column>
         <el-table-column label="耗时" prop="cost_time" width="100">
           <template slot-scope="scope">{{scope.row.cost_time}}s</template>
         </el-table-column>
@@ -104,13 +105,15 @@
               <delete_button title="终止" slot="reference"
                              v-if="['wait','running'].indexOf(scope.row.result)!==-1"></delete_button>
             </el-popconfirm>
-
-            <detail_button title="详细" style="margin-left:10px"></detail_button>
+<!--            <detail_button title="详细" style="margin-left:10px"></detail_button>-->
+            <delete_button title="删除" @click="confirmDelRows(scope.row,scope.row.name,scope.row.id)"></delete_button>
           </template>
         </el-table-column>
       </el-table>
       <div style="margin-top: 5px">
-        <div style="display: inline"></div>
+        <div class="block" style="float: left;display: inline">
+          <el-button size="mini" type="danger" plain style="margin: 5px 0" @click="confirmDelBulkRows($refs.tasklog.selection)">批量删除</el-button>
+        </div>
         <div class="block" style="float: right;display: inline">
           <pagination :total="total" :page.sync="page" :limit.sync="limit" @pagination="getData()"></pagination>
         </div>

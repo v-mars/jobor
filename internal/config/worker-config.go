@@ -16,7 +16,7 @@ var WorkerConfig = Worker{
 	LogLevel: "DEBUG",
 	RoutingKey: "default",
 	Servers:  make([]string,0),
-	Version: "worker version 1.0.1",
+	Version: "v1.0.1",
 }
 
 
@@ -27,7 +27,7 @@ type Worker struct {
 	IP           string `json:"ip"`
 	Port         int32 `json:"port"`
 	Weight       int32 `json:"weight"`
-	RoutingKey   string `json:"routing_key" `
+	RoutingKey   string `json:"routing_key" toml:"routing_key"`
 	LogPath      string `json:"log_path"`
 	LogLevel     string `json:"log_level"`
 	Servers      []string `json:"servers"`

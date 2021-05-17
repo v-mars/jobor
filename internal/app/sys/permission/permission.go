@@ -190,10 +190,15 @@ func (r Permission) Delete(c *gin.Context) {
 		tx.Rollback()
 	}()
 	for _,_id := range data["rows"]{
-		if err:= models.DeleteById(tx, &tbs.Permission{}, _id, []string{}, true); err!=nil{
+		if err:= models.DeleteById(tx, &tbs.Permission{}, _id, []string{}, false); err!=nil{
 			response.Error(c, err)
 			return
 		}
+	}
+	err := tx.Commit().Error
+	if err!=nil{
+		response.Error(c, err)
+		return
 	}
 
 	response.DeleteSuccess(c)

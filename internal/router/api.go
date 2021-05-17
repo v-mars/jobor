@@ -96,6 +96,7 @@ func RegisterRouter(engine *gin.Engine) error {
 			var joborTaskLog = joborlog.NewService(db.DB)
 			joborApp.GET("/log", joborTaskLog.Query)
 			joborApp.POST("/log/:id/abort", joborTaskLog.Abort)
+			joborApp.DELETE("/log", joborTaskLog.Delete)
 		}
 
 

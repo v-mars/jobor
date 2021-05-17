@@ -1,15 +1,15 @@
 package registry
 
 import (
+	"context"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"jobor/internal/config"
 	"jobor/internal/proto"
 	"jobor/internal/proto/pb"
 	"jobor/internal/response"
 	"jobor/pkg/logger"
-	"context"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 	"log"
 	"math/rand"
 	"time"

@@ -49,7 +49,7 @@ func init() {
 	DefaultLog := "./logs"
 	rootCmd.Flags().StringVarP(&cfg, "conf", "c", "", "config file, example: ./configs/config.toml")
 	rootCmd.Flags().StringVarP(&c.IP, "ip", "i", DefaultIP, "服务IP")
-	rootCmd.Flags().Int32VarP(&c.Port, "port", "p", DefaultPort, "服务启动的端口: 20052")
+	rootCmd.Flags().Int32VarP(&c.Port, "port", "p", DefaultPort, "服务启动的端口: 20052 e.g")
 	rootCmd.Flags().StringVarP(&c.Mode, "mode", "m", DefaultMode, "启动模式(release, debug, test e.g)")
 	rootCmd.Flags().StringVarP(&c.LogPath, "log", "f", DefaultLog, "日志目录(/data/logs e.g)")
 	rootCmd.Flags().StringVarP(&c.LogLevel, "level", "l", DefaultLevel, "日志级别(DEBUG, INFO, WARNING e.g)")
