@@ -104,4 +104,4 @@ password: admin
 
 
 ## 交流联系
-VX id: boen1990
+<img src="./img/Wechatid.jpeg" width=200 height=200>
