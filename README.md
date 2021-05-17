@@ -15,6 +15,7 @@ tar -zxvf jobor-1.0.1.tar.gz
 cd jobor-1.0.1
 server:
 ./bin/jobor server -c configs/config.toml
+worker:
 ./bin/jobor worker -c configs/worker.toml
 ```
 
