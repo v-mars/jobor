@@ -229,15 +229,16 @@
             <el-option :value="value" :label="alarmMapZH[value]" v-for="(value,key,index) in alarmMap" :key="index"></el-option>
           </el-select>
         </el-form-item>
+        <el-form-item label="路由标识" prop="routing_key" :rules="[{required:true,message:'请输入', trigger: 'blur'}]">
+          <!--          <el-input controls-position="right" :min="0" :max="20" v-model="rowData.routing_key" style="width: auto"></el-input>-->
+          <routing_key_select :select-value.sync="rowData.routing_key" :clearable="false"></routing_key_select>
+        </el-form-item>
         <el-form-item label="超时时间" prop="timeout" :rules="[{required:true,message:'请输入', trigger: 'blur'}]">
           <el-input-number controls-position="right" :min="-1" :max="86400" v-model="rowData.timeout" style="width: auto"></el-input-number>
         </el-form-item>
 <!--        <el-form-item label="失败重试" prop="retry" :rules="[{required:true,message:'请输入', trigger: 'blur'}]">-->
 <!--          <el-input-number controls-position="right" :min="0" :max="20" v-model="rowData.retry" style="width: auto"></el-input-number>-->
 <!--        </el-form-item>-->
-        <el-form-item label="路由标识" prop="routing_key" :rules="[{required:true,message:'请输入', trigger: 'blur'}]">
-          <el-input controls-position="right" :min="0" :max="20" v-model="rowData.routing_key" style="width: auto"></el-input>
-        </el-form-item>
         <el-form-item label="期望返回码" prop="expect_code" :rules="[{required:true,message:'请输入期望返回码', trigger: 'blur'}]">
           <el-input-number controls-position="right" v-model="rowData.expect_code" style="width: auto"></el-input-number>
         </el-form-item>
@@ -267,6 +268,7 @@
   import green_button from '@/components/crud/green_button'
   import user_select from '@/components/sys/user_select'
   import notify from '@/components/jobor/notify'
+  import routing_key_select from '@/components/jobor/routing_key_select'
   import common_mixin from '@/components/crud/common_mixin'
   import {validateUrl,EmailReCheck} from '@/utils/common'
   import { isValidCron } from 'cron-validator'
@@ -570,6 +572,7 @@
         edit_button,
         user_select,
         green_button,
+        routing_key_select,
         editor: require("vue2-ace-editor"),
       },
     }

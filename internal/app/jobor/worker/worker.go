@@ -14,6 +14,7 @@ import (
 )
 
 type IJoborWorker interface {
+	GetRoutingKey(c *gin.Context)
 	Query(c *gin.Context)
 	Update(c *gin.Context)
 	Delete(c *gin.Context)
@@ -22,10 +23,36 @@ type JoborWorker struct {
 	DB *gorm.DB
 }
 
-
 func NewService(DB *gorm.DB) IJoborWorker {
 	if DB==nil{DB= db.DB}
 	return JoborWorker{DB: DB}
+}
+
+// GetRoutingKey
+// @Tags Jobor Worker管理
+// @Summary Jobor routing_key列表
+// @Description JoborWorker
+// @Produce  json
+// @Security ApiKeyAuth
+// //@Param Name query string false ""
+// @Success 200 object response.Data {"code": 2000, "status": "ok", "message": "success", "data": ""}
+// @Failure 400 object response.Data {"code": 4001, "status": "error", "message": "error", "data": ""}
+// @Router /api/v1/jobor/routing_key [get]
+func (r JoborWorker)GetRoutingKey(c *gin.Context)  {
+	var obj []ShowRoutingKey
+	var pageData = response.PageDataList{PageNumber: 1,PageSize:0,List:&obj}
+	o := models.Option{}
+	o.Select = "distinct routing_key"
+	o.Order = "ID DESC"
+	o.Scan = true
+	err := models.Query(r.DB,&tbs.JoborTask{}, o, &pageData)
+	if err != nil {
+		response.Error(c, err)
+		return
+	} else {
+		response.Success(c, pageData)
+	}
+
 }
 
 // Query
@@ -135,8 +162,6 @@ func (r JoborWorker) Option() models.Option {
 	o.Order = "ID DESC"
 	return o
 }
-
-
 
 func CreateOrUpdate(data tbs.JoborWorker) error {
 	var exist tbs.JoborWorker

@@ -90,6 +90,7 @@ func RegisterRouter(engine *gin.Engine) error {
 			joborApp.DELETE("/task/:id", joborTask.Delete)
 
 			var iJoborWorker = joborWorker.NewService(db.DB)
+			joborApp.GET("/routing_key", iJoborWorker.GetRoutingKey)
 			joborApp.GET("/worker", iJoborWorker.Query)
 			joborApp.PUT("/worker/:id", iJoborWorker.Update)
 			joborApp.DELETE("/worker/:id", iJoborWorker.Delete)

@@ -25,6 +25,7 @@ const state = {
   jobor_task_url: "/api/v1/jobor/task",
   jobor_log_url: "/api/v1/jobor/log",
   jobor_worker_url: "/api/v1/jobor/worker",
+  jobor_routing_key_url: "/api/v1/jobor/routing_key",
   jobor_dash_url: "/api/v1/jobor/dashboard",
 }
 

@@ -25,8 +25,9 @@ func setEmbedWeb(e *gin.Engine)  {
 		webUi: webuiAntObj,
 	}
 	var static=&webUi{embed: Fs.DistFs,path: "dist/static"}
+	var favicon=&webUi{embed: Fs.DistFs,path: "dist/favicon.ico"}
 	e.StaticFS("/static", http.FS(static))
-	e.StaticFS("/favicon.ico", http.FS(Fs.DistFs))
+	e.StaticFS("/favicon.ico/", http.FS(favicon))
 	e.GET("/", func(c *gin.Context) {
 		c.FileFromFS("index", http.FS(webuiAntIndexObj))
 	})
