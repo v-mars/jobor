@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/robfig/cron/v3"
 	"google.golang.org/grpc"
+	"html/template"
 	"io"
 	"jobor/internal/config"
 	"jobor/internal/models/db"
@@ -459,7 +460,80 @@ func (s *taskSession)Alarm() error {
 	}
 	return nil
 }
+func generateRow(row []string, odd int) string {
+	var arr []string
+	width := ""
+	if len(arr) > 1 {
+		width = "width:70px"
+	}
+	for i, x := range row {
+		s := "<td style=\"padding:12px 8px\">%s</td>"
+		if i == 0 && len(width) > 0 {
+			s = "<td style=\"padding:12px 8px;" + width + "\">%s</td>"
+		}
+		arr = append(arr, fmt.Sprintf(s, strings.ReplaceAll(template.HTMLEscaper(x), "\n", "<br/>")))
+	}
+	bgColor := "f8f8f9"
+	if odd > 0 {
+		bgColor = "fff"
+	}
+	tds := strings.Join(arr, "\n")
+	res := fmt.Sprintf(`<tr style="height:25px; background-color:#%s; border-bottom:1px solid #e8e8e8">%s
+	</tr>`, bgColor, tds)
+	return res
+}
 
+func generateForm(title string, rows [][]string) string {
+	var trs []string
+	for i, o := range rows {
+		trs = append(trs, generateRow(o, 1-i%2))
+	}
+	tr := strings.Join(trs, "\n")
+	tableTemplate := `
+	<div style="overflow: auto; margin-bottom: 20px;">
+	<table border="0" style="width: 80%%; text-align:left; border-collapse:collapse; font-size:14px; color:rgba(0,0,0,0.75); line-height:1.1; word-break:break-all; white-space:nowrap; border-left:1px solid #e8e8e8; border-right:1px solid #e8e8e8; font-family:'Microsoft YaHei UI','Microsoft YaHei','微软雅黑',SimSun,'宋体',sans-serif,serif; margin:5px;border-top:1px solid #e8e8e8;">
+	<caption style="text-align: left; font-size: 16px; font-weight: bold; margin-bottom: 10px">
+	%s
+	</caption>
+	<tbody>
+	%s
+	</tbody>
+	</table>
+	</div>`
+	res := fmt.Sprintf(tableTemplate, title, tr)
+	return res
+}
+
+func (s *taskSession) GenerateHtml() string {
+	before := `<div style=" text-align:left; border-collapse:co
+llapse; font-size:18px; line-height:1.1;  font-family:'Microsoft YaHei UI','Microsoft YaHei','微软雅黑',SimSun,'
+宋体',sans-serif,serif; margin:30px">
+	Hello, 定时任务出现问题了:
+    </div>`
+	taskDetail := [][]string{
+		{"任务 ID：", fmt.Sprintf("%d", s.Task.ID)},
+		{"任务名称：", fmt.Sprintf("%s", s.Task.Name)},
+		{"执行 ID：", fmt.Sprintf("%d", s.TaskLog.ID)},
+		{"类   型：", fmt.Sprintf("%s", s.TaskLog.Lang)},
+		{"触发方式：", fmt.Sprintf("%s", s.TaskLog.TriggerMethod)},
+		{"表达式 ：", fmt.Sprintf("%s", s.TaskLog.Expr)},
+		{"Worker：", fmt.Sprintf("%s", s.TaskLog.Addr)},
+		{"执行时间：", fmt.Sprintf("[ %s - %s ]", s.TaskLog.StartTime.Format("2006-01-02 15:04:05"), s.TaskLog.EndTime.Format("2006-01-02 15:04:05"))},
+		{"耗   时：", fmt.Sprintf("%s", fmt.Sprintf("%.3f", s.TaskLog.CostTime))},
+		{"状   态：", fmt.Sprintf("%s", s.TaskLog.Result)},
+	}
+	stdOut := [][]string{
+		{"返回内容：", fmt.Sprintf("%s", s.TaskLog.Resp+"test multi<div> &<br>line \n line2\n multi\n")}}
+	errMsg := [][]string{
+		{"错误状态码：", fmt.Sprintf("%d", s.TaskLog.ErrCode)},
+		{"错误信息：", fmt.Sprintf("%s", s.TaskLog.ErrMsg)},
+	}
+	detail := generateForm("任务执行详情:", taskDetail)
+	std := generateForm("任务执行输出:", stdOut)
+	err := generateForm("输出错误:", errMsg)
+	res := before + detail + std + err
+	return res
+}
 func (s *taskSession)Notify() error {
 	var title = fmt.Sprintf("定时任务[%s]记录ID[%d]执行结果",s.Task.Name,s.TaskLog.ID)
 	var msg = fmt.Sprintf(
@@ -501,10 +575,11 @@ Worker：%s
 		logger.Jobor.Debugf("task notify webhook send is success, %s", apiData)
 	}
 	if s.Task.Notify.Email.Enable  {
+		mailMsg := s.GenerateHtml()
 		notify := email.NewMail(config.Configs.Email.Username,config.Configs.Email.Password,
 			config.Configs.Email.SMTPHost,config.Configs.Email.From,config.Configs.Email.Port,
 			config.Configs.Email.Tls)
-		err := notify.Send(title, msg, s.Task.Notify.Email.Receivers, []string{})
+		err := notify.Send(title, mailMsg, s.Task.Notify.Email.Receivers, []string{})
 		if err != nil {
 			return err
 		}
