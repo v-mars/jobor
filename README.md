@@ -114,4 +114,10 @@ sql_mode=STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_
 
 
 ## 交流联系
+```
+如果您只是使用本项目的话，您可以在提出您使用中需要改进的地方，我会尽快修改。
+如果您是想基于此项目二次开发的话，您可以提出您在开发过程中的任何疑问，我会尽快答复并讲解。
+```
 <img src="./img/Wechatid.jpeg" width=200 height=200>
+
+
