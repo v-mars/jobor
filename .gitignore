@@ -66,3 +66,4 @@ test/
 go.sum
 jobor-frontend/mock
 jobor-frontend/node_modules
+/jobor-frontend/
