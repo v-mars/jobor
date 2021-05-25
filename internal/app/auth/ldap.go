@@ -5,9 +5,19 @@ import (
 	"fmt"
 	"github.com/go-ldap/ldap/v3"
 	"golang.org/x/text/encoding/unicode"
-	"jobor/internal/config"
 	"jobor/internal/errors"
+	"jobor/pkg/logger"
 	"time"
+)
+
+const (
+	defaultFilter = "(&(sAMAccountName=%s))"
+	DefaultTimeout = time.Second*3
+)
+
+var (
+	AdAttributes = []string{"sAMAccountName", "displayName", "mail", "mobile", "employeeID","givenName"}
+	OpenldapAttributes = []string{"cn", "mail","displayName", "uid"}
 )
 
 type option struct {
@@ -15,17 +25,20 @@ type option struct {
 	Config     tls.Config
 	BaseDN     string
 	AuthFilter string
+	Attributes []string
 	Domain     string
 	Username   string
 	Password   string
+	Tls        bool
 }
 
 var defaultOptions = option{
-	Addr:    fmt.Sprintf("%s", config.Configs.Ldap.Addr), //x.x.x.x:389
-	Config:  tls.Config{InsecureSkipVerify: !config.Configs.Ldap.Tls},
-	BaseDN:  config.Configs.Ldap.BaseDn, //"dc=ocean,dc=cn"
-	AuthFilter:  config.Configs.Ldap.AuthFilter, //"(&(sAMAccountName=%s))",		// (&(objectclass=group)(cn=%s*))
-	Domain:  config.Configs.Ldap.Domain,
+	Addr:    fmt.Sprintf("%s:%s", "127.0.0.1", "389"),
+	Config:  tls.Config{InsecureSkipVerify: true},
+	BaseDN:  "dc=example,dc=org",
+	AuthFilter:  defaultFilter,		// (&(sAMAccountName=%s)) (&(objectclass=group)(cn=%s*))  (cn=%s)
+	Attributes: AdAttributes,  // []string{"cn", "mail","displayName"}
+	Domain:  "example.org",
 }
 
 func NewLDAP() *LDAP {
@@ -46,45 +59,45 @@ type LDAP struct {
 }
 
 func (a *LDAP) Bind(username, password string) error {
-	conn, err:= a.Conn()
+	conn, err:= a.Connect()
 	if err != nil {
 		return err
 	}
 	defer conn.Close()
 	err = conn.Bind(username, password)
 	if err != nil {
-		//fmt.Printf("Ldap server disconnect. ")
 		return err
 	}
+	logger.Debugf("ldap user[%s] bind success", username)
 	return nil
 }
 
-func (a *LDAP) Conn() (*ldap.Conn, error) {
-	ldap.DefaultTimeout = time.Second*3
-	conn, err := ldap.DialTLS("tcp", a.Option.Addr, &a.Option.Config)
+func (a *LDAP) Connect() (*ldap.Conn, error) {
+	ldap.DefaultTimeout = DefaultTimeout
+	conn, err := ldap.Dial("tcp", a.Option.Addr)
+	if a.Option.Tls{
+		conn, err = ldap.DialTLS("tcp", a.Option.Addr, &a.Option.Config)
+	}
 	if err != nil {
 		return nil, err
 	}
+	logger.Debugf("ldap addr[%s] conn success", a.Option.Addr)
 	return conn, nil
 }
 
-func (a *LDAP) User(username string, conn *ldap.Conn) (Result, error) {
+func (a *LDAP) User(username string, conn *ldap.Conn) (*ldap.Entry, error) {
 	searchRequest := a.GetSearchRequest(username)
-	//var cur *ldap.SearchResult
 	cur, err := conn.Search(searchRequest)
 	if err != nil {
-		return Result{}, err
+		logger.Errorf("ldap search err: %s", err)
+		return nil, err
 	}
 	if len(cur.Entries) == 0 {
-		return Result{}, errors.New("Not found user.")
+		logger.Errorf("Not found ldap user.")
+		return nil, errors.New("Not found ldap user.")
 	}
-	var r = Result{
-		DisplayName:        cur.Entries[0].GetAttributeValue("displayName"),
-		Username:           cur.Entries[0].GetAttributeValue("sAMAccountName"),
-		Email:              cur.Entries[0].GetAttributeValue("mail"),
-		Phone:              cur.Entries[0].GetAttributeValue("mobile"),
-	}
-	return r,nil
+	entry := cur.Entries[0]
+	return entry, err
 }
 
 func (a *LDAP) Group(name string, conn *ldap.Conn) (string, error) {
@@ -114,22 +127,47 @@ func (a *LDAP) GetGroupUsers(GroupName string, conn *ldap.Conn) {
 }
 
 func (a LDAP) Authentication(username, password string) (Result, error) {
-	conn, err:= a.Conn()
+	var r = Result{}
+	conn, err:= a.Connect()
 	if err != nil {
-		return Result{},err
+		return r,err
 	}
 	defer conn.Close()
 
-	err = conn.Bind(username, password)
+	err = conn.Bind(a.Option.Username, a.Option.Password)
 	if err != nil {
+		logger.Errorf("ldap admin bind err: %s", err)
+		return r,err
+	}
+	entry, err := a.User(username, conn)
+	if entry==nil {
+		logger.Errorf("Not found ldap user info.")
+		return r, errors.New("Not found ldap user info.")
+	}
+	err = conn.Bind(entry.DN, password)
+	if err != nil {
+		logger.Errorf("ldap user authentication err: %s", err)
 		return Result{},err
 	}
-	result, err := a.User(username, conn)
-	return result,err
+	if a.Option.AuthFilter == defaultFilter {
+		r = Result{
+			DisplayName:        entry.GetAttributeValue("displayName"),
+			Username:           entry.GetAttributeValue("sAMAccountName"),
+			Email:              entry.GetAttributeValue("mail"),
+			Phone:              entry.GetAttributeValue("mobile"),
+		}
+	} else {
+		r = Result{
+			DisplayName:        entry.GetAttributeValue("displayName"),
+			Username:           entry.GetAttributeValue("cn"),
+			Email:              entry.GetAttributeValue("mail"),
+		}
+	}
+	return r,err
 }
 
 func (a *LDAP) RestPassword(username, OldPassword, NewPassword string, change bool) error {
-	conn, err:= a.Conn()
+	conn, err:= a.Connect()
 	if err != nil {
 		//panic("Ldap server disconnect.")
 		return err
@@ -160,7 +198,6 @@ func (a *LDAP) RestPassword(username, OldPassword, NewPassword string, change bo
 
 	err = conn.Bind("", "")
 	if err != nil {
-		//panic("Ldap server unbind.")
 		return err
 	}
 
@@ -182,81 +219,19 @@ func (a *LDAP) RestPassword(username, OldPassword, NewPassword string, change bo
 }
 
 func (a *LDAP) GetSearchRequest(username string) *ldap.SearchRequest {
-	Filter:=fmt.Sprintf(a.Option.AuthFilter, username)
 	//Filter:=fmt.Sprintf("(sAMAccountName=%s)", username)
-	Attributes := []string{"sAMAccountName", "displayName", "mail", "mobile", "employeeID","givenName"}
+	Filter:=fmt.Sprintf(a.Option.AuthFilter, username)
+	Attributes := a.Option.Attributes
+	if a.Option.AuthFilter!=defaultFilter{Attributes=OpenldapAttributes}
 	searchRequest := ldap.NewSearchRequest(a.Option.BaseDN,
 		ldap.ScopeWholeSubtree,
-		ldap.DerefAlways,
-		0,
-		0,
-		false,
-		Filter,
-		Attributes,
-		nil)
+		ldap.NeverDerefAliases,		// ldap.ScopeWholeSubtree, ldap.NeverDerefAliases, ldap.DerefAlways
+		0,		// SizeLimit: 大小设置,一般设置为0
+		0, 	// TimeLimit: 时间设置,一般设置为0
+		false,	//TypesOnly:  设置false（返回的值要多一点）
+		Filter,					// "(objectClass=*)",
+		Attributes,				//Attributes 需要返回的属性值
+		nil)	//Controls:  控制
 	return searchRequest
-}
-
-
-func ActionLdapLogin() {
-	params := struct {
-		Username string `json:"username"`
-		Password string `json:"password"`
-	}{}
-	addr := fmt.Sprintf("%s:%s", "10.30.108.52", "389") //addr:127.0.0.1:389
-
-	conn, err := ldap.DialTLS("tcp", addr, &tls.Config{
-		InsecureSkipVerify: true,
-	})
-	if err != nil {
-		panic("Ldap server disconnect.")
-		return
-	}
-	defer conn.Close()
-
-	err = conn.Bind(params.Username, params.Password)
-	if err != nil {
-		panic("Password error.")
-		return
-	}
-
-	sql := ldap.NewSearchRequest("cn=xx,cn=com",
-		ldap.ScopeWholeSubtree,
-		ldap.DerefAlways,
-		0,
-		0,
-		false,
-		fmt.Sprintf("(sAMAccountName=%s)", params.Username),
-		[]string{"sAMAccountName", "displayName", "mail", "mobile", "employeeID", "givenName"},
-		nil)
-
-	var cur *ldap.SearchResult
-
-	if cur, err = conn.Search(sql); err != nil {
-		panic("Ldap server search failed.")
-		return
-	}
-
-	if len(cur.Entries) == 0 {
-		panic( "Not found user.")
-		return
-	}
-	/*
-	var result = struct {
-		Name               string `json:"displayname"`
-		Username           string `json:"username"`
-		Email              string `json:"email"`
-		Phone              string `json:"phone"`
-		EmployeeId         string `json:"employeeId"`
-	}{
-		DisplayName:        cur.Entries[0].GetAttributeValue("displayName"),
-		Username:           cur.Entries[0].GetAttributeValue("sAMAccountName"),
-		Email:              cur.Entries[0].GetAttributeValue("mail"),
-		Phone:              cur.Entries[0].GetAttributeValue("mobile"),
-	}
-
-	 */
-
-	//return result
 }
 

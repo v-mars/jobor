@@ -1,7 +1,12 @@
 package service
 
 import (
-	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
+	"context"
+	"fmt"
+	"github.com/grpc-ecosystem/go-grpc-middleware"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
+	"io"
 	"jobor/internal/app/jobor/dispatcher"
 	"jobor/internal/config"
 	"jobor/internal/middleware"
@@ -9,11 +14,6 @@ import (
 	"jobor/internal/proto/pb"
 	"jobor/internal/proto/registry"
 	"jobor/pkg/logger"
-	"context"
-	"fmt"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/reflection"
-	"io"
 	"log"
 	"math"
 	"net"

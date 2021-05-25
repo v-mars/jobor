@@ -37,12 +37,11 @@ Age = 360000
 [LDAP]
 addr = "ad.example.org:389"
 baseDn = "dc=example,dc=org"
-bindDn = "manager@example.org"
+bindDn = "cn=admin,dc=example,dc=org"
 bindPass = "password"
-authFilter = "(&(sAMAccountName=%s))"
-attributes = ["sAMAccountName", "displayName", "mail"]
+authFilter = "(cn=%s)"   # "(&(sAMAccountName=%s))"
+attributes = ["cn", "mail","displayName", "dn"] # ["sAMAccountName", "displayName", "mail"]
 tls = false
-domain = "example.com"
 
 [email]
 smtpHost = "smtp.qq.com"

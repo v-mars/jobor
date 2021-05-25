@@ -8,6 +8,7 @@ import (
 	"gorm.io/gorm/schema"
 	"jobor/internal/config"
 	"jobor/internal/models/db"
+	"jobor/internal/models/tbs"
 	"log"
 	"os"
 	"time"
@@ -71,9 +72,9 @@ func InitDB(config *config.Config) {
 
 
 func Migration() {
-	//err := db.DB.AutoMigrate(&tbs.JoborTask{})
-	//fmt.Println("err:", err)
-	//fmt.Println(db.DB.AutoMigrate(new(tbs.Key)).Error)
+	err := db.DB.AutoMigrate(&tbs.JoborTask{},&tbs.JoborLog{},&tbs.JoborWorker{},&tbs.User{},
+	&tbs.Usergroup{},&tbs.Role{},&tbs.Permission{})
+	log.Printf("db migration err: %s", err)
 }
 
 type DataBases struct {

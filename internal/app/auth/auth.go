@@ -1,10 +1,13 @@
 package auth
 
 import (
+	"errors"
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 	role2 "jobor/internal/app/sys/role"
+	"jobor/internal/app/sys/user"
 	sys "jobor/internal/app/sys/user"
 	"jobor/internal/config"
 	"jobor/internal/models/db"
@@ -18,7 +21,7 @@ import (
 	"time"
 )
 
-
+// LoginAuth
 // @Tags 登录认证
 // @Summary 登录
 // @Description 登录
@@ -41,16 +44,21 @@ func LoginAuth(c *gin.Context)  {
 		return
 	}
 	if localAuth > 0 {
-		returnResult(c, obj.Username, 1)
+		returnResult(c, obj.Username, "local",Result{})
 		return
 	}
 
 	if len(config.Configs.Ldap.Addr)>0{
-		var ldap = NewLDAP()
-		ldapAuthErr := ldap.Bind(obj.Username, obj.Password)
-		//fmt.Println("ldapAuth:", ldapAuth)
+		var ldapApi = NewLDAP()
+		ldapApi.Option.Addr = fmt.Sprintf("%s", config.Configs.Ldap.Addr)
+		ldapApi.Option.BaseDN = config.Configs.Ldap.BaseDn
+		ldapApi.Option.AuthFilter = config.Configs.Ldap.AuthFilter
+		ldapApi.Option.Domain = config.Configs.Ldap.Domain
+		ldapApi.Option.Username = config.Configs.Ldap.BindDn
+		ldapApi.Option.Password = config.Configs.Ldap.BindPass
+		u,ldapAuthErr := ldapApi.Authentication(obj.Username, obj.Password)
 		if ldapAuthErr ==  nil {
-			returnResult(c, obj.Username, 2)
+			returnResult(c, obj.Username, "ldap", u)
 			return
 		} else {
 			logger.Errorf("ldap auth err: %s", ldapAuthErr)
@@ -62,6 +70,7 @@ func LoginAuth(c *gin.Context)  {
 
 }
 
+// RefreshToken
 // @Tags 登录认证
 // @Summary 刷新Token
 // @Description 刷新Token
@@ -133,7 +142,7 @@ func TokenMethod(tokenApi goJWT.JWTAuth, cla jwt.MapClaims) (map[string]interfac
 	return data, nil
 }
 
-func returnResult(c *gin.Context, username string, userType int)  {
+func returnResult(c *gin.Context, username string, userType string, r Result)  {
 	type User struct {
 		ID        uint   `json:"id"`
 		Nickname  string `json:"nickname"`
@@ -141,28 +150,36 @@ func returnResult(c *gin.Context, username string, userType int)  {
 		Email     string `json:"email"`
 		Status    bool   `json:"status"`
 	}
-	var user User
-	if err:= db.DB.Table("user").Where("username = ? and user_type_id = ?", username,
-		userType).Select("id, nickname, username, email, status").First(&user).Error;err!=nil{
-		//fmt.Println("returnResult, gorm.IsRecordNotFoundError(err)", gorm.IsRecordNotFoundError(err))
+	var userObj tbs.User
+	if err:= db.DB.Table("user").Where("username = ? and user_type = ?", username,
+		userType).Select("id, nickname, username, email, status").First(&userObj).Error;
+	errors.Is(err, gorm.ErrRecordNotFound) && userType=="ldap"{
+		var roles []tbs.Role
+		db.DB.Model(&tbs.Role{}).Where("name='normal'").Find(&roles)
+		userObj = tbs.User{Username: r.Username,Nickname: r.Username,Email: r.Email,Phone: r.Phone,Status: true,
+			UserType: userType,Roles: roles, BaseByUpdate: tbs.BaseByUpdate{ByUpdate: "ldap"}}
+		if len(r.DisplayName)>0{userObj.Nickname = r.DisplayName}
+		if len(r.Email)==0{userObj.Email = fmt.Sprintf("%s@example.com",username)}
+		if err=user.AddUser(db.DB,&userObj); err != nil {
+			response.Error(c, err)
+			return
+		}
+	} else if err!=nil {
 		response.Error(c, err)
 		return
 	}
-	if !user.Status{
+	if !userObj.Status{
 		response.Error(c, fmt.Errorf("用户名%s已经被禁用", username))
 		return
 	}
-	//fmt.Printf("user: %+v", user)
 	var role role2.IRole = &role2.Role{}
 	roleList, err:=role.GetUserRoles(username)
 	if err != nil {
 		response.Error(c, err)
 		return
 	}
-	//fmt.Printf("roleList: %+v", roleList)
-	var u = sys.InfoUser{ID: user.ID,Name:user.Nickname,Nickname:user.Nickname,Username:user.Username,
-		Email:user.Email,Roles:roleList}
-	//var cla = map[string]interface{}{"role_list": roleList, "username": username, "name": user.Nickname, "nickname": user.Nickname}
+	var u = sys.InfoUser{ID: userObj.ID,Name:userObj.Nickname,Nickname:userObj.Nickname,Username:userObj.Username,
+		Email:userObj.Email,Roles:roleList}
 	var cla map[string]interface{}
 	if err := convert.StructToMapOut(u, &cla); err!=nil{
 		log.Print("user info parse claims err:", err)
@@ -171,24 +188,13 @@ func returnResult(c *gin.Context, username string, userType int)  {
 	tokenApi := goJWT.New()
 	tokenApi.SetKey([]byte(config.Configs.JWT.TokenKey))
 	tokenApi.SetClaims(cla)
-	//fmt.Println("cla:", cla)
-	//err := middleware.NewSession(c, cla)
-	//fmt.Println("cla:", err)
-	//if err != nil {
-	//	response.Error(c, err, map[string]interface{}{})
-	//	return
-	//}
 	data,err := TokenMethod(tokenApi, cla)
 	if err != nil {
 		response.Error(c, err, map[string]interface{}{})
 		return
 	}
 	data["roles"] = roleList
-	logger.Infof("%s(%s) 登陆成功!", user.Nickname,user.Username)
+	logger.Infof("%s(%s) 登陆成功!", userObj.Nickname,userObj.Username)
 	response.Success(c, data)
 	return
-}
-
-func LDAPApi()  {
-
 }

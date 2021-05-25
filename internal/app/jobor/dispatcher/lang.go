@@ -1,16 +1,16 @@
 package dispatcher
 
 import (
-	"jobor/internal/models/tbs"
-	"jobor/internal/proto/pb"
-	"jobor/internal/response"
-	"jobor/pkg/logger"
 	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
+	"jobor/internal/models/tbs"
+	"jobor/internal/proto/pb"
+	"jobor/internal/response"
+	"jobor/pkg/logger"
 	"net/http"
 	"os"
 	"os/exec"
@@ -32,7 +32,7 @@ const (
 	LangApi = "api"
 )
 
-// Runner Please Implment io.ReadCloser
+// Runner Please Implement io.ReadCloser
 // reader last 3 byte must be exit code
 type Runner interface {
 	Run(ctx context.Context) (out io.ReadCloser)

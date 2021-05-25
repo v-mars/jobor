@@ -133,11 +133,19 @@ func StartInstall(ctx context.Context,DB *gorm.DB, sqlFileName string) error {
 	if err != nil {
 		return err
 	}
-	var permissions []tbs.Permission
+	var sysPermissions []tbs.Permission
 	if err=DB.Model(&tbs.Permission{}).Where(
-		"name like ? or name=?","sys:%","jobor:dashboard:get").Find(&permissions).Error; err != nil {
-		return fmt.Errorf("get permissions err: %s", err)
+		"name like ? or name=?","sys:%","jobor:dashboard:get").Find(&sysPermissions).Error; err != nil {
+		return fmt.Errorf("get sysPermissions err: %s", err)
 	}
+
+	var normalPermissions []tbs.Permission
+	if err=DB.Model(&tbs.Permission{}).Where(
+		"name like ? or name like ? or name=?",
+		"jobor:task:%","jobor:log:%","jobor:dashboard:get").Find(&normalPermissions).Error; err != nil {
+		return fmt.Errorf("get normalPermissions err: %s", err)
+	}
+
 
 	var roles []tbs.Role
 	if err=DB.Find(&roles).Error; err != nil {
@@ -145,7 +153,7 @@ func StartInstall(ctx context.Context,DB *gorm.DB, sqlFileName string) error {
 	} else if len(roles)==0{
 		roles = []tbs.Role{
 			{Name: "admin", Description: "超级管理员"},
-			{Name: "system", Description: "系统管理",Permissions: permissions},
+			{Name: "system", Description: "系统管理",Permissions: sysPermissions},
 			{Name: "normal", Description: "普通用户"},
 		}
 		if err=DB.Create(&roles).Error; err != nil {
@@ -165,7 +173,7 @@ func StartInstall(ctx context.Context,DB *gorm.DB, sqlFileName string) error {
 	if err=DB.First(&u).Error; errors.Is(err,gorm.ErrRecordNotFound) {
 		u = tbs.User{Nickname: "admin",Username: "admin",Password: "admin",Email: "admin@example.com",
 			Status: true,UserType: "local", Roles: roles}
-		if err=user.AddUser(DB,u); err != nil {
+		if err=user.AddUser(DB,&u); err != nil {
 			return fmt.Errorf("add user err: %s", err)
 		}
 	} else if err!=nil{

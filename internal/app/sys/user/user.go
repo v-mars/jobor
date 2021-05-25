@@ -385,7 +385,7 @@ func GetUserValue(c *gin.Context) (InfoUser, error) {
 	return u, nil
 }
 
-func AddUser(DB *gorm.DB,user tbs.User) error {
+func AddUser(DB *gorm.DB,user *tbs.User) error {
 	user.Password = utils.SHA256HashString(user.Password)
 	tx :=DB.Begin()
 	defer func() {tx.Rollback()}()
