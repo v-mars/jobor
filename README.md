@@ -82,6 +82,18 @@ dataDir = "./raft_data"
 joinAddress = ""    # 如果是第一台设置为空，否则设置第一台的httpAddress
 ```
 
+## raft 相关管理API
+```
+curl "http://localhost:2869/set?key=ping&value=pong"
+curl "http://localhost:2869/get?key=ping"
+curl "http://localhost:2869/delete?key=ping"
+curl "http://localhost:2869/join"
+curl "http://localhost:2869/remove"
+curl "http://localhost:2869/stats"
+curl "http://localhost:2869/member"
+[{"serverID":"127.0.0.1:2869","serverAddress":"127.0.0.1:2889","isLeader":true}]%  
+```
+
 ## 启动Worker
 ```
 ./app worker -c ./configs/worker.toml
