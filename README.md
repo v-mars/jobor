@@ -4,7 +4,7 @@
 * worker高可用，并且通过路由标识，worker可以部署在不同环境，实现不同环境worker的权限控制，worker的系统环境依赖（Python,Golang,执行依赖的文件）。
 * 调度server与worker通过grpc通信。
 * 支持LDAP（openldap,AD）协议用户认证。
-* 支持多重任务脚本 [ api/restful请求,shell,python ] e.g
+* 支持多种任务脚本 [ api/restful请求, shell, python3 ] e.g
 
 
 
