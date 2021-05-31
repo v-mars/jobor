@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/hashicorp/raft"
 	"github.com/robfig/cron/v3"
 	"google.golang.org/grpc"
 	"html/template"
@@ -12,6 +13,7 @@ import (
 	"jobor/internal/models/db"
 	"jobor/internal/models/tbs"
 	"jobor/internal/proto/pb"
+	Raft "jobor/internal/raft"
 	"jobor/internal/response"
 	"jobor/internal/utils/errgroup"
 	"jobor/pkg/logger"
@@ -256,6 +258,9 @@ type taskSession struct {
 
 // RunTasks evt 事件, add/change
 func RunTasks(evt,trigger string, t tbs.JoborTask)  {
+	if Raft.St.RaftNode.Raft.State() != raft.Leader {
+		return
+	}
 	var s = taskSession{TaskCtx: context.Background()}
 	var tx = db.DB
 	jsonTime := tbs.JSONTime{Time: time.Now()}
@@ -265,6 +270,10 @@ func RunTasks(evt,trigger string, t tbs.JoborTask)  {
 	}
 	var startTimeTotal = time.Now()
 	defer func() {
+		if Raft.St.RaftNode.Raft.State() != raft.Leader {
+			logger.Jobor.Infof("this dispatcher server is not Leader, task %s[%d] lang %s is skip run,now time: %s ", t.Name,t.ID, t.Lang, time.Now())
+			return
+		}
 		defer func() {
 			if errPanic := recover(); errPanic != nil{
 				stack := response.Stack(3)
@@ -460,6 +469,7 @@ func (s *taskSession)Alarm() error {
 	}
 	return nil
 }
+
 func generateRow(row []string, odd int) string {
 	var arr []string
 	width := ""
@@ -534,6 +544,7 @@ llapse; font-size:18px; line-height:1.1;  font-family:'Microsoft YaHei UI','Micr
 	res := before + detail + std + err
 	return res
 }
+
 func (s *taskSession)Notify() error {
 	var title = fmt.Sprintf("定时任务[%s]记录ID[%d]执行结果",s.Task.Name,s.TaskLog.ID)
 	var msg = fmt.Sprintf(

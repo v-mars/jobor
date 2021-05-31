@@ -23,12 +23,11 @@ const (
 )
 
 type raftNodeInfo struct {
-	raft           *raft.Raft
-	fsm            *FSM
-	leaderNotifyCh chan bool
-	nodeNotifyCh   chan bool
-	raftConfig     *raft.Config
-	a     *raft.AppendPipeline
+	Raft           *raft.Raft
+	FSM            *FSM
+	LeaderNotifyCh chan bool
+	NodeNotifyCh   chan bool
+	RaftConfig     *raft.Config
 }
 
 func newRaftTransport(opts Options) (*raft.NetworkTransport, error) {
@@ -48,14 +47,14 @@ func newRaftNode(opts Options, ctx *stCachedContext) (*raftNodeInfo, error) {
 	ServerID:=fmt.Sprintf("%s:%s", strings.Split(opts.RaftTCPAddress,":")[0],
 		strings.Split(opts.HttpAddress,":")[1])
 	raftConfig.LocalID = raft.ServerID(ServerID)
-	//raftConfig.LocalID = raft.ServerID(MD5HashString16(Opts.RaftTCPAddress))
-	//raftConfig.LocalID = RaftNode.ServerID(Opts.RaftTCPAddress)
-	//raftConfig.Logger = Log.New(os.Stderr, "RaftNode: ", Log.Ldate|Log.Ltime)
+	//RaftConfig.LocalID = Raft.ServerID(MD5HashString16(Opts.RaftTCPAddress))
+	//RaftConfig.LocalID = RaftNode.ServerID(Opts.RaftTCPAddress)
+	//RaftConfig.Logger = Log.New(os.Stderr, "RaftNode: ", Log.Ldate|Log.Ltime)
 	//logOpts :=hclog.DefaultOptions
 	//logOpts.Name="RaftNode: "
-	//raftConfig.Logger = hclog.New(logOpts)
-	//raftConfig.SnapshotInterval = 20 * time.Second
-	//raftConfig.SnapshotThreshold = 2
+	//RaftConfig.Logger = hclog.New(logOpts)
+	//RaftConfig.SnapshotInterval = 20 * time.Second
+	//RaftConfig.SnapshotThreshold = 2
 	leaderNotifyCh := make(chan bool, 1)
 	raftConfig.NotifyCh = leaderNotifyCh
 
@@ -104,7 +103,7 @@ func newRaftNode(opts Options, ctx *stCachedContext) (*raftNodeInfo, error) {
 		raftNode.BootstrapCluster(configuration)
 	}
 
-	return &raftNodeInfo{raft: raftNode, fsm: fsm, leaderNotifyCh: leaderNotifyCh,raftConfig:raftConfig}, nil
+	return &raftNodeInfo{Raft: raftNode, FSM: fsm, LeaderNotifyCh: leaderNotifyCh, RaftConfig:raftConfig}, nil
 }
 
 // JoinRaftCluster joins a node to RaftNode cluster

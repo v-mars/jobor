@@ -72,10 +72,10 @@ func (h *httpServer) doSet(w http.ResponseWriter, r *http.Request) {
 	key := vars.Get("key")
 	value := vars.Get("value")
 
-	if h.ctx.StCached.RaftNode.raft.State() != raft.Leader {
-		var leaderRaftTcpAddress = h.ctx.StCached.RaftNode.raft.Leader()
+	if h.ctx.StCached.RaftNode.Raft.State() != raft.Leader {
+		var leaderRaftTcpAddress = h.ctx.StCached.RaftNode.Raft.Leader()
 		var leaderHttpAddress = ""
-		for _,server:=range h.ctx.StCached.RaftNode.raft.GetConfiguration().Configuration().Servers{
+		for _,server:=range h.ctx.StCached.RaftNode.Raft.GetConfiguration().Configuration().Servers{
 			if server.Address == leaderRaftTcpAddress { leaderHttpAddress= string(server.ID) }
 		}
 		if leaderHttpAddress == "" {
@@ -127,10 +127,10 @@ func (h *httpServer) doDelete(w http.ResponseWriter, r *http.Request) {
 	vars := r.URL.Query()
 
 	key := vars.Get("key")
-	if h.ctx.StCached.RaftNode.raft.State() != raft.Leader {
-		var leaderRaftTcpAddress = h.ctx.StCached.RaftNode.raft.Leader()
+	if h.ctx.StCached.RaftNode.Raft.State() != raft.Leader {
+		var leaderRaftTcpAddress = h.ctx.StCached.RaftNode.Raft.Leader()
 		var leaderHttpAddress = ""
-		for _,server:=range h.ctx.StCached.RaftNode.raft.GetConfiguration().Configuration().Servers{
+		for _,server:=range h.ctx.StCached.RaftNode.Raft.GetConfiguration().Configuration().Servers{
 			if server.Address == leaderRaftTcpAddress { leaderHttpAddress= string(server.ID) }
 		}
 		if leaderHttpAddress == "" {
@@ -177,7 +177,7 @@ func (h *httpServer) Set (key,value string) string {
 		return "internal error"
 	}
 
-	applyFuture := h.ctx.StCached.RaftNode.raft.Apply(eventBytes, 5*time.Second)
+	applyFuture := h.ctx.StCached.RaftNode.Raft.Apply(eventBytes, 5*time.Second)
 	if err := applyFuture.Error(); err != nil {
 		h.log.Printf("RaftNode.Apply failed:%v", err)
 		return "internal error"
@@ -209,15 +209,15 @@ func (h *httpServer) doJoin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	httpAddress := vars.Get("httpAddress")
-	if httpAddress == "" && h.ctx.StCached.RaftNode.raft.State() != raft.Leader {
+	if httpAddress == "" && h.ctx.StCached.RaftNode.Raft.State() != raft.Leader {
 		h.log.Println("invalid httpAddress")
 		fmt.Fprint(w, "invalid httpAddress\n")
 		return
 	}
-	if h.ctx.StCached.RaftNode.raft.State() != raft.Leader {
-		var leaderRaftTcpAddress = h.ctx.StCached.RaftNode.raft.Leader()
+	if h.ctx.StCached.RaftNode.Raft.State() != raft.Leader {
+		var leaderRaftTcpAddress = h.ctx.StCached.RaftNode.Raft.Leader()
 		var leaderHttpAddress = ""
-		for _,server:=range h.ctx.StCached.RaftNode.raft.GetConfiguration().Configuration().Servers{
+		for _,server:=range h.ctx.StCached.RaftNode.Raft.GetConfiguration().Configuration().Servers{
 			if server.Address == leaderRaftTcpAddress { leaderHttpAddress= string(server.ID) }
 		}
 		if leaderHttpAddress == "" {
@@ -236,7 +236,7 @@ func (h *httpServer) doJoin(w http.ResponseWriter, r *http.Request) {
 
 	ServerID:=fmt.Sprintf("%s:%s", strings.Split(peerAddress,":")[0],
 		strings.Split(httpAddress,":")[1])
-	addPeerFuture := h.ctx.StCached.RaftNode.raft.AddVoter(
+	addPeerFuture := h.ctx.StCached.RaftNode.Raft.AddVoter(
 		raft.ServerID(ServerID),
 		raft.ServerAddress(peerAddress),
 		0, 0)
@@ -259,10 +259,10 @@ func (h *httpServer) doRemove(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if h.ctx.StCached.RaftNode.raft.State() != raft.Leader {
-		var leaderRaftTcpAddress = h.ctx.StCached.RaftNode.raft.Leader()
+	if h.ctx.StCached.RaftNode.Raft.State() != raft.Leader {
+		var leaderRaftTcpAddress = h.ctx.StCached.RaftNode.Raft.Leader()
 		var leaderHttpAddress = ""
-		for _,server:=range h.ctx.StCached.RaftNode.raft.GetConfiguration().Configuration().Servers{
+		for _,server:=range h.ctx.StCached.RaftNode.Raft.GetConfiguration().Configuration().Servers{
 			if server.Address == leaderRaftTcpAddress { leaderHttpAddress= string(server.ID) }
 		}
 		if leaderHttpAddress == "" {
@@ -279,7 +279,7 @@ func (h *httpServer) doRemove(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	removeServerFuture := h.ctx.StCached.RaftNode.raft.RemoveServer(raft.ServerID(serverID),0,0)
+	removeServerFuture := h.ctx.StCached.RaftNode.Raft.RemoveServer(raft.ServerID(serverID),0,0)
 	//addPeerFuture := h.ctx.StCached.RaftNode.RaftNode.AddVoter(RaftNode.ServerID(serverAddress), RaftNode.ServerAddress(peerAddress), 0, 0)
 	if err := removeServerFuture.Error(); err != nil {
 		h.log.Printf("Error remove server to RaftNode, ID:%s, err:%v, code:%d", serverID, err, http.StatusInternalServerError)
@@ -297,8 +297,8 @@ func (h *httpServer) Member(w http.ResponseWriter, r *http.Request) {
 		IsLeader      bool   `json:"isLeader"`
 	}
 	var servers [] serverList
-	var LeaderAddress = h.ctx.StCached.RaftNode.raft.Leader()
-	for _,s := range h.ctx.StCached.RaftNode.raft.GetConfiguration().Configuration().Servers {
+	var LeaderAddress = h.ctx.StCached.RaftNode.Raft.Leader()
+	for _,s := range h.ctx.StCached.RaftNode.Raft.GetConfiguration().Configuration().Servers {
 		server := serverList{ServerID: string(s.ID),ServerAddress: string(s.Address)}
 		if LeaderAddress == s.Address { server.IsLeader = true }
 		servers=append(servers,server)
@@ -315,7 +315,7 @@ func (h *httpServer) Member(w http.ResponseWriter, r *http.Request) {
 // Stats handles remove cluster request
 func (h *httpServer) Stats(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type","text/json")
-	msg, err := json.Marshal(h.ctx.StCached.RaftNode.raft.Stats())
+	msg, err := json.Marshal(h.ctx.StCached.RaftNode.Raft.Stats())
 	if err!=nil{
 		fmt.Fprint(w, fmt.Sprintf("data parse json err: %s", err))
 		return

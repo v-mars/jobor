@@ -5,6 +5,12 @@ Port = "5000"
 #LogPath = "./logs"
 GRPCPort = 50052
 
+[Raft]
+bootstrap = true    # 如果是第一台设置为true，否则为：false
+httpAddress = "127.0.0.1:2869"
+tcpAddress = "127.0.0.1:2889"   # 不能设置成: 0.0.0.0:2869, 必须是ip:port.
+dataDir = "./raft_data"
+joinAddress = ""    # 如果是第一台设置为空，否则设置第一台的httpAddress
 
 [MySQL]
 DBName = "jobor"

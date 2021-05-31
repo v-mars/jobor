@@ -1,4 +1,12 @@
 # Jobor分布式定时任务
+# 特色：
+* 通过raft一致性算法，实现多server/controller/master的高可用，不同与传统的分布式只实现worker端的高可用，调度端只能是单点来避免同一任务同一时间被重复调度执行，从而达到了整个服务（Server,Worker）的高可用，保证了系统的健壮稳定性。
+* worker高可用，并且通过路由标识，worker可以部署在不同环境，实现不同环境worker的权限控制，worker的系统环境依赖（Python,Golang,执行依赖的文件）。
+* 调度server与worker通过grpc通信。
+* 支持LDAP（openldap,AD）协议用户认证。
+* 支持多重任务脚本 [ api/restful请求,shell,python ] e.g
+
+
 
 ## 构建
 ```
@@ -63,6 +71,17 @@ Flags:
 ./app server -p 5000 -c ./configs/config.toml -f ./logs
 ```
 
+## Server端raft配置
+```
+# 一个Raft集群通常包含2*N+1个服务器，允许系统有N个故障服务器。
+[Raft]
+bootstrap = true    # 如果是第一台设置为true，否则为：false
+httpAddress = "127.0.0.1:2869"
+tcpAddress = "127.0.0.1:2889"   # 不能设置成: 0.0.0.0:2869, 必须是ip:port.
+dataDir = "./raft_data"
+joinAddress = ""    # 如果是第一台设置为空，否则设置第一台的httpAddress
+```
+
 ## 启动Worker
 ```
 ./app worker -c ./configs/worker.toml
@@ -89,10 +108,12 @@ sql_mode=STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_
 ![avatar](./img/jobor-task.jpeg)
 ![avatar](./img/jobor-run.jpeg)
 ![avatar](./img/jobor-worker.jpeg)
+![avatar](./img/notify-email.png)
 
 ## TODO 
 ### task
-- [x] ldap
+- [x] 支持server/controller/master(通过raft一致性算法)的高可用，一个Raft集群通常包含2*N+1个服务器，允许系统有N个故障服务器。
+- [x] ldap(支持openldap,AD 认证)
 - [x] server <-- gRPC --> worker
 - [x] task abort
 - [x] task timeout

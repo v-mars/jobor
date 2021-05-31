@@ -19,6 +19,8 @@ require (
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/gorilla/websocket v1.4.2
 	github.com/grpc-ecosystem/go-grpc-middleware v1.0.0
+	github.com/hashicorp/raft v1.3.1 // indirect
+	github.com/hashicorp/raft-boltdb v0.0.0-20210422161416-485fa74b0b01 // indirect
 	github.com/jinzhu/gorm v1.9.16
 	github.com/json-iterator/go v1.1.9
 	github.com/lestrrat-go/file-rotatelogs v2.4.0+incompatible

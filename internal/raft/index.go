@@ -63,8 +63,8 @@ func Server(opts Options) {
 		for{
 			//_ = StCached.RaftNode.RaftNode.
 			//fmt.Println("RaftNode:",StCached.RaftNode.RaftNode.String())
-			fmt.Println("RaftNode Leader,Id,state:",StCached.RaftNode.raft.Leader(),StCached.RaftNode.raft.State())
-			fmt.Println("RaftNode Servers:",StCached.RaftNode.raft.GetConfiguration().Configuration().Servers)
+			fmt.Println("RaftNode Leader,Id,state:",StCached.RaftNode.Raft.Leader(),StCached.RaftNode.Raft.State())
+			fmt.Println("RaftNode Servers:",StCached.RaftNode.Raft.GetConfiguration().Configuration().Servers)
 			time.Sleep(30*time.Second)
 		}
 	}()*/
@@ -72,7 +72,7 @@ func Server(opts Options) {
 	// monitor leadership
 	for {
 		select {
-		case leader := <-St.RaftNode.leaderNotifyCh:
+		case leader := <-St.RaftNode.LeaderNotifyCh:
 			if leader {
 				St.Log.Println("become leader, enable write api")
 				St.HttpServer.setWriteFlag(true)

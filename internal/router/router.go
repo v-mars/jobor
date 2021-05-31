@@ -8,9 +8,11 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"github.com/swaggo/gin-swagger/swaggerFiles"
 	"io"
+	"jobor/internal/config"
 	"jobor/internal/middleware"
 	"jobor/internal/models/db"
 	"jobor/internal/proto/service"
+	"jobor/internal/raft"
 	"jobor/pkg/logger"
 	"jobor/pkg/utils"
 	"log"
@@ -27,13 +29,6 @@ var (
 	Engine *gin.Engine
 )
 
-
-////go:embed dist/*
-//var f embed.FS
-////go:embed dist/favicon.ico
-//var ico embed.FS
-////go:embed dist/static/*
-//var static embed.FS
 
 func InitRouter(RunMode string, addr string)  {
 	var err error
@@ -111,6 +106,17 @@ func InitRouter(RunMode string, addr string)  {
 		}
 	}()
 	fmt.Println(utils.Green("Jobor server service start success, 地址："+ service.ServerGRPCPort()))
+
+	go func() {
+		opts := raft.Options{Bootstrap: config.Configs.Raft.Bootstrap,DataDir: config.Configs.Raft.DataDir,
+			HttpAddress: config.Configs.Raft.HttpAddress,RaftTCPAddress: config.Configs.Raft.TcpAddress,
+			JoinAddress: config.Configs.Raft.JoinAddress,
+		}
+		raft.Server(opts)
+	}()
+	fmt.Println(utils.Green(
+		fmt.Sprintf("raft service start success, httpAddress：%s, raftTcpAddress: %s",
+			config.Configs.Raft.HttpAddress,config.Configs.Raft.TcpAddress)))
 
 	srv := &http.Server{
 		Addr:    addr,

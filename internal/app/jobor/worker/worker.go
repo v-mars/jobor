@@ -45,7 +45,7 @@ func (r JoborWorker)GetRoutingKey(c *gin.Context)  {
 	o.Select = "distinct routing_key"
 	o.Order = "ID DESC"
 	o.Scan = true
-	err := models.Query(r.DB,&tbs.JoborTask{}, o, &pageData)
+	err := models.Query(r.DB,&tbs.JoborWorker{}, o, &pageData)
 	if err != nil {
 		response.Error(c, err)
 		return
