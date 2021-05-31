@@ -28,6 +28,12 @@ var Configs = Config{
 		Age: 3600,
 	},
 	Ldap: Ldap{},
+	Raft: Raft{
+		Bootstrap: true,
+		HttpAddress: "127.0.0.1:2869",
+		TcpAddress: "127.0.0.1:2889",
+		DataDir: "./raft_data",
+	},
 }
 
 func getDefaultName() string {
@@ -68,6 +74,7 @@ type Config struct {
 	JWT 		JWT
 	Email		Email
 	Ldap		Ldap
+	Raft		Raft
 }
 
 // Web 站点配置参数
@@ -78,6 +85,14 @@ type Web struct {
 	ReadTimeout  int
 	WriteTimeout int
 	IdleTimeout  int
+}
+
+type Raft struct {
+	Bootstrap   bool   `json:"bootstrap"`
+	HttpAddress string `json:"httpAddress"`
+	TcpAddress  string `json:"tcpAddress"`
+	DataDir     string `json:"dataDir"`
+	JoinAddress string `json:"joinAddress"`
 }
 
 

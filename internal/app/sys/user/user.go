@@ -335,7 +335,7 @@ func (r SUser) SetPassword(c *gin.Context)  {
 func (r SUser) Option() models.Option {
 	var o models.Option
 	o.Select = "distinct user.id as id, user.nickname, user.username, phone, " +
-		"email, user_type_id, status,user.by_update,user.ctime, user.mtime"
+		"email, user_type, status,user.by_update,user.ctime, user.mtime"
 	o.Joins = "left join user_roles on user_roles.user_id = user.id left join role on user_roles.role_id = role.id "
 	return o
 }

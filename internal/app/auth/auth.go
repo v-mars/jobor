@@ -38,9 +38,9 @@ func LoginAuth(c *gin.Context)  {
 	}
 
 	var localAuth int64
-	if err:= db.DB.Model(&tbs.User{}).Where("username = ? and password = ? and user_type_id = ?",
-		obj.Username, utils.SHA256HashString(obj.Password), 1).Count(&localAuth).Error;err!=nil {
-		response.Error(c, err)
+	if err:= db.DB.Model(&tbs.User{}).Where("username = ? and password = ? and user_type = ?",
+		obj.Username, utils.SHA256HashString(obj.Password), "local").Count(&localAuth).Error;err!=nil {
+		response.ErrorNoLog(c, err)
 		return
 	}
 	if localAuth > 0 {
