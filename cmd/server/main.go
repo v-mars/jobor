@@ -13,10 +13,10 @@ import (
 var (
 	c = &config.Configs
 	rootCmd = &cobra.Command{
-		Use:   "server",
+		Use:   "",
 		Short: "Start Run Jobor Server",
 		Long:  `Welcome User Jobor Server`,
-		Example: `## 启动命令 ./app server -p 5000 -c ./configs/config.toml -f ./logs`,
+		Example: `## 启动命令 ./app -p 5000 -c ./configs/config.toml -f ./logs`,
 		Run: func(cmd *cobra.Command, args []string) {
 			internal.Run(c.Server.ConfigFile)
 			addr := fmt.Sprintf("%s:%s",c.Server.IP,c.Server.Port)
