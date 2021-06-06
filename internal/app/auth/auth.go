@@ -138,6 +138,7 @@ func TokenMethod(tokenApi goJWT.JWTAuth, cla jwt.MapClaims) (map[string]interfac
 		"nickname":      cla["nickname"],
 		"username":      cla["username"],
 		"email":         cla["email"],
+		"id":            cla["id"],
 	}
 	return data, nil
 }
@@ -181,7 +182,7 @@ func returnResult(c *gin.Context, username string, userType string, r Result)  {
 	var u = sys.InfoUser{ID: userObj.ID,Name:userObj.Nickname,Nickname:userObj.Nickname,Username:userObj.Username,
 		Email:userObj.Email,Roles:roleList}
 	var cla map[string]interface{}
-	if err := convert.StructToMapOut(u, &cla); err!=nil{
+	if err = convert.StructToMapOut(u, &cla); err!=nil{
 		log.Print("user info parse claims err:", err)
 		return
 	}

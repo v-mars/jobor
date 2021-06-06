@@ -141,8 +141,9 @@ func StartInstall(ctx context.Context,DB *gorm.DB, sqlFileName string) error {
 
 	var normalPermissions []tbs.Permission
 	if err=DB.Model(&tbs.Permission{}).Where(
-		"name like ? or name like ? or name=?",
-		"jobor:task:%","jobor:log:%","jobor:dashboard:get").Find(&normalPermissions).Error; err != nil {
+		"name like ? or name like ? or name=(?)",
+		"jobor:task:%","jobor:log:%",[]string{"jobor:dashboard:get","sys:user-profile:put","sys:user-pass:put"},
+		).Find(&normalPermissions).Error; err != nil {
 		return fmt.Errorf("get normalPermissions err: %s", err)
 	}
 

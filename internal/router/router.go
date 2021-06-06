@@ -10,6 +10,7 @@ import (
 	"io"
 	"jobor/internal/config"
 	"jobor/internal/middleware"
+	"jobor/internal/models"
 	"jobor/internal/models/db"
 	"jobor/internal/proto/service"
 	"jobor/internal/raft"
@@ -43,7 +44,6 @@ func InitRouter(RunMode string, addr string)  {
 		Engine.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	}
 
-
 	gin.DefaultWriter = io.MultiWriter(logger.Gin.Writer()) // os.Stdout, logger.Gin.Writer()
 
 	//错误日志审计
@@ -61,7 +61,6 @@ func InitRouter(RunMode string, addr string)  {
 	// 日志
 	Engine.Use(gin.Logger())
 
-	//var blockArr = []string{"/api", "/v1"}
 	// 登录验证 及信息提取
 	var notCheckLoginUrlArr = []string{
 		"/static","/favicon.ico","/ping","/swager/*","/debug/pprof","/metrics","/api/code",
@@ -77,20 +76,25 @@ func InitRouter(RunMode string, addr string)  {
 	Engine.Use(middleware.CasbinMiddleware(middleware.AllowPathPrefixSkipper(notCheckPermissionUrlArr...)))
 
 	setEmbedWeb(Engine)
+	logger.Debugf("jobor gin load static file success")
 
 	// 注册路由
 	if err = RegisterRouter(Engine); err != nil{
 		log.Fatal(err)
 	}
-	// Prometheus
+	logger.Debugf("jobor gin register router success")
+
 	prometheusMonitor(Engine)
-	//profile(Engine)
+	logger.Debugf("jobor gin prometheus monitor add")
+
+
 	install, err := QueryIsInstall(context.TODO(),db.DB)
 	if err != nil {
 		logger.Fatal(err)
 		return
 	}
 	if !install{
+		logger.Debugf("jobor db init is start ")
 		err = StartInstall(context.TODO(), db.DB, "jobor.sql")
 		if err != nil {
 			logger.Fatal(err)
@@ -98,7 +102,9 @@ func InitRouter(RunMode string, addr string)  {
 		}
 	}
 
-	//pprof.Register(Engine)
+	err = InitUpdatePermissionByGinRoutes()
+	models.Migration()
+	logger.Debugf("jobor db migrate ")
 
 	go func() {
 		if err= service.ServerGRPC();err!=nil{
@@ -130,9 +136,6 @@ func InitRouter(RunMode string, addr string)  {
 		}
 	}()
 
-	//go func() {
-	//	log.Fatal(Engine.Run(addr))
-	//}()
 	msg := fmt.Sprintf("服务启动成功，运行模式：%s，版本号：%s，进程号：%d", RunMode, "release", os.Getpid())
 	fmt.Println(utils.Green(msg))
 	fmt.Println(utils.Green("访问地址 http://"+addr))

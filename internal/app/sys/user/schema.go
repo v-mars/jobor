@@ -42,7 +42,7 @@ type User struct {
 	Password   string       `json:"password"`
 	Email      string       `json:"email"`
 	Phone      string       `json:"phone"`
-	UserTypeID string       `json:"user_type_id"`
+	UserType   string       `json:"user_type"`
 	Status     bool         `json:"status"`
 	ByUpdate   string       `json:"by_update"`
 	Roles      []Role       `gorm:"many2many:user_roles;" json:"roles"`
@@ -80,5 +80,27 @@ type PutSchema struct {
 }
 
 func (PutSchema) TableName() string {
+	return tbName
+}
+
+type RestPass struct {
+	ID       uint   `json:"id" binding:"required"`
+	Password string `json:"password" binding:"required"`
+}
+
+type ChangePass struct {
+	OldPassword string `json:"old_password" binding:"required"`
+	Password    string `json:"password" binding:"required"`
+	RePassword  string `json:"re_password" binding:"required"`
+}
+
+type ChangeProfile struct {
+	Nickname *string `json:"nickname,omitempty"`
+	Email    *string `json:"email,omitempty"`
+	Phone    *string `json:"phone,omitempty"`
+	ByUpdate string `json:"by_update,-"`
+}
+
+func (ChangeProfile) TableName() string {
 	return tbName
 }

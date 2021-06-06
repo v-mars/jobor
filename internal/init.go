@@ -39,7 +39,7 @@ func Run(configPath string)  {
 
 func initDB(config *config.Config){
 	models.InitDB(config)
-	models.Migration()
+	//models.Migration()
 }
 
 
