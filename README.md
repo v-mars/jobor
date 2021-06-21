@@ -22,7 +22,7 @@ go build
 ## 二进制部署
 ```
 下载链接：https://github.com/v-mars/jobor/releases
-tar -zxvf jobor-2.0.1.tar.gz
+tar -zxvf jobor-2.0.2.tar.gz
 cd jobor-2.0.1
 server:
 ./bin/jobor server -c configs/config.toml
