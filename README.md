@@ -1,6 +1,6 @@
 # Jobor分布式定时任务
 ## ✨ 功能特性
-- 通过raft一致性算法，实现多server/controller/master的高可用，不同与传统的分布式只实现worker端的高可用，调度端只能是单点来避免同一任务同一时间被重复调度执行，从而达到了整个服务（Server,Worker）的高可用，保证了系统的健壮稳定性。
+- 通过raft一致性算法，实现多server/controller/master的高可用，不同于传统的分布式只实现worker端的高可用，调度端只能是单点来避免同一任务同一时间被重复调度执行，从而达到了整个服务（Server,Worker）的高可用，保证了系统的健壮稳定性。
 - worker高可用，并且通过路由标识，worker可以部署在不同环境，实现不同环境worker的权限控制，worker的系统环境依赖（Python,Golang,执行依赖的文件）。
 - 调度server与worker通过grpc通信。
 - 支持LDAP（openldap,AD）协议用户认证。
