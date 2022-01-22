@@ -1,0 +1,8 @@
+tar zcvf jobor-linux-amd64-1.0.1.tar.gz jobor-linux-amd64-1.0.1/
+tar zcvf jobor-drawin-amd64-1.0.1.tar.gz jobor-drawin-amd64-1.0.1/
+
+tar -zxvf jobor-1.0.1.tar.gz
+cd jobor-1.0.1
+server:
+./bin/jobor server -c configs/config.toml
+./bin/jobor worker -c configs/worker.toml
