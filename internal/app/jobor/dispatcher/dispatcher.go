@@ -258,7 +258,7 @@ type taskSession struct {
 
 // RunTasks evt 事件, add/change
 func RunTasks(evt,trigger string, t tbs.JoborTask)  {
-	if Raft.St.RaftNode.Raft.State() != raft.Leader {
+	if Raft.St.RaftNode.Raft.State() != raft.Leader && trigger == TriggerAuto {
 		return
 	}
 	var s = taskSession{TaskCtx: context.Background()}
