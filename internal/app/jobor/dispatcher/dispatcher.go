@@ -216,6 +216,10 @@ var (
 )
 
 func InitCron()  {
+	if config.Configs.Server.CronType == "m" {
+		c = cron.New()
+		logger.Jobor.Info("jobor task is 'min' cron mode")
+	}
 	taskList, err := GetAllRunningTask()
 	if err!=nil{}
 	c.Start()

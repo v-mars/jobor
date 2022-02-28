@@ -3,7 +3,6 @@ package config
 import (
 	"fmt"
 	"github.com/BurntSushi/toml"
-	"github.com/gin-gonic/gin"
 	"log"
 	"os"
 	"sync"
@@ -20,6 +19,7 @@ var Configs = Config{
 		LogPath:  "./logs",
 		LogLevel: "DEBUG",
 		GRPCPort: 50052,
+		CronType: "s",
 	},
 	JWT: JWT{
 		TokenType: "Bearer",
@@ -106,6 +106,7 @@ type Server struct {
 	Port         string
 	GRPCPort     int
 
+	CronType     string
 	LogPath      string
 	LogLevel     string
 
@@ -228,28 +229,28 @@ type Email struct {
 // LoadConfig 加载配置
 func LoadConfig(configPath string) (err error) {
 	var c = &Configs
-	var server = c.Server
+	//var server = c.Server
 
 	if _, err := toml.DecodeFile(configPath, &c); err != nil {
 		log.Fatal("加载配置失败:", err)
 	}
-	if server.Mode != "" {
-		c.Server.Mode = server.Mode
-	} else if len(c.Server.Mode) == 0 {
-		c.Server.Mode = gin.ReleaseMode
-	}
+	//if server.Mode != "" {
+	//	c.Server.Mode = server.Mode
+	//} else if len(c.Server.Mode) == 0 {
+	//	c.Server.Mode = gin.ReleaseMode
+	//}
 
-	if server.IP != "" {
-		c.Server.IP = server.IP
-	} else if len(c.Server.IP) == 0 {
-		c.Server.IP = "0.0.0.0"
-	}
+	//if server.IP != "" {
+	//	c.Server.IP = server.IP
+	//} else if len(c.Server.IP) == 0 {
+	//	c.Server.IP = "0.0.0.0"
+	//}
 
-	if server.Port != "" {
-		c.Server.Port = server.Port
-	} else if len(c.Server.Port) == 0 {
-		c.Server.Port = "8000"
-	}
+	//if server.Port != "" {
+	//	c.Server.Port = server.Port
+	//} else if len(c.Server.Port) == 0 {
+	//	c.Server.Port = "8000"
+	//}
 	//fmt.Println("ac:", *ac)
 	//jsonBytes, _ := json.Marshal(*ac)
 	//fmt.Println("ac:", string(jsonBytes))

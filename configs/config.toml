@@ -4,6 +4,7 @@ IP = "0.0.0.0"
 Port = "5000"
 #LogPath = "./logs"
 GRPCPort = 50052
+CronType = "m"  # m 分钟级别 | s 秒级别
 
 [Raft]
 bootstrap = true    # 如果是第一台设置为true，否则为：false

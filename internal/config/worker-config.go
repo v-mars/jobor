@@ -2,7 +2,6 @@ package config
 
 import (
 	"github.com/BurntSushi/toml"
-	"github.com/gin-gonic/gin"
 	"log"
 )
 
@@ -16,7 +15,7 @@ var WorkerConfig = Worker{
 	LogLevel: "DEBUG",
 	RoutingKey: "default",
 	Servers:  make([]string,0),
-	Version: "v1.0.1",
+	Version: "v2.0.5",
 }
 
 
@@ -47,16 +46,16 @@ func LoadWorkerConfig(configPath string) (err error) {
 		log.Fatal("Worker加载配置失败:", err)
 	}
 
-	if len(c.Worker.Mode) == 0 {
-		c.Worker.Mode = gin.ReleaseMode
-	}
-
-	if len(c.Worker.IP) == 0 {
-		c.Worker.IP = "0.0.0.0"
-	}
-
-	if c.Worker.Port == 0 {
-		c.Worker.Port = 20052
-	}
+	//if len(c.Worker.Mode) == 0 {
+	//	c.Worker.Mode = gin.ReleaseMode
+	//}
+	//
+	//if len(c.Worker.IP) == 0 {
+	//	c.Worker.IP = "0.0.0.0"
+	//}
+	//
+	//if c.Worker.Port == 0 {
+	//	c.Worker.Port = 20052
+	//}
 	return nil
 }

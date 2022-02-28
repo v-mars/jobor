@@ -28,6 +28,7 @@ type PostSchema struct {
 	Notify        tbs.Notify   `json:"notify"`
 	Expr          string       `json:"Expr" binding:"required"`
 	Timeout       int          `json:"timeout"`
+	AlarmPolicy   int          `json:"alarm_policy"`
 	ExpectCode    int          `json:"expect_code"`
 	ExpectContent string       `json:"expect_content"`
 	//RoutePolicy   int          `json:"route_policy"`
@@ -48,6 +49,7 @@ type PutSchema struct {
 	Notify        *tbs.Notify   `json:"notify" form:"notify"`
 	Expr          *string       `json:"Expr"`
 	Timeout       *int          `json:"timeout"`
+	AlarmPolicy   *int          `json:"alarm_policy"`
 	RoutePolicy   *int          `json:"route_policy"`
 	RoutingKey    *string       `json:"routing_key"`
 	ExpectCode    *int          `json:"expect_code"`
