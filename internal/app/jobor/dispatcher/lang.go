@@ -55,17 +55,15 @@ func GetDataRun(t *pb.TaskRequest) (Runner, error) {
 		if api.Header == nil { api.Header = make(map[string]string) }
 		if len(data.Api.ContentType)>0 {api.Header["Content-Type"]=data.Api.ContentType}
 		for _,mapVal:=range data.Api.Header{
-			for k,v:=range mapVal { api.Header[k]=v }
+			api.Header[mapVal["key"]]=mapVal["value"]
 		}
 		if api.Header["Content-Type"] == "application/x-www-form-urlencoded"{
 			api.PayLoad = ""
 			for _,mapForm := range data.Api.Forms {
-				for k,v:=range mapForm {
-					if len(api.PayLoad)>0{
-						api.PayLoad = fmt.Sprintf("%s&%s=%s",api.PayLoad,k,v)
-					}else {
-						api.PayLoad = fmt.Sprintf("%s=%s",k,v)
-					}
+				if len(api.PayLoad)>0{
+					api.PayLoad = fmt.Sprintf("%s&%s=%s",api.PayLoad,mapForm["key"],mapForm["value"])
+				}else {
+					api.PayLoad = fmt.Sprintf("%s=%s",mapForm["key"],mapForm["value"])
 				}
 			}
 		}

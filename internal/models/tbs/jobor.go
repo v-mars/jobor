@@ -18,7 +18,7 @@ type JoborTask struct {
 	UserID        *uint    `gorm:"index:user_id;comment:'关联用户id'" json:"user_id"`
 	Count         int      `gorm:"comment:'执行次数'" json:"count" form:"count"`
 	Expr          string   `gorm:"type:varchar(32);not null;comment:'定时任务表达式：0/1 * * ? * * * 秒分时天月星期'" json:"expr" form:"expr"`
-	Timeout       int      `gorm:"default:-1;comment:'超时时间'" json:"timeout" form:"timeout"`
+	Timeout       int      `gorm:"default:-1;comment:'超时时间;单位：秒'" json:"timeout" form:"timeout"`
 	RoutePolicy   int      `gorm:"default:1;comment:'路由策略 1:Random 2:RoundRobin 3:Weight 4:LeastTask'" json:"route_policy" form:"route_policy"`
 	RoutingKey    string   `gorm:"type:varchar(32);default:'default';comment:'执行worker路由标识'" json:"routing_key" form:"routing_key"`
 	Status        string   `gorm:"type:varchar(32);default:'running';comment:'定时任务状态: running,stop'" json:"status" form:"status"`

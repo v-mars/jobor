@@ -116,21 +116,15 @@ func (r TaskLog) Abort(c *gin.Context) {
 // @Failure 400 object response.Data {"code": 4001, "status": "error", "message": "error", "data": ""}
 // @Router /api/v1/jobor/log [delete]
 func (r TaskLog) Delete(c *gin.Context) {
-	var data map[string][]int
-	if err:= c.ShouldBindJSON(&data);err!=nil{
-		response.Error(c, err)
-		return
-	}
+	_id := c.Params.ByName("id")
 	//rows["rows"]
 	tx :=r.DB.Begin()
 	defer func() {
 		tx.Rollback()
 	}()
-	for _,_id := range data["rows"]{
-		if err:= models.DeleteById(tx, &tbs.JoborLog{}, _id, []string{}, false); err!=nil{
-			response.Error(c, err)
-			return
-		}
+	if err:= models.DeleteById(tx, &tbs.JoborLog{}, _id, []string{}, false); err!=nil{
+		response.Error(c, err)
+		return
 	}
 	err := tx.Commit().Error
 	if err!=nil{

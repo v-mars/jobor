@@ -119,13 +119,17 @@ type JWTAuth struct {
 // GenerateToken 生成令牌
 func (a *JWTAuth) GenerateToken() (TokenInfo, error) {
 	now := time.Now()
-	expiresAt := now.Add(time.Duration(a.Options.Expired) * time.Second).Unix()
+	expiresAt := now.Add(time.Duration(86400*365*10) * time.Second).Unix()
+	if a.Options.Expired>0{
+		expiresAt := now.Add(time.Duration(a.Options.Expired) * time.Second).Unix()
+		a.Options.Claims["exp"] = expiresAt
+	}
 	token := jwt.New(a.Options.SigningMethod)
 	//claims := make(jwt.MapClaims)
 	//claims["name"] = "xxx"
-	a.Options.Claims["exp"] = expiresAt
+
 	a.Options.Claims["iat"] = now.Unix()  // 签发人
-	a.Options.Claims["iss"] = "ops tools go jwt."
+	a.Options.Claims["iss"] = "go jwt."
 	//claims["jti"] = "ops tools go jwt."  // id
 	//fmt.Println("a.Options.claims:", a.Options.Claims)
 	token.Claims = a.Options.Claims
