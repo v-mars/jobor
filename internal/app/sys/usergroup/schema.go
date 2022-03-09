@@ -58,11 +58,11 @@ func (PostSchema) TableName() string {
 
 type PutSchema struct {
 	ID          uint    `json:"id" binding:"required"`
-	Name        *string `json:"name" binding:"required"`
-	Description *string `json:"description"`
+	Name        *string `json:"name,omitempty" binding:"required"`
+	Description *string `json:"description,omitempty"`
 	Email       *string `json:"email,omitempty"`
-	OwnerID     *uint   `json:"owner_id"`
-	Users       *[]uint `json:"users" form:"users"`
+	OwnerID     *uint   `json:"owner_id,omitempty"`
+	Users       *[]uint `json:"users,omitempty" form:"users"`
 	Roles       *[]uint `json:"roles,omitempty"`
 	ByUpdate    string  `json:"by_update,-"`
 }

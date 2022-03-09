@@ -5,10 +5,10 @@ COPY . ./jobor/
 RUN cd ./jobor && ls && go env -w GO111MODULE="on" && go env -w GOPROXY="https://goproxy.io" && \
 CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o build/package/server ./cmd/server/main.go
 
-FROM centos:7.9.2009
+FROM docker.io/iocean/centos:7.9.2009
 WORKDIR /data
 COPY --from=builder /data/jobor/build/package/server ./
-RUN yum install inetutils-ping vim telnet traceroute -y
+#RUN yum install inetutils-ping vim telnet traceroute -y
 RUN mkdir -p /data/logs
 ENV GRPC_PORT=50052
 ENV SERVICE=jobor.server

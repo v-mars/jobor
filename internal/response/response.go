@@ -46,13 +46,13 @@ func PageSuccess(c *gin.Context, v PageDataList) {
 }
 
 // 创建响应成功
-func CreateSuccess(c *gin.Context, v...interface{}) {
+func CreateSuccess(c *gin.Context, v interface{}) {
 	ret := Data{Code: SUCCESS_CODE,Status:"success", Message: "创建成功.", Data: v}
 	ResJSON(c, http.StatusOK, &ret)
 }
 
 // 更新响应成功
-func UpdateSuccess(c *gin.Context, v...interface{}) {
+func UpdateSuccess(c *gin.Context, v interface{}) {
 	ret := Data{Code: SUCCESS_CODE,Status:"success", Message: "更新成功.", Data: v}
 	ResJSON(c, http.StatusOK, &ret)
 }

@@ -25,8 +25,8 @@ func (PostSchema) TableName() string {
 
 type PutSchema struct {
 	ID          uint   `json:"id" binding:"required"`
-	Name        *string `json:"name"`
-	Description *string `json:"description"`
+	Name        *string `json:"name,omitempty"`
+	Description *string `json:"description,omitempty"`
 	ByUpdate    *string `json:"by_update,-"`
 	Permissions *[]uint `json:"permissions,omitempty"`
 }

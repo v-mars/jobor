@@ -25,9 +25,9 @@ func (PostSchema) TableName() string {
 }
 
 type PutSchema struct {
-	Name        *string `json:"name"`
-	Url         *string `json:"url"`
-	Method      *string `json:"Method"`
+	Name        *string `json:"name,omitempty"`
+	Url         *string `json:"url,omitempty"`
+	Method      *string `json:"method,omitempty"`
 	//ByUpdate    *string `json:"by_update,-"`
 }
 

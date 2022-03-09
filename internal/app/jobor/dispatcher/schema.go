@@ -20,8 +20,8 @@ func (ShowData) TableName() string {
 
 
 type PostSchema struct {
-	ID            uint         `json:"-"`
-	Name          string       `json:"Name" binding:"required"`
+	ID            uint         `json:"id"`
+	Name          string       `json:"name" binding:"required"`
 	Description   string       `json:"description"`
 	Lang          string       `json:"lang" binding:"required"`
 	Data          tbs.TaskData `json:"data" binding:"required"`
@@ -42,20 +42,20 @@ func (PostSchema) TableName() string {
 }
 
 type PutSchema struct {
-	Name          *string       `json:"Name"`
-	Description   *string       `json:"description"`
-	Lang          *string       `json:"lang"`
-	Data          *tbs.TaskData `json:"data" form:"data"`
-	Notify        *tbs.Notify   `json:"notify" form:"notify"`
-	Expr          *string       `json:"Expr"`
-	Timeout       *int          `json:"timeout"`
-	AlarmPolicy   *int          `json:"alarm_policy"`
-	RoutePolicy   *int          `json:"route_policy"`
-	RoutingKey    *string       `json:"routing_key"`
-	ExpectCode    *int          `json:"expect_code"`
-	ExpectContent *string       `json:"expect_content"`
-	Retry         *int          `json:"retry"`
-	Status        *string       `json:"status"`
+	Name          *string       `json:"name,omitempty"`
+	Description   *string       `json:"description,omitempty"`
+	Lang          *string       `json:"lang,omitempty"`
+	Data          *tbs.TaskData `json:"data,omitempty" form:"data"`
+	Notify        *tbs.Notify   `json:"notify,omitempty" form:"notify"`
+	Expr          *string       `json:"expr,omitempty"`
+	Timeout       *int          `json:"timeout,omitempty"`
+	AlarmPolicy   *int          `json:"alarm_policy,omitempty"`
+	RoutePolicy   *int          `json:"route_policy,omitempty"`
+	RoutingKey    *string       `json:"routing_key,omitempty"`
+	ExpectCode    *int          `json:"expect_code,omitempty"`
+	ExpectContent *string       `json:"expect_content,omitempty"`
+	Retry         *int          `json:"retry,omitempty"`
+	Status        *string       `json:"status,omitempty"`
 	ByUpdate      *string       `json:"by_update,-"`
 }
 

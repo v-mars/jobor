@@ -132,7 +132,7 @@ func (r UserGroup) Create(c *gin.Context) {
 		response.Error(c, err)
 		return
 	}
-	response.CreateSuccess(c)
+	response.CreateSuccess(c,newRow)
 }
 
 // @Tags 用户组管理
@@ -183,12 +183,12 @@ func (r UserGroup) Update(c *gin.Context) {
 		}
 		ass =append(ass, models.Association{Column: "Users", Values: &users})
 	}
-
-	if err:= models.UpdateById(tx, &tbs.Usergroup{},obj.ID,MapData,ass, true);err!=nil{
+	var res tbs.Usergroup
+	if err:= models.UpdateById(tx, &res,obj.ID,MapData,ass, true);err!=nil{
 		response.Error(c, err)
 		return
 	}
-	response.UpdateSuccess(c)
+	response.UpdateSuccess(c,res)
 }
 
 // @Tags 用户组管理

@@ -212,12 +212,13 @@ func (r Role) Update(c *gin.Context) {
 		}
 
 	}
-	if err:= models.UpdateById(tx, &tbs.Role{},obj.ID,MapData,ass, true);err!=nil{
+	var res tbs.Role
+	if err:= models.UpdateById(tx, &res,obj.ID,MapData,ass, true);err!=nil{
 		response.Error(c, err)
 		return
 	}
 
-	response.UpdateSuccess(c)
+	response.UpdateSuccess(c,res)
 }
 
 // @Tags 角色管理
