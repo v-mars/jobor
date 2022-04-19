@@ -80,7 +80,7 @@ func (ap AlarmPolicy) String() string {
 
 func Fn(channel, payload string) error {
 	defer func() {
-		if err := recover(); err != nil{
+		if err := recover(); err != any(nil){
 			stack := response.Stack(3)
 			logger.Jobor.Errorf("Jobor 订阅者 panic, channel=%s, payload=%s, 错误信息: %s\n堆栈信息：%s", channel, payload, err, stack)
 		}
@@ -279,13 +279,13 @@ func RunTasks(evt,trigger string, t tbs.JoborTask)  {
 			return
 		}
 		defer func() {
-			if errPanic := recover(); errPanic != nil{
+			if errPanic := recover(); errPanic != any(nil){
 				stack := response.Stack(3)
 				s.Err = fmt.Errorf("defer panic, 错误信息: %s\n堆栈信息：%s", errPanic, stack)
 				logger.Jobor.Error(s.Err)
 			}
 		}()
-		if errPanic := recover(); errPanic != nil{
+		if errPanic := recover(); errPanic != any(nil){
 			stack := response.Stack(3)
 			s.Err = fmt.Errorf("RunTasks panic, 错误信息: %s\n堆栈信息：%s", errPanic, stack)
 			logger.Jobor.Error(s.Err)
