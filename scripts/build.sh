@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # shellcheck disable=SC2034
-version=2.0.6
+version=2.0.7
 
 cd ../
 make Makefile build-linux-drawin
