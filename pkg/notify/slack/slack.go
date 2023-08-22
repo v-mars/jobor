@@ -2,10 +2,9 @@ package slack
 
 import (
 	"fmt"
+	"jobor/pkg/notify"
 	"net/http"
 	"time"
-
-	"jobor/pkg/notify"
 )
 
 // Slack send conf

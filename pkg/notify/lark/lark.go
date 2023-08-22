@@ -43,7 +43,6 @@ type Lark struct {
 	Secret     string `json:"secret"`
 }
 
-
 // Result post resp
 type Result struct {
 	Code int    `json:"code"`
@@ -79,17 +78,17 @@ func (d *Lark) Send(tos []string, title string, content string) error {
 	var reqUrl = d.WebHookUrl
 	timestamp := time.Now().Unix()
 	sign := ""
-	if len(d.Secret)>0{
+	if len(d.Secret) > 0 {
 		var err error
-		if sign, err = GenSign(d.Secret, timestamp);err!=nil{
+		if sign, err = GenSign(d.Secret, timestamp); err != nil {
 			return err
 		}
 	}
 
 	sendMsg := SendMsg{
-		Timestamp: fmt.Sprintf("%d",timestamp),
-		Sign: sign,
-		MsgType: "text",
+		Timestamp: fmt.Sprintf("%d", timestamp),
+		Sign:      sign,
+		MsgType:   "text",
 		Content: Content{
 			Text: title + "\n" + content + "\n",
 		},

@@ -6,10 +6,9 @@ import (
 	"sort"
 )
 
-
 func InOfStr(str string, arrayList []string) bool {
-	for _,v:=range arrayList{
-		if str == v{
+	for _, v := range arrayList {
+		if str == v {
 			return true
 		}
 	}
@@ -17,8 +16,8 @@ func InOfStr(str string, arrayList []string) bool {
 }
 
 func InOfInt(obj int, arrayList []int) bool {
-	for _,v:=range arrayList{
-		if obj == v{
+	for _, v := range arrayList {
+		if obj == v {
 			return true
 		}
 	}
@@ -26,8 +25,8 @@ func InOfInt(obj int, arrayList []int) bool {
 }
 
 func InOfInt32(obj int32, arrayList []int32) bool {
-	for _,v:=range arrayList{
-		if obj == v{
+	for _, v := range arrayList {
+		if obj == v {
 			return true
 		}
 	}
@@ -35,8 +34,8 @@ func InOfInt32(obj int32, arrayList []int32) bool {
 }
 
 func InOfInt64(obj int64, arrayList []int64) bool {
-	for _,v:=range arrayList{
-		if obj == v{
+	for _, v := range arrayList {
+		if obj == v {
 			return true
 		}
 	}
@@ -44,8 +43,26 @@ func InOfInt64(obj int64, arrayList []int64) bool {
 }
 
 func InOfType(obj interface{}, arrayList []interface{}, dataType string) bool {
-	for _,v:=range arrayList{
-		if obj == v{
+	for _, v := range arrayList {
+		if obj == v {
+			return true
+		}
+	}
+	return false
+}
+
+func InOfT[T string | int | int64 | int32](t T, arrayT []T) bool {
+	for _, v := range arrayT {
+		if t == v {
+			return true
+		}
+	}
+	return false
+}
+
+func InWithSlice[T string | int | int64](source []T, target []T) bool {
+	for _, s := range source {
+		if InOfT(s, target) {
 			return true
 		}
 	}
@@ -62,7 +79,7 @@ func InOfType(obj interface{}, arrayList []interface{}, dataType string) bool {
 //	return false
 //}
 
-// example:
+// In example:
 // r, err := In([]interface{}{1, "two", 3}, "two")
 func In(haystack interface{}, needle interface{}) (bool, error) {
 	sVal := reflect.ValueOf(haystack)
@@ -88,7 +105,7 @@ func SortInIntSlice(haystack []int, needle int) bool {
 func InIntSliceMapKeyFunc(haystack []int) func(int) bool {
 	set := make(map[int]struct{})
 
-	for _ , e := range haystack {
+	for _, e := range haystack {
 		set[e] = struct{}{}
 	}
 
@@ -97,7 +114,6 @@ func InIntSliceMapKeyFunc(haystack []int) func(int) bool {
 		return ok
 	}
 }
-
 
 func Pop(haystack interface{}, needle interface{}) (bool, error) {
 	sVal := reflect.ValueOf(haystack)

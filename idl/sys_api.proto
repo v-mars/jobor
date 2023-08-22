@@ -1,0 +1,80 @@
+// idl/hello/hello.proto
+syntax = "proto3";
+
+package sys_api;
+
+option go_package = "sys_api";
+
+import "api.proto";
+//import "github.com/gogo/protobuf@v1.3.2/gogoproto/gogo.proto";
+
+message ApiQuery {
+  int64 id = 1[(api.query)="id",(api.body)="id"];
+  string name = 2[(api.query)="name",(api.body)="name"];
+  string title = 3[(api.query)="title",(api.body)="title"];
+  string dom = 4[(api.query)="dom",(api.body)="dom"];
+  string path = 5[(api.query)="path",(api.body)="path"];
+  string method = 6[(api.query)="method",(api.body)="method"];
+  string group = 14[(api.query)="group",(api.body)="group"];
+}
+
+message ApiPost {
+  string name = 2[(api.query)="name",(api.body)="name,required",(api.vd)="len($)>1"];
+  string title = 3[(api.query)="title",(api.body)="title"];
+  string dom = 4[(api.query)="dom",(api.body)="dom"];
+  string group = 14[(api.query)="group",(api.body)="group"];
+  string path = 5[(api.query)="path",(api.body)="path,required"];
+  string method = 6[(api.query)="method",(api.body)="method,required"];
+  bool enabled = 12[(api.query)="enabled",(api.go_tag)="json:\"enabled,omitempty\""];
+  bool audit_enabled = 13[(api.query)="enabled_audit",(api.go_tag)="json:\"enabled_audit,omitempty\""];
+}
+
+message ApiPut {
+  optional string name = 2[(api.query)="name",(api.body)="name,omitempty"];
+  optional string title = 3[(api.query)="title",(api.body)="title,omitempty"];
+  optional string dom = 4[(api.query)="dom",(api.body)="dom,omitempty"];
+  optional string group = 14[(api.query)="group",(api.body)="group,omitempty"];
+  optional string path = 5[(api.query)="path",(api.body)="path,omitempty"];
+  optional string method = 6[(api.query)="method",(api.body)="method,omitempty"];
+  optional bool Enabled = 12[(api.query)="enabled",(api.go_tag)="json:\"enabled,omitempty\""];
+  optional bool AuditEnabled = 13[(api.query)="enabled_audit",(api.go_tag)="json:\"enabled_audit,omitempty\""];
+  optional string updater = 60[(api.query)="-",(api.body)="-"];
+}
+
+message ApiDel {
+
+}
+
+message ApiResp {
+  int64 id = 1[(api.query)="id",(api.body)="id"];
+  string name = 2[(api.query)="name",(api.body)="name"];
+  string title = 3[(api.query)="title",(api.body)="title"];
+  string dom = 4[(api.query)="dom",(api.body)="dom"];
+  string path = 5[(api.query)="path",(api.body)="path"];
+  string method = 6[(api.query)="method",(api.body)="method"];
+  optional bool Enabled = 12[(api.query)="enabled",(api.go_tag)="json:\"enabled,omitempty\""];
+  optional bool AuditEnabled = 13[(api.query)="enabled_audit",(api.go_tag)="json:\"enabled_audit,omitempty\""];
+  optional string group = 14[(api.query)="group",(api.body)="group,omitempty"];
+  optional string updater = 60[(api.query)="-",(api.body)="-"];
+}
+
+service Api {
+  rpc TriggerUpdateApi(ApiQuery) returns(ApiResp) {
+    option (api.get) = "/api/v1/sys/api-auto-update";
+  }
+  rpc GetApiAll(ApiQuery) returns(ApiResp) {
+    option (api.get) = "/api/v1/sys/apis";
+  }
+  rpc GetApi(ApiQuery) returns(ApiResp) {
+    option (api.get) = "/api/v1/sys/api";
+  }
+  rpc PostApi(ApiPost) returns(ApiResp) {
+    option (api.post) = "/api/v1/sys/api";
+  }
+  rpc PutApi(ApiPut) returns(ApiResp) {
+    option (api.put) = "/api/v1/sys/api/:id";
+  }
+  rpc DeleteApi(ApiDel) returns(ApiResp) {
+    option (api.delete) = "/api/v1/sys/api/:id";
+  }
+}

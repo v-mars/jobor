@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+package srv_rpc;
+// kitex -module sso -service sso -I idl -record  idl/rpc.proto
+// The greeting service definition.
+option go_package = "pbapi";
+//option go_package = "kitex_gen/pbapi";
+
+//import "base.proto";
+//import "sys/user.proto";
+
+
+message Request {
+  string message = 1;
+}
+
+message GetUserReq {
+  string username = 1;
+}
+message GetUserByIdReq {
+  string id = 2;
+}
+message UserListResp {
+  int64 page = 1;
+  int64 pageSize = 2;
+  int64 total = 3;
+// repeated user.UserInfo list =4;
+}
+
+service Sso {
+//  rpc Demo(base.Empty) returns(base.Empty){}
+//  rpc UserList(user.UserQuery) returns(UserListResp){}
+}

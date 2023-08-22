@@ -6,12 +6,11 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"jobor/pkg/notify"
 	"net/http"
 	"net/url"
 	"strconv"
 	"time"
-
-	"jobor/pkg/notify"
 )
 
 // getsign generate a sign when secure level is needsign
@@ -30,7 +29,7 @@ func getsign(secret string, now string) string {
 
 // Secrue dingding secrue setting
 // pls reading https://ding-doc.dingtalk.com/doc#/serverapi2/qf2nxq
-type Secrue uint
+type Secrue int
 
 const (
 	// CustomKey Custom keywords
@@ -86,7 +85,7 @@ func NewDing(webhookurl string, sl Secrue, secret string) notify.Sender {
 // Send to notify tos is phone number
 func (d *Ding) Send(tos []string, title string, content string) error {
 	var reqUrl = d.webhookurl
-	if d.sl == Sign && len(d.secret)>0{
+	if d.sl == Sign && len(d.secret) > 0 {
 		now := strconv.FormatInt(time.Now().UnixNano()/1e6, 10)
 		sign := getsign(d.secret, now)
 		reqUrl += fmt.Sprintf("&timestamp=%s&sign=%s", now, sign)

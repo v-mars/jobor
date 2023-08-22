@@ -1,0 +1,171 @@
+definitions:
+  mw.LoginReq:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+  mw.LogoutReq:
+    properties:
+      id_token_hint:
+        type: string
+      post_logout_redirect_uri:
+        type: string
+    type: object
+info:
+  contact:
+    name: jobor
+    url: https://github.com/v-mars/jobor
+  description: |-
+    支持host,server,network等
+    Authorization Bearer token
+    header:  x-enc-data = yes
+  title: Jobor 定时任务 API
+  version: "3.0"
+paths:
+  /api/v1/jobor/audit-log:
+    get:
+      responses: {}
+  /api/v1/jobor/env:
+    get:
+      responses: {}
+    post:
+      responses: {}
+  /api/v1/jobor/env/:id:
+    delete:
+      responses: {}
+    get:
+      responses: {}
+    put:
+      responses: {}
+  /api/v1/jobor/envs:
+    get:
+      responses: {}
+  /api/v1/jobor/user-self:
+    get:
+      responses: {}
+  /api/v1/jobor/user-switch/:user_id:
+    get:
+      responses: {}
+  /api/v1/login:
+    post:
+      consumes:
+      - application/json
+      description: user login
+      parameters:
+      - description: 参数
+        in: body
+        name: json
+        required: true
+        schema:
+          $ref: '#/definitions/mw.LoginReq'
+      produces:
+      - application/json
+      responses: {}
+      summary: user login summary
+      tags:
+      - login
+  /api/v1/logout:
+    post:
+      consumes:
+      - application/json
+      description: user logout
+      parameters:
+      - description: 参数
+        in: body
+        name: json
+        required: true
+        schema:
+          $ref: '#/definitions/mw.LogoutReq'
+      produces:
+      - application/json
+      responses: {}
+      summary: user logout summary
+      tags:
+      - login
+  /api/v1/oidc/callback:
+    get:
+      description: oidc callback
+      parameters:
+      - description: code
+        in: query
+        name: code
+        required: true
+        type: string
+      - description: state
+        in: query
+        name: state
+        type: string
+      responses: {}
+      summary: oidc callback summary
+      tags:
+      - login
+  /api/v1/oidc/redirect:
+    get:
+      description: oidc redirect login
+      parameters:
+      - description: next
+        in: query
+        name: next
+        type: string
+      responses: {}
+      summary: oidc redirect login summary
+      tags:
+      - login
+  /api/v1/sys/api:
+    get:
+      responses: {}
+    post:
+      responses: {}
+  /api/v1/sys/api-auto-update:
+    get:
+      responses: {}
+  /api/v1/sys/api/:id:
+    delete:
+      responses: {}
+    put:
+      responses: {}
+  /api/v1/sys/apis:
+    get:
+      responses: {}
+  /api/v1/sys/role:
+    get:
+      responses: {}
+    post:
+      responses: {}
+  /api/v1/sys/role-tree:
+    get:
+      responses: {}
+  /api/v1/sys/role/:id:
+    delete:
+      responses: {}
+    put:
+      responses: {}
+  /api/v1/sys/roles:
+    get:
+      responses: {}
+  /api/v1/sys/user:
+    get:
+      responses: {}
+    post:
+      responses: {}
+  /api/v1/sys/user-sync:
+    get:
+      responses: {}
+  /api/v1/sys/user/:id:
+    delete:
+      responses: {}
+    get:
+      responses: {}
+    put:
+      responses: {}
+  /api/v1/sys/users:
+    get:
+      responses: {}
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

@@ -2,10 +2,49 @@ package utils
 
 import (
 	"compress/gzip"
+	"fmt"
 	"io"
+	"net"
 	"os"
+	"strings"
 	"time"
 )
+
+func GetLocalIPv4Address() (string, error) {
+	addr, err := net.InterfaceAddrs()
+	if err != nil {
+		return "", err
+	}
+	for _, addr := range addr {
+
+		ipNet, isIpNet := addr.(*net.IPNet)
+		if isIpNet && !ipNet.IP.IsLoopback() {
+			ipv4 := ipNet.IP.To4()
+			if ipv4 != nil {
+				return ipv4.String(), nil
+			}
+		}
+	}
+	return "", fmt.Errorf("not found ipv4 address")
+}
+
+// GetOutBoundIP net.Dial("udp", "8.8.8.8:53")
+func GetOutBoundIP(network, addr string) (ip string) {
+	conn, err := net.Dial(network, addr)
+	if err != nil {
+		//log.Errorf("get out bound ip err: %s\n", err)
+		panic(any(err))
+	}
+	var localAddr net.Addr
+	if network == "tcp" {
+		localAddr = conn.LocalAddr().(*net.TCPAddr) // .(*net.TCPAddr)
+	} else {
+		localAddr = conn.LocalAddr().(*net.UDPAddr) // .(*net.UDPAddr)
+	}
+	//fmt.Println(localAddr.String())
+	ip = strings.Split(localAddr.String(), ":")[0]
+	return
+}
 
 func FileExists(name string) bool {
 	if _, err := os.Stat(name); err != nil {
@@ -28,12 +67,22 @@ func GzipCompressFile(srcPath, dstPath string) error {
 	if err != nil {
 		return err
 	}
-	defer sf.Close()
+	defer func(sf *os.File) {
+		err := sf.Close()
+		if err != nil {
+
+		}
+	}(sf)
 	df, err := os.Create(dstPath)
 	if err != nil {
 		return err
 	}
-	defer df.Close()
+	defer func(df *os.File) {
+		err := df.Close()
+		if err != nil {
+
+		}
+	}(df)
 	writer := gzip.NewWriter(df)
 	writer.Name = dstPath
 	writer.ModTime = time.Now().UTC()

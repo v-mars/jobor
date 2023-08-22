@@ -2,15 +2,13 @@ package email
 
 import (
 	"crypto/tls"
+	"jobor/pkg/notify"
 	"jobor/pkg/utils"
 
 	"encoding/base64"
 	"fmt"
 	"net/smtp"
 	"strings"
-
-	//"github.com/labulaka521/crocodile/common/log"
-	"jobor/pkg/notify"
 )
 
 // SMTP is email conf
@@ -44,28 +42,29 @@ func (s *SMTP) Send(tos []string, title, content string) error {
 	if s.SMTPHost == "" {
 		return fmt.Errorf("address is necessary")
 	}
-	safetos := []string{}
+	var safeTos []string
 	for _, to := range tos {
 		err := utils.CheckEmail(to)
 		if err != nil {
 			//log.Error("email check error", zap.Error(err))
 			continue
 		}
-		safetos = append(safetos, to)
+		safeTos = append(safeTos, to)
 	}
 
-	toaddr := strings.Join(safetos, ";")
+	toAddr := strings.Join(safeTos, ";")
 
 	b64 := base64.NewEncoding("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/")
 
 	header := make(map[string]string)
 	header["From"] = s.From
-	header["To"] = toaddr
+	header["To"] = toAddr
 	header["Subject"] = fmt.Sprintf("=?UTF-8?B?%s?=", b64.EncodeToString([]byte(title)))
 	header["MIME-Version"] = "1.0"
 
 	header["Content-TypeV1"] = "text/plain"
 	header["Content-Transfer-Encoding"] = "base64"
+	//header.Attach("./Dockerfile")   //添加附件
 
 	message := ""
 	for k, v := range header {
@@ -77,7 +76,7 @@ func (s *SMTP) Send(tos []string, title, content string) error {
 	if !s.Anonymous {
 		auth = smtp.PlainAuth("", s.Username, s.Password, s.SMTPHost)
 	}
-	return s.sendMail(auth, safetos, []byte(message))
+	return s.sendMail(auth, safeTos, []byte(message))
 }
 
 // sendMail will send mail to user

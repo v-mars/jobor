@@ -1,0 +1,58 @@
+syntax = "proto3";
+
+package base;
+
+option go_package = "base";
+import "google/protobuf/struct.proto";
+
+// base message
+message Empty {}
+
+message IDReq {
+  uint64 ID = 1;
+}
+
+enum ErrCode {
+  Success = 0;
+  Fail = 1;
+}
+
+//message BaseResp {
+//  string statusMessage = 1;
+//  uint32 statusCode = 2;
+//}
+
+message PageInfoReq {
+  uint64 page = 1;
+  uint64 pageSize = 2;
+}
+
+message StatusCodeReq {
+  uint64 ID = 1;
+  uint64 status = 2;
+}
+
+message BaseResp {
+  string message = 1;
+  uint32 code = 2;
+  string status = 3;
+}
+
+message BaseListReq {
+  uint64 page = 1;
+  uint64 pageSize = 2;
+  optional BaseSearch condition = 3;
+}
+
+message BaseListResp {
+  uint64 total = 1;
+  google.protobuf.ListValue list = 2;
+}
+
+message BaseSearch {
+  map <string,string> condition = 1;
+}
+
+message BaseId {
+  uint64 id = 1;
+}

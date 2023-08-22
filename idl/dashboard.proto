@@ -1,0 +1,39 @@
+// idl/hello/hello.proto
+syntax = "proto3";
+
+package dashboard;
+
+option go_package = "dashboard";
+
+import "api.proto";
+//import "base.proto";
+//import "google/protobuf/struct.proto";
+
+message dashboardQuery {
+  int64 id = 1[(api.query)="id",(api.body)="id"];
+  string name = 2[(api.query)="name",(api.body)="name"];
+  repeated string range = 3[(api.query)="range",(api.body)="range"];
+}
+
+message dashboardResp {
+  int64 id = 1[(api.query)="id",(api.body)="id"];
+  string name = 2[(api.query)="name",(api.body)="name"];
+  string description = 3[(api.query)="description",(api.body)="description"];
+}
+
+
+
+service DashboardService {
+  rpc GetDashboard(dashboardQuery) returns(dashboardResp) {
+    option (api.get) = "/api/v1/jobor/dashboard";
+  }
+  rpc GetDashboardDevice(dashboardQuery) returns(dashboardResp) {
+    option (api.get) = "/api/v1/jobor/dashboard/device";
+  }
+  rpc GetDashboardHost(dashboardQuery) returns(dashboardResp) {
+    option (api.get) = "/api/v1/jobor/dashboard/host";
+  }
+  rpc GetDashboardAms(dashboardQuery) returns(dashboardResp) {
+    option (api.get) = "/api/v1/jobor/dashboard/ams";
+  }
+}
