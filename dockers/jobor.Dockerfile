@@ -12,7 +12,10 @@ COPY --from=builder /data/app ./
 #RUN yum install inetutils-ping vim telnet traceroute -y && mkdir -pv /data/log
 ENV INST_NO=0
 ENV BEGIN_PORT=5002
-ENV SERVICE=jobor
+ENV SERVICE=jobor-server
 ENV LOCATION=CN
 ENV LANG=C.UTF-8
 ENTRYPOINT exec ./app -c conf/config.yaml
+
+# docker build -f dockers/jobor.Dockerfile -t iocean/jobor-server:20230822_144731-dev-jobor .
+# docker push iocean/jobor-server:20230822_144731-dev-jobor
