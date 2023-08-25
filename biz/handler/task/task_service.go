@@ -13,10 +13,10 @@ import (
 
 // GetTaskAll .
 //
-//	@Summary		task all get summary
-//	@Description	task all get
-//	@Tags			task
-//	@router			/api/v1/cmdb/tasks [GET]
+//	@Summary		jobor task all get summary
+//	@Description	jobor task all get
+//	@Tags			jobor task
+//	@router			/api/v1/jobor/tasks [GET]
 func GetTaskAll(ctx context.Context, c *app.RequestContext) {
 	var err error
 	var req task.TaskQuery
@@ -28,7 +28,7 @@ func GetTaskAll(ctx context.Context, c *app.RequestContext) {
 	}
 	var objs []task.TaskAllResp
 	resp := response.PageDataList{List: &objs}
-	if resp.Total, err = model.DataWithScopes(db.DB.Model(&task.JoborTask{}), task.NameTask, model.Scan,
+	if resp.Total, err = model.DataWithScopes(db.DB.Model(&model.JoborTask{}), model.NameTask, model.Scan,
 		resp.List, model.GetScopesList()); err != nil {
 		response.SendBaseResp(ctx, c, err)
 		return
@@ -38,16 +38,16 @@ func GetTaskAll(ctx context.Context, c *app.RequestContext) {
 
 // GetTaskById .
 //
-//	@Summary		task get by id summary
-//	@Description	task get by id
-//	@Tags			task
+//	@Summary		jobor task get by id summary
+//	@Description	jobor task get by id
+//	@Tags			jobor task
 //
-//	@router			/api/v1/cmdb/task/{id} [GET]
+//	@router			/api/v1/jobor/task/{id} [GET]
 func GetTaskById(ctx context.Context, c *app.RequestContext) {
 	var err error
 	_id := c.Params.ByName("id")
 
-	hostResp, err := task.GetTaskInfoById(_id, false)
+	hostResp, err := model.GetTaskInfoById(_id, false)
 	if err != nil {
 		response.SendBaseResp(ctx, c, err)
 		return
@@ -58,13 +58,13 @@ func GetTaskById(ctx context.Context, c *app.RequestContext) {
 
 // GetTask .
 //
-//	@Summary		task get summary
-//	@Description	task get
-//	@Tags			task
+//	@Summary		jobor task get summary
+//	@Description	jobor task get
+//	@Tags			jobor task
 //	@Param			name		query	string	false	"name"
 //	@Param			page		query	int		false	"page"
 //	@Param			pageSize	query	int		false	"pageSize"
-//	@router			/api/v1/cmdb/task [GET]
+//	@router			/api/v1/jobor/task [GET]
 func GetTask(ctx context.Context, c *app.RequestContext) {
 	var err error
 	var req task.TaskQuery
@@ -74,7 +74,7 @@ func GetTask(ctx context.Context, c *app.RequestContext) {
 		return
 	}
 
-	var objs task.Tasks
+	var objs model.Tasks
 
 	resp := response.InitPageData(ctx, c, &objs, false)
 
@@ -87,11 +87,11 @@ func GetTask(ctx context.Context, c *app.RequestContext) {
 
 // PostTask .
 //
-//	@Summary		task post summary
-//	@Description	task post
-//	@Tags			task
+//	@Summary		jobor task post summary
+//	@Description	jobor task post
+//	@Tags			jobor task
 //	@Param			json	body	task.PostTaskReq	true	"参数"
-//	@router			/api/v1/cmdb/task [POST]
+//	@router			/api/v1/jobor/task [POST]
 func PostTask(ctx context.Context, c *app.RequestContext) {
 	var err error
 	var req task.PostTaskReq
@@ -99,7 +99,7 @@ func PostTask(ctx context.Context, c *app.RequestContext) {
 		response.ParamFailed(ctx, c, err)
 		return
 	}
-	obj, err := task.AddTask(ctx, db.DB, &req)
+	obj, err := model.AddTask(ctx, db.DB, &req)
 	if err != nil {
 		response.SendBaseResp(ctx, c, err)
 		return
@@ -110,12 +110,12 @@ func PostTask(ctx context.Context, c *app.RequestContext) {
 
 // PutTask .
 //
-//	@Summary		task put summary
-//	@Description	task put
-//	@Tags			task
+//	@Summary		jobor task put summary
+//	@Description	jobor task put
+//	@Tags			jobor task
 //	@Param			id		path	int				true	"int valid"
 //	@Param			json	body	task.PutTaskReq	true	"参数"
-//	@router			/api/v1/cmdb/task/{id} [PUT]
+//	@router			/api/v1/jobor/task/{id} [PUT]
 func PutTask(ctx context.Context, c *app.RequestContext) {
 	var err error
 	var req task.PutTaskReq
@@ -128,7 +128,7 @@ func PutTask(ctx context.Context, c *app.RequestContext) {
 	_id := c.Params.ByName("id")
 	//u, _ := task.GetUserValue(c, false)
 	//req.Updater = &u.Nickname
-	obj, err := task.ModTask(ctx, db.DB, _id, &req)
+	obj, err := model.ModTask(ctx, db.DB, _id, &req)
 	if err != nil {
 		response.SendBaseResp(ctx, c, err)
 		return
@@ -139,11 +139,11 @@ func PutTask(ctx context.Context, c *app.RequestContext) {
 
 // DeleteTask .
 //
-//	@Summary		task delete summary
-//	@Description	task delete
-//	@Tags			task
+//	@Summary		jobor task delete summary
+//	@Description	jobor task delete
+//	@Tags			jobor task
 //	@Param			id	path	int	true	"int valid"
-//	@router			/api/v1/cmdb/task/{id} [DELETE]
+//	@router			/api/v1/jobor/task/{id} [DELETE]
 func DeleteTask(ctx context.Context, c *app.RequestContext) {
 	var err error
 	var req task.TaskQuery
@@ -152,7 +152,7 @@ func DeleteTask(ctx context.Context, c *app.RequestContext) {
 		return
 	}
 	_id := c.Params.ByName("id")
-	if objs, err := task.DelTask(ctx, db.DB, []interface{}{_id}); err != nil {
+	if objs, err := model.DelTask(ctx, db.DB, []interface{}{_id}); err != nil {
 		response.SendBaseResp(ctx, c, err)
 		return
 	} else {

@@ -11,80 +11,28 @@ import "api.proto";
 
 message WorkerQuery {
   int64 id = 1[(api.query)="id",(api.body)="id"];
-  string name = 2[(api.query)="name",(api.body)="name"];
-  string description = 3[(api.query)="description",(api.body)="description"];
-  string lang = 4[(api.query)="lang",(api.body)="lang"];
-  int64 user_id = 7[(api.query)="user_id",(api.body)="user_id"];
-  string user = 8[(api.query)="user",(api.body)="user"];
-  int64 count = 9[(api.query)="count",(api.body)="count"];
-  string expr = 10[(api.query)="expr",(api.body)="expr"];
-  int64 timeout = 11[(api.query)="timeout",(api.body)="timeout"];
-  int32 route_policy = 12[(api.query)="route_policy",(api.body)="route_policy"];
-  optional bool deleted = 22[(api.query)="deleted",(api.go_tag)="json:\"deleted,omitempty\""];
+  string hostname = 2[(api.query)="hostname",(api.body)="hostname"];
+  string ip = 3[(api.query)="ip",(api.body)="ip"];
+  string addr = 4[(api.query)="addr",(api.body)="addr"];
+  string version = 5[(api.query)="version",(api.body)="version"];
+  string routing_key = 6[(api.query)="routing_key",(api.body)="routing_key"];
+  int32 weight = 7[(api.query)="weight",(api.body)="weight"];
+  int64 lease_update = 8[(api.query)="lease_update",(api.body)="lease_update"];
+  string status = 9[(api.query)="status",(api.body)="status"];
   uint64 page = 111;
   uint64 pageSize = 112;
-}
-message Api {
-  string url = 35[(api.query)="url",(api.body)="url"];
-  string method = 36[(api.query)="method",(api.body)="method"];
-  string content_type = 37[(api.query)="content_type",(api.body)="content_type"];
-  string payload = 38[(api.query)="payload",(api.body)="payload"];
-  map<string,string> header = 39[(api.query)="header",(api.body)="header"];
-  map<string,string>  forms = 30[(api.query)="forms",(api.body)="forms"];
-}
-message WorkerData {
-  string code = 32[(api.query)="data",(api.body)="data"];
-  Api api= 31[(api.query)="api",(api.body)="api"];
-}
-message Notify{
-  message email {
-    bool enable = 41[(api.query)="enable",(api.body)="enable"];
-    repeated string receivers = 42[(api.query)="receivers",(api.body)="receivers"];  // 多个邮箱地址以逗号分割
-  }
-  message webhook {
-    bool enable = 43[(api.query)="enable",(api.body)="enable"];
-    repeated string urls = 44[(api.query)="urls",(api.body)="urls"];  // 多个api url以逗号分割
-  }
-  // 多个飞书webhook以逗号分割
-  message lark {
-    bool enable = 45[(api.query)="enable",(api.body)="enable"];
-    message webhooks {
-      string webhook_url = 46[(api.query)="webhook_url",(api.body)="webhook_url"];
-      string secret = 47[(api.query)="secret",(api.body)="secret"];
-    }
-  }
-  // 多个钉钉webhook以逗号分割
-  message dingding {
-    bool enable = 48[(api.query)="enable",(api.body)="enable"];
-    message webhooks {
-      string webhook_url = 49[(api.query)="webhook_url",(api.body)="webhook_url"];
-      string secret = 50[(api.query)="secret",(api.body)="secret"];
-    }
-  }
 }
 
 message WorkerResp {
   int64 id = 1[(api.query)="id",(api.body)="id"];
-  string name = 2[(api.query)="name",(api.body)="name"];
-  string description = 3[(api.query)="description",(api.body)="description"];
-  string lang = 4[(api.query)="lang",(api.body)="lang"];
-  WorkerData data = 5[(api.query)="data",(api.body)="data"];
-  Notify notify = 6[(api.query)="notify",(api.body)="notify"];
-  int64 user_id = 7[(api.query)="user_id",(api.body)="user_id"];
-  string user = 8[(api.query)="user",(api.body)="user"];
-  int64 count = 9[(api.query)="count",(api.body)="count"];
-  string expr = 10[(api.query)="expr",(api.body)="expr"];
-  int64 timeout = 11[(api.query)="timeout",(api.body)="timeout"];
-  int32 route_policy = 12[(api.query)="route_policy",(api.body)="route_policy"];
-  string routing_key = 13[(api.query)="routing_key",(api.body)="routing_key"];
-  string status = 14[(api.query)="status",(api.body)="status"];
-  int32 alarm_policy = 15[(api.query)="alarm_policy",(api.body)="alarm_policy"];
-  string expect_content = 16[(api.query)="expect_content",(api.body)="expect_content"];
-  int32 expect_code = 17[(api.query)="expect_code",(api.body)="expect_code"];
-  int32 retry = 18[(api.query)="retry",(api.body)="retry"];
-  string prev = 19[(api.query)="prev",(api.body)="prev"];
-  string next = 20[(api.query)="next",(api.body)="next"];
-  string updater = 21[(api.query)="updater",(api.body)="updater"];
+  string hostname = 2[(api.query)="hostname",(api.body)="hostname"];
+  string ip = 3[(api.query)="ip",(api.body)="ip"];
+  string addr = 4[(api.query)="addr",(api.body)="addr"];
+  string version = 5[(api.query)="version",(api.body)="version"];
+  string routing_key = 6[(api.query)="routing_key",(api.body)="routing_key"];
+  int32 weight = 7[(api.query)="weight",(api.body)="weight"];
+  int64 lease_update = 8[(api.query)="lease_update",(api.body)="lease_update"];
+  string status = 9[(api.query)="status",(api.body)="status"];
   string created_at = 110[(api.query)="created_at",(api.body)="created_at"];
   string updated_at = 120[(api.query)="updated_at",(api.body)="updated_at"];
 }
@@ -96,78 +44,39 @@ message WorkerAllResp {
 
 message WorkerGetByIdResp {
   int64 id = 1[(api.query)="id"];
-  string name = 2[(api.query)="name",(api.body)="name"];
-  string description = 3[(api.query)="description",(api.body)="description"];
-  string lang = 4[(api.query)="lang",(api.body)="lang"];
-  WorkerData data = 5[(api.query)="data",(api.body)="data"];
-  Notify notify = 6[(api.query)="notify",(api.body)="notify"];
-  int64 user_id = 7[(api.query)="user_id",(api.body)="user_id"];
-  string user = 8[(api.query)="user",(api.body)="user"];
-  int64 count = 9[(api.query)="count",(api.body)="count"];
-  string expr = 10[(api.query)="expr",(api.body)="expr"];
-  int64 timeout = 11[(api.query)="timeout",(api.body)="timeout"];
-  int32 route_policy = 12[(api.query)="route_policy",(api.body)="route_policy"];
-  string routing_key = 13[(api.query)="routing_key",(api.body)="routing_key"];
-  string status = 14[(api.query)="status",(api.body)="status"];
-  int32 alarm_policy = 15[(api.query)="alarm_policy",(api.body)="alarm_policy"];
-  string expect_content = 16[(api.query)="expect_content",(api.body)="expect_content"];
-  int32 expect_code = 17[(api.query)="expect_code",(api.body)="expect_code"];
-  int32 retry = 18[(api.query)="retry",(api.body)="retry"];
-  string prev = 19[(api.query)="prev",(api.body)="prev"];
-  string next = 20[(api.query)="next",(api.body)="next"];
-  string updater = 21[(api.query)="updater",(api.body)="updater"];
-  bool deleted = 22[(api.query)="deleted",(api.go_tag)="json:\"deleted,omitempty\""];
+  string hostname = 2[(api.query)="hostname",(api.body)="hostname"];
+  string ip = 3[(api.query)="ip",(api.body)="ip"];
+  string addr = 4[(api.query)="addr",(api.body)="addr"];
+  string version = 5[(api.query)="version",(api.body)="version"];
+  string routing_key = 6[(api.query)="routing_key",(api.body)="routing_key"];
+  int32 weight = 7[(api.query)="weight",(api.body)="weight"];
+  int64 lease_update = 8[(api.query)="lease_update",(api.body)="lease_update"];
+  string status = 9[(api.query)="status",(api.body)="status"];
   string created_at = 110[(api.query)="created_at",(api.body)="created_at"];
   string updated_at = 120[(api.query)="updated_at",(api.body)="updated_at"];
 }
 
 
 message PostWorkerReq {
-  string name = 2[(api.query)="name",(api.body)="name"];
-  string description = 3[(api.query)="description",(api.body)="description"];
-  string lang = 4[(api.query)="lang",(api.body)="lang"];
-  WorkerData data = 5[(api.query)="data",(api.body)="data"];
-  Notify notify = 6[(api.query)="notify",(api.body)="notify"];
-  int64 user_id = 7[(api.query)="user_id",(api.body)="user_id"];
-  string user = 8[(api.query)="user",(api.body)="user"];
-  int64 count = 9[(api.query)="count",(api.body)="count"];
-  string expr = 10[(api.query)="expr",(api.body)="expr"];
-  int64 timeout = 11[(api.query)="timeout",(api.body)="timeout"];
-  int32 route_policy = 12[(api.query)="route_policy",(api.body)="route_policy"];
-  string routing_key = 13[(api.query)="routing_key",(api.body)="routing_key"];
-  string status = 14[(api.query)="status",(api.body)="status"];
-  int32 alarm_policy = 15[(api.query)="alarm_policy",(api.body)="alarm_policy"];
-  string expect_content = 16[(api.query)="expect_content",(api.body)="expect_content"];
-  int32 expect_code = 17[(api.query)="expect_code",(api.body)="expect_code"];
-  int32 retry = 18[(api.query)="retry",(api.body)="retry"];
-  string prev = 19[(api.query)="prev",(api.body)="prev"];
-  string next = 20[(api.query)="next",(api.body)="next"];
-  string updater = 21[(api.query)="updater",(api.body)="updater"];
-  bool deleted = 22[(api.query)="deleted",(api.go_tag)="json:\"deleted,omitempty\""];
+  string hostname = 2[(api.query)="hostname",(api.body)="hostname"];
+  string ip = 3[(api.query)="ip",(api.body)="ip"];
+  string addr = 4[(api.query)="addr",(api.body)="addr"];
+  string version = 5[(api.query)="version",(api.body)="version"];
+  string routing_key = 6[(api.query)="routing_key",(api.body)="routing_key"];
+  int32 weight = 7[(api.query)="weight",(api.body)="weight"];
+  int64 lease_update = 8[(api.query)="lease_update",(api.body)="lease_update"];
+  string status = 9[(api.query)="status",(api.body)="status"];
 }
 
 message PutWorkerReq {
-  optional string name = 2[(api.query)="name",(api.body)="name,omitempty"];
-  optional string description = 3[(api.query)="description",(api.body)="description,omitempty"];
-  optional string lang = 4[(api.query)="lang",(api.body)="lang"];
-  WorkerData data = 5[(api.query)="data",(api.body)="data"];
-  Notify notify = 6[(api.query)="notify",(api.body)="notify"];
-  optional int64 user_id = 7[(api.query)="user_id",(api.go_tag)="json:\"user_id,omitempty\""];
-  optional string user = 8[(api.query)="user",(api.body)="user"];
-  optional int64 count = 9[(api.query)="count",(api.go_tag)="json:\"count,omitempty\""];
-  optional string expr = 10[(api.query)="expr",(api.body)="expr"];
-  optional int64 timeout = 11[(api.query)="timeout",(api.go_tag)="json:\"timeout,omitempty\""];
-  optional int32 route_policy = 12[(api.query)="route_policy",(api.go_tag)="json:\"route_policy,omitempty\""];
-  optional string routing_key = 13[(api.query)="routing_key",(api.body)="routing_key"];
-  optional string status = 14[(api.query)="status",(api.body)="status"];
-  optional int32 alarm_policy = 15[(api.query)="alarm_policy",(api.go_tag)="json:\"alarm_policy,omitempty\""];
-  optional string expect_content = 16[(api.query)="expect_content",(api.body)="expect_content"];
-  optional int32 expect_code = 17[(api.query)="expect_code",(api.go_tag)="json:\"expect_code,omitempty\""];
-  optional int32 retry = 18[(api.query)="retry",(api.go_tag)="json:\"retry,omitempty\""];
-  optional string prev = 19[(api.query)="prev",(api.body)="prev"];
-  optional string next = 20[(api.query)="next",(api.body)="next"];
-  optional string updater = 21[(api.query)="updater",(api.body)="updater"];
-  optional bool deleted = 22[(api.query)="deleted",(api.go_tag)="json:\"deleted,omitempty\""];
+  optional string hostname = 2[(api.query)="hostname",(api.body)="hostname,omitempty"];
+  optional string ip = 3[(api.query)="ip",(api.body)="ip,omitempty"];
+  optional string addr = 4[(api.query)="addr",(api.body)="addr,omitempty"];
+  optional string version = 5[(api.query)="version",(api.body)="version,omitempty"];
+  optional string routing_key = 6[(api.query)="routing_key",(api.body)="routing_key,omitempty"];
+  optional int32 weight = 7[(api.query)="weight",(api.go_tag)="json:\"weight,omitempty\""];
+  optional int64 lease_update = 8[(api.query)="lease_update",(api.go_tag)="json:\"lease_update,omitempty\""];
+  optional string status = 9[(api.query)="status",(api.body)="status,omitempty"];
 }
 
 

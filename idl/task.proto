@@ -36,31 +36,36 @@ message TaskData {
   string code = 32[(api.query)="data",(api.body)="data"];
   Api api= 31[(api.query)="api",(api.body)="api"];
 }
+
+message webhooks {
+  string webhook_url = 49[(api.query)="webhook_url",(api.body)="webhook_url"];
+  string secret = 50[(api.query)="secret",(api.body)="secret"];
+}
+
+message email {
+  bool enable = 41[(api.query)="enable",(api.body)="enable"];
+  repeated string receivers = 42[(api.query)="receivers",(api.body)="receivers"];  // 多个邮箱地址以逗号分割
+}
+message webhook {
+  bool enable = 43[(api.query)="enable",(api.body)="enable"];
+  repeated string urls = 44[(api.query)="urls",(api.body)="urls"];  // 多个api url以逗号分割
+}
+// 多个飞书webhook以逗号分割
+message lark {
+  bool enable = 45[(api.query)="enable",(api.body)="enable"];
+  webhooks webhooks = 52[(api.query)="webhooks",(api.body)="webhooks"];
+}
+// 多个钉钉webhook以逗号分割
+message dingding {
+  bool enable = 48[(api.query)="enable",(api.body)="enable"];
+  webhooks webhooks = 51[(api.query)="webhooks",(api.body)="webhooks"];
+}
+
 message Notify{
-  message email {
-    bool enable = 41[(api.query)="enable",(api.body)="enable"];
-    repeated string receivers = 42[(api.query)="receivers",(api.body)="receivers"];  // 多个邮箱地址以逗号分割
-  }
-  message webhook {
-    bool enable = 43[(api.query)="enable",(api.body)="enable"];
-    repeated string urls = 44[(api.query)="urls",(api.body)="urls"];  // 多个api url以逗号分割
-  }
-  // 多个飞书webhook以逗号分割
-  message lark {
-    bool enable = 45[(api.query)="enable",(api.body)="enable"];
-    message webhooks {
-      string webhook_url = 46[(api.query)="webhook_url",(api.body)="webhook_url"];
-      string secret = 47[(api.query)="secret",(api.body)="secret"];
-    }
-  }
-  // 多个钉钉webhook以逗号分割
-  message dingding {
-    bool enable = 48[(api.query)="enable",(api.body)="enable"];
-    message webhooks {
-      string webhook_url = 49[(api.query)="webhook_url",(api.body)="webhook_url"];
-      string secret = 50[(api.query)="secret",(api.body)="secret"];
-    }
-  }
+  email email = 1[(api.query)="email",(api.body)="email,omitempty"];
+  webhook webhook = 2[(api.query)="webhook",(api.body)="webhook,omitempty"];
+  lark lark = 3[(api.query)="lark",(api.body)="lark,omitempty"];
+  dingding dingding = 4[(api.query)="dingding",(api.body)="dingding,omitempty"];
 }
 
 message TaskResp {
@@ -143,30 +148,30 @@ message PostTaskReq {
   string prev = 19[(api.query)="prev",(api.body)="prev"];
   string next = 20[(api.query)="next",(api.body)="next"];
   string updater = 21[(api.query)="updater",(api.body)="updater"];
-  bool deleted = 22[(api.query)="deleted",(api.go_tag)="json:\"deleted,omitempty\""];
+  bool deleted = 22[(api.query)="deleted",(api.go_tag)="json:\"deleted\""];
 }
 
 message PutTaskReq {
   optional string name = 2[(api.query)="name",(api.body)="name,omitempty"];
   optional string description = 3[(api.query)="description",(api.body)="description,omitempty"];
-  optional string lang = 4[(api.query)="lang",(api.body)="lang"];
-  TaskData data = 5[(api.query)="data",(api.body)="data"];
-  Notify notify = 6[(api.query)="notify",(api.body)="notify"];
+  optional string lang = 4[(api.query)="lang",(api.body)="lang,omitempty"];
+  TaskData data = 5[(api.query)="data",(api.body)="data,omitempty"];
+  Notify notify = 6[(api.query)="notify",(api.body)="notify,omitempty"];
   optional int64 user_id = 7[(api.query)="user_id",(api.go_tag)="json:\"user_id,omitempty\""];
-  optional string user = 8[(api.query)="user",(api.body)="user"];
+  optional string user = 8[(api.query)="user",(api.body)="user,omitempty"];
   optional int64 count = 9[(api.query)="count",(api.go_tag)="json:\"count,omitempty\""];
-  optional string expr = 10[(api.query)="expr",(api.body)="expr"];
+  optional string expr = 10[(api.query)="expr",(api.body)="expr,omitempty"];
   optional int64 timeout = 11[(api.query)="timeout",(api.go_tag)="json:\"timeout,omitempty\""];
   optional int32 route_policy = 12[(api.query)="route_policy",(api.go_tag)="json:\"route_policy,omitempty\""];
-  optional string routing_key = 13[(api.query)="routing_key",(api.body)="routing_key"];
-  optional string status = 14[(api.query)="status",(api.body)="status"];
+  optional string routing_key = 13[(api.query)="routing_key",(api.body)="routing_key,omitempty"];
+  optional string status = 14[(api.query)="status",(api.body)="status,omitempty"];
   optional int32 alarm_policy = 15[(api.query)="alarm_policy",(api.go_tag)="json:\"alarm_policy,omitempty\""];
-  optional string expect_content = 16[(api.query)="expect_content",(api.body)="expect_content"];
+  optional string expect_content = 16[(api.query)="expect_content",(api.body)="expect_content,omitempty"];
   optional int32 expect_code = 17[(api.query)="expect_code",(api.go_tag)="json:\"expect_code,omitempty\""];
   optional int32 retry = 18[(api.query)="retry",(api.go_tag)="json:\"retry,omitempty\""];
-  optional string prev = 19[(api.query)="prev",(api.body)="prev"];
-  optional string next = 20[(api.query)="next",(api.body)="next"];
-  optional string updater = 21[(api.query)="updater",(api.body)="updater"];
+  optional string prev = 19[(api.query)="prev",(api.body)="prev,omitempty"];
+  optional string next = 20[(api.query)="next",(api.body)="next,omitempty"];
+  optional string updater = 21[(api.query)="updater",(api.body)="updater,omitempty"];
   optional bool deleted = 22[(api.query)="deleted",(api.go_tag)="json:\"deleted,omitempty\""];
 }
 

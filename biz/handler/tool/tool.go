@@ -6,9 +6,9 @@ import (
 	"context"
 	"github.com/hertz-contrib/jwt"
 	"jobor/biz/dal/db"
+	"jobor/biz/model"
 	"jobor/biz/response"
 	"jobor/conf"
-	"jobor/kitex_gen/task"
 	"jobor/kitex_gen/user"
 	"time"
 
@@ -44,7 +44,9 @@ func GetMigrate(ctx context.Context, c *app.RequestContext) {
 	//	return
 	//}
 	err = db.DB.AutoMigrate(
-		&task.JoborTask{},
+		&model.JoborTask{},
+		&model.JoborWorker{},
+		&model.JoborLog{},
 	)
 	if err != nil {
 		//hlog.Fatal("auto migrate sys err:", err)

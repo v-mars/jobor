@@ -40,12 +40,12 @@ type JoborLog struct {
 	TaskID        *int        `gorm:"index:task_id;comment:'关联任务id'" json:"task_id"`
 	TriggerMethod string      `gorm:"type:varchar(16);comment:'任务触发方式：auto,manual'" json:"trigger_method"`
 	Expr          string      `gorm:"type:varchar(32);not null;comment:'定时任务表达式：0/1 * * ? * * * 秒分时天月星期'" json:"expr" form:"expr"`
-	Data          TaskData    `gorm:"type:text;not null;comment:'任务执行详细，格式：json'" json:"data" form:"data"`
-	Resp          string      `gorm:"type:text;comment:'任务返回结果'" json:"resp"`
+	Data          TaskData    `gorm:"type:mediumtext;not null;comment:'任务执行详细，格式：json'" json:"data" form:"data"`
+	Resp          string      `gorm:"type:mediumtext;comment:'任务返回结果'" json:"resp"`
 	CostTime      float32     `gorm:"comment:'任务耗时'" json:"cost_time" form:"cost_time"`
 	Result        string      `gorm:"type:varchar(16);comment:'任务结果: success,failed'" json:"result" form:"result"`
 	ErrCode       int         `gorm:"comment:'错误码'" json:"err_code" form:"err_code"`
-	ErrMsg        string      `gorm:"type:text;comment:'错误信息'" json:"err_msg" form:"err_msg"`
+	ErrMsg        string      `gorm:"type:mediumtext;comment:'错误信息'" json:"err_msg" form:"err_msg"`
 	Addr          string      `gorm:"type:varchar(64);not null;comment:'任务运行的worker节点'" json:"addr" form:"addr"`
 	StartTime     db.JSONTime `gorm:"default: null;type:datetime;comment:'开始时间'" json:"start_time" form:"start_time"`
 	EndTime       db.JSONTime `gorm:"default: null;type:datetime;comment:'结束时间'" json:"end_time" form:"end_time"`

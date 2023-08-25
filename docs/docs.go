@@ -53,6 +53,36 @@ const docTemplate = `{
                 "responses": {}
             }
         },
+        "/api/v1/jobor/log": {
+            "get": {
+                "description": "jobor log get",
+                "tags": [
+                    "jobor log"
+                ],
+                "summary": "jobor log get summary",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "name",
+                        "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "page",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "pageSize",
+                        "name": "pageSize",
+                        "in": "query"
+                    }
+                ],
+                "responses": {}
+            }
+        },
         "/api/v1/jobor/migrate": {
             "get": {
                 "responses": {}
@@ -65,25 +95,113 @@ const docTemplate = `{
         },
         "/api/v1/jobor/task": {
             "get": {
+                "description": "jobor task get",
+                "tags": [
+                    "jobor task"
+                ],
+                "summary": "jobor task get summary",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "name",
+                        "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "page",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "pageSize",
+                        "name": "pageSize",
+                        "in": "query"
+                    }
+                ],
                 "responses": {}
             },
             "post": {
+                "description": "jobor task post",
+                "tags": [
+                    "jobor task"
+                ],
+                "summary": "jobor task post summary",
+                "parameters": [
+                    {
+                        "description": "参数",
+                        "name": "json",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/task.PostTaskReq"
+                        }
+                    }
+                ],
                 "responses": {}
             }
         },
-        "/api/v1/jobor/task/:id": {
+        "/api/v1/jobor/task/{id}": {
             "get": {
+                "description": "jobor task get by id",
+                "tags": [
+                    "jobor task"
+                ],
+                "summary": "jobor task get by id summary",
                 "responses": {}
             },
             "put": {
+                "description": "jobor task put",
+                "tags": [
+                    "jobor task"
+                ],
+                "summary": "jobor task put summary",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "int valid",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "参数",
+                        "name": "json",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/task.PutTaskReq"
+                        }
+                    }
+                ],
                 "responses": {}
             },
             "delete": {
+                "description": "jobor task delete",
+                "tags": [
+                    "jobor task"
+                ],
+                "summary": "jobor task delete summary",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "int valid",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
                 "responses": {}
             }
         },
         "/api/v1/jobor/tasks": {
             "get": {
+                "description": "jobor task all get",
+                "tags": [
+                    "jobor task"
+                ],
+                "summary": "jobor task all get summary",
                 "responses": {}
             }
         },
@@ -94,6 +212,118 @@ const docTemplate = `{
         },
         "/api/v1/jobor/user-switch/:user_id": {
             "get": {
+                "responses": {}
+            }
+        },
+        "/api/v1/jobor/worker": {
+            "get": {
+                "description": "jobor worker get",
+                "tags": [
+                    "jobor worker"
+                ],
+                "summary": "jobor worker get summary",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "name",
+                        "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "page",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "pageSize",
+                        "name": "pageSize",
+                        "in": "query"
+                    }
+                ],
+                "responses": {}
+            },
+            "post": {
+                "description": "jobor worker post",
+                "tags": [
+                    "jobor worker"
+                ],
+                "summary": "jobor worker post summary",
+                "parameters": [
+                    {
+                        "description": "参数",
+                        "name": "json",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/worker.PostWorkerReq"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/api/v1/jobor/worker/{id}": {
+            "get": {
+                "description": "jobor worker get by id",
+                "tags": [
+                    "jobor worker"
+                ],
+                "summary": "jobor worker get by id summary",
+                "responses": {}
+            },
+            "put": {
+                "description": "jobor worker put",
+                "tags": [
+                    "jobor worker"
+                ],
+                "summary": "jobor worker put summary",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "int valid",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "参数",
+                        "name": "json",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/worker.PutWorkerReq"
+                        }
+                    }
+                ],
+                "responses": {}
+            },
+            "delete": {
+                "description": "jobor worker delete",
+                "tags": [
+                    "jobor worker"
+                ],
+                "summary": "jobor worker delete summary",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "int valid",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/api/v1/jobor/workers": {
+            "get": {
+                "description": "jobor worker all get",
+                "tags": [
+                    "jobor worker"
+                ],
+                "summary": "jobor worker all get summary",
                 "responses": {}
             }
         },
@@ -301,6 +531,303 @@ const docTemplate = `{
                 },
                 "post_logout_redirect_uri": {
                     "type": "string"
+                }
+            }
+        },
+        "task.Api": {
+            "type": "object",
+            "properties": {
+                "content_type": {
+                    "type": "string"
+                },
+                "forms": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "header": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "method": {
+                    "type": "string"
+                },
+                "payload": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
+                }
+            }
+        },
+        "task.Dingding": {
+            "type": "object",
+            "properties": {
+                "enable": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "task.Email": {
+            "type": "object",
+            "properties": {
+                "enable": {
+                    "type": "boolean"
+                },
+                "receivers": {
+                    "description": "多个邮箱地址以逗号分割",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "task.Lark": {
+            "type": "object",
+            "properties": {
+                "enable": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "task.Notify": {
+            "type": "object",
+            "properties": {
+                "dingding": {
+                    "$ref": "#/definitions/task.Dingding"
+                },
+                "email": {
+                    "$ref": "#/definitions/task.Email"
+                },
+                "lark": {
+                    "$ref": "#/definitions/task.Lark"
+                },
+                "webhook": {
+                    "$ref": "#/definitions/task.Webhook"
+                }
+            }
+        },
+        "task.PostTaskReq": {
+            "type": "object",
+            "properties": {
+                "alarm_policy": {
+                    "type": "integer"
+                },
+                "count": {
+                    "type": "integer"
+                },
+                "data": {
+                    "$ref": "#/definitions/task.TaskData"
+                },
+                "deleted": {
+                    "type": "boolean"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "expect_code": {
+                    "type": "integer"
+                },
+                "expect_content": {
+                    "type": "string"
+                },
+                "expr": {
+                    "type": "string"
+                },
+                "lang": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "next": {
+                    "type": "string"
+                },
+                "notify": {
+                    "$ref": "#/definitions/task.Notify"
+                },
+                "prev": {
+                    "type": "string"
+                },
+                "retry": {
+                    "type": "integer"
+                },
+                "route_policy": {
+                    "type": "integer"
+                },
+                "routing_key": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "timeout": {
+                    "type": "integer"
+                },
+                "updater": {
+                    "type": "string"
+                },
+                "user": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "task.PutTaskReq": {
+            "type": "object",
+            "properties": {
+                "alarm_policy": {
+                    "type": "integer"
+                },
+                "count": {
+                    "type": "integer"
+                },
+                "data": {
+                    "$ref": "#/definitions/task.TaskData"
+                },
+                "deleted": {
+                    "type": "boolean"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "expect_code": {
+                    "type": "integer"
+                },
+                "expect_content": {
+                    "type": "string"
+                },
+                "expr": {
+                    "type": "string"
+                },
+                "lang": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "next": {
+                    "type": "string"
+                },
+                "notify": {
+                    "$ref": "#/definitions/task.Notify"
+                },
+                "prev": {
+                    "type": "string"
+                },
+                "retry": {
+                    "type": "integer"
+                },
+                "route_policy": {
+                    "type": "integer"
+                },
+                "routing_key": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "timeout": {
+                    "type": "integer"
+                },
+                "updater": {
+                    "type": "string"
+                },
+                "user": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "task.TaskData": {
+            "type": "object",
+            "properties": {
+                "api": {
+                    "$ref": "#/definitions/task.Api"
+                },
+                "data": {
+                    "type": "string"
+                }
+            }
+        },
+        "task.Webhook": {
+            "type": "object",
+            "properties": {
+                "enable": {
+                    "type": "boolean"
+                },
+                "urls": {
+                    "description": "多个api url以逗号分割",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "worker.PostWorkerReq": {
+            "type": "object",
+            "properties": {
+                "addr": {
+                    "type": "string"
+                },
+                "hostname": {
+                    "type": "string"
+                },
+                "ip": {
+                    "type": "string"
+                },
+                "lease_update": {
+                    "type": "integer"
+                },
+                "routing_key": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "version": {
+                    "type": "string"
+                },
+                "weight": {
+                    "type": "integer"
+                }
+            }
+        },
+        "worker.PutWorkerReq": {
+            "type": "object",
+            "properties": {
+                "addr": {
+                    "type": "string"
+                },
+                "hostname": {
+                    "type": "string"
+                },
+                "ip": {
+                    "type": "string"
+                },
+                "lease_update": {
+                    "type": "integer"
+                },
+                "routing_key": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "version": {
+                    "type": "string"
+                },
+                "weight": {
+                    "type": "integer"
                 }
             }
         }
