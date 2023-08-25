@@ -5,6 +5,7 @@ package srv_http
 import (
 	"context"
 	"jobor/biz/handler"
+	"jobor/biz/handler/tool"
 	"jobor/biz/mw"
 	"jobor/biz/pack/oidc_callback"
 	"jobor/biz/response"
@@ -46,8 +47,8 @@ func customizedRegister(r *server.Hertz) {
 	r.GET("/api/v1/login", mw.AuthWm.LoginHandler)
 	r.POST("/api/v1/logout", mw.AuthWm.LogoutHandler)
 	r.GET("/api/v1/logout", mw.AuthWm.LogoutHandler)
-	//r.GET("/api/v1/sys/migrate", tool.GetMigrate)
-	//r.GET("/api/v1/sys/state-code", tool.GetStateCode)
+	r.GET("/api/v1/jobor/migrate", tool.GetMigrate)
+	r.GET("/api/v1/jobor/state-code", tool.GetStateCode)
 	//r.POST("/api/v1/sys/gen-token", tool.GenJwtToken)
 	r.POST("/api/v1/refresh_token", mw.AuthWm.RefreshHandler)
 	r.GET("/api/v1/refresh_token", mw.AuthWm.RefreshHandler)

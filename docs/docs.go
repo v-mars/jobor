@@ -48,6 +48,45 @@ const docTemplate = `{
                 "responses": {}
             }
         },
+        "/api/v1/jobor/gen-token": {
+            "post": {
+                "responses": {}
+            }
+        },
+        "/api/v1/jobor/migrate": {
+            "get": {
+                "responses": {}
+            }
+        },
+        "/api/v1/jobor/state-code": {
+            "get": {
+                "responses": {}
+            }
+        },
+        "/api/v1/jobor/task": {
+            "get": {
+                "responses": {}
+            },
+            "post": {
+                "responses": {}
+            }
+        },
+        "/api/v1/jobor/task/:id": {
+            "get": {
+                "responses": {}
+            },
+            "put": {
+                "responses": {}
+            },
+            "delete": {
+                "responses": {}
+            }
+        },
+        "/api/v1/jobor/tasks": {
+            "get": {
+                "responses": {}
+            }
+        },
         "/api/v1/jobor/user-self": {
             "get": {
                 "responses": {}
@@ -232,6 +271,11 @@ const docTemplate = `{
             }
         },
         "/api/v1/sys/users": {
+            "get": {
+                "responses": {}
+            }
+        },
+        "/routes": {
             "get": {
                 "responses": {}
             }

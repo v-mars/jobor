@@ -14,6 +14,7 @@ import (
 	"jobor/biz/dal/db"
 	"jobor/biz/model"
 	"jobor/biz/response"
+	"jobor/kitex_gen/task"
 	"jobor/pkg/convert"
 	"jobor/pkg/utils"
 )
@@ -76,7 +77,7 @@ func (u *Users) List(req *UserQuery, resp *response.PageDataList) (Users, error)
 	//resp := response.PageDataList{List: &users}
 	if err := model.PageDataWithScopes(db.DB.Model(&User{}), TbName, model.Find, resp,
 		model.GetScopesList(), //SelectScopes(),
-		WhereScopes(req), model.PreloadScopes("Roles"),
+		WhereScopes(req), task.PreloadScopes("Roles"),
 		OrderScopes(), GroupScopes()); err != nil {
 		return nil, err
 	}

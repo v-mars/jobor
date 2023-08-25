@@ -60,6 +60,7 @@ _testmain.go
 cmd/apibox
 *.toml
 *.yaml
+config.yaml
 
 internal/tmp
 logs
