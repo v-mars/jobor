@@ -60,8 +60,8 @@ type Tasks []JoborTask
 
 func (u *Tasks) List(req *task.TaskQuery, resp *response.PageDataList) (Tasks, error) {
 	resp.List = u
-	if err := PageDataWithScopes(db.DB.Model(&JoborTask{}), NameTask, Find, resp,
-		GetScopesList(), SelectTask(),
+	if err := PageDataWithScopes(db.DB.Model(&JoborTask{}), NameTask, Scan, resp,
+		GetScopesList(SelectTask()),
 		WhereTask(req),
 		OrderTask(), GroupTask()); err != nil {
 		return nil, err
