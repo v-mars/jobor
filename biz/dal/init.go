@@ -1,21 +1,24 @@
 package dal
 
 import (
+	"context"
 	"github.com/cloudwego/hertz/pkg/app/server"
+	"github.com/cloudwego/hertz/pkg/common/hlog"
 	"jobor/biz/dal/alog"
 	"jobor/biz/dal/bind"
 	"jobor/biz/dal/casbin"
 	"jobor/biz/dal/db"
 	"jobor/biz/dal/migrate"
 	"jobor/biz/dal/mysql"
+	"jobor/biz/dal/q"
 	"jobor/biz/dal/redis"
 	"jobor/biz/dal/redisStore"
+	"jobor/biz/model"
 	"jobor/biz/mw"
+	"jobor/biz/pack/dispatcher"
 	"jobor/biz/pack/oidc_callback"
 	"jobor/biz/response"
 	"jobor/conf"
-
-	"github.com/cloudwego/hertz/pkg/common/hlog"
 )
 
 var (
@@ -58,6 +61,7 @@ func Init() {
 	bind.Init()
 	// Redis连接初始化
 	redis.Init(conf.GetConf())
+
 	// MySQL连接初始化
 	mysql.Init()
 
@@ -71,4 +75,14 @@ func Init() {
 	mw.InitJwt()
 	//hlog.Debug(time.Since(startTime).String())
 
+	go func() {
+		hlog.Fatal(redis.Subscribe(context.TODO(), dispatcher.Fn, model.PubSubChannel))
+	}()
+
+	if _, err := q.InitQSrv(); err != nil {
+		hlog.Fatal(err)
+		return
+	}
+
+	dispatcher.InitCron()
 }

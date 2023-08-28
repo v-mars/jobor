@@ -7,10 +7,11 @@ import (
 	"gorm.io/gorm"
 	"jobor/biz/dal/db"
 	"jobor/biz/response"
-	"jobor/kitex_gen/task"
+	task "jobor/kitex_gen/task"
 	"jobor/kitex_gen/task_log"
 	"jobor/pkg/convert"
 	"jobor/pkg/utils"
+	"time"
 )
 
 const (
@@ -19,20 +20,22 @@ const (
 
 type JoborLog struct {
 	db.Model
-	Name          string        `gorm:"type:varchar(128);index:idx_code;comment:'任务名'" json:"name" form:"name"`
-	Lang          string        `gorm:"type:varchar(16);index:idx_code;not null;comment:'任务类型:[shell,api,python,golang,e.g.]'" json:"lang" form:"lang"`
-	TaskId        int           `gorm:"index:task_id;comment:'关联任务id'" json:"task_id"`
-	TriggerMethod string        `gorm:"type:varchar(16);comment:'任务触发方式：auto,manual'" json:"trigger_method"`
-	Expr          string        `gorm:"type:varchar(32);not null;comment:'定时任务表达式：0/1 * * ? * * * 秒分时天月星期'" json:"expr" form:"expr"`
-	Data          task.TaskData `gorm:"type:mediumtext;not null;comment:'任务执行详细，格式：json'" json:"data" form:"data"`
-	Resp          string        `gorm:"type:mediumtext;comment:'任务返回结果'" json:"resp"`
-	CostTime      float32       `gorm:"comment:'任务耗时'" json:"cost_time" form:"cost_time"`
-	Result        string        `gorm:"type:varchar(16);comment:'任务结果: success,failed'" json:"result" form:"result"`
+	Name          string        `gorm:"type:varchar(128);index:idx_code;comment:任务名" json:"name" form:"name"`
+	Lang          string        `gorm:"type:varchar(16);index:idx_code;not null;comment:任务类型:[shell,api,python,golang,e.g.]" json:"lang" form:"lang"`
+	TaskId        int           `gorm:"index:task_id;comment:关联任务id" json:"task_id"`
+	TriggerMethod string        `gorm:"type:varchar(16);comment:任务触发方式：auto,manual" json:"trigger_method"`
+	Expr          string        `gorm:"type:varchar(32);not null;comment:定时任务表达式：0/1 * * ? * * * 秒分时天月星期" json:"expr" form:"expr"`
+	Data          task.TaskData `gorm:"type:mediumtext;not null;comment:任务执行详细，格式：json" json:"data" form:"data"`
+	Resp          string        `gorm:"type:mediumtext;comment:任务返回结果" json:"resp"`
+	Result        string        `gorm:"type:varchar(16);comment:任务结果: success,failed" json:"result" form:"result"`
 	ErrCode       int           `gorm:"comment:'错误码'" json:"err_code" form:"err_code"`
-	ErrMsg        string        `gorm:"type:mediumtext;comment:'错误信息'" json:"err_msg" form:"err_msg"`
-	Addr          string        `gorm:"type:varchar(64);not null;comment:'任务运行的log节点'" json:"addr" form:"addr"`
-	StartTime     db.JSONTime   `gorm:"default: null;type:datetime;comment:'开始时间'" json:"start_time" form:"start_time"`
-	EndTime       db.JSONTime   `gorm:"default: null;type:datetime;comment:'结束时间'" json:"end_time" form:"end_time"`
+	ErrMsg        string        `gorm:"type:mediumtext;comment:错误信息" json:"err_msg" form:"err_msg"`
+	Addr          string        `gorm:"type:varchar(64);not null;comment:任务运行的log节点" json:"addr" form:"addr"`
+	Idempotent    string        `gorm:"type:varchar(156);comment:幂等标志" json:"idempotent" form:"idempotent"`
+	StartTime     db.JSONTime   `gorm:"default: null;type:datetime;comment:开始时间" json:"start_time" form:"start_time"`
+	EndTime       db.JSONTime   `gorm:"default: null;type:datetime;comment:结束时间" json:"end_time" form:"end_time"`
+	CostTime      db.SecTime    `gorm:"type:float;default:0;comment:执行耗时" json:"cost_time" form:"cost_time"` // 单位：秒
+	//CostTime      float32       `gorm:"comment:'任务耗时'" json:"cost_time" form:"cost_time"`
 }
 
 func (u *JoborLog) TableName() string {
@@ -53,10 +56,16 @@ type Logs []JoborLog
 func (u *Logs) List(req *task_log.LogQuery, resp *response.PageDataList) (Logs, error) {
 	resp.List = u
 	if err := PageDataWithScopes(db.DB.Model(&JoborLog{}), NameLog, Find, resp,
-		GetScopesList(), SelectLog(),
+		GetScopesList(SelectLog()),
 		WhereLog(req),
 		OrderLog(), GroupLog()); err != nil {
 		return nil, err
+	}
+	for i, v := range *u {
+		if v.Result == TaskLogStatusRunning || v.Result == TaskLogStatusWait {
+			var totalTime = time.Now().Unix() - v.StartTime.Unix()
+			(*u)[i].CostTime = db.SecTime((time.Second * time.Duration(totalTime)).String())
+		}
 	}
 	return *u, nil
 }

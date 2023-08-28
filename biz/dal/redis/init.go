@@ -5,12 +5,11 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/bytedance/gopkg/util/logger"
+	"github.com/cloudwego/hertz/pkg/common/hlog"
 	"jobor/conf"
 	"log"
 	"time"
-
-	"github.com/bytedance/gopkg/util/logger"
-	"github.com/cloudwego/hertz/pkg/common/hlog"
 
 	"github.com/redis/go-redis/v9"
 )

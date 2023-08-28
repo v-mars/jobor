@@ -37,7 +37,7 @@ func (j *TaskData) Scan(value interface{}) error {
 }
 
 // Value 实现 driver.Valuer 接口，Value 返回 json value
-func (j *TaskData) Value() (driver.Value, error) {
+func (j TaskData) Value() (driver.Value, error) {
 	if &j == nil {
 		return nil, nil
 	}
@@ -90,7 +90,7 @@ func (j *Notify) Scan(value interface{}) error {
 }
 
 // Value 实现 driver.Valuer 接口，Value 返回 json value
-func (j *Notify) Value() (driver.Value, error) {
+func (j Notify) Value() (driver.Value, error) {
 	if &j == nil {
 		return nil, nil
 	}

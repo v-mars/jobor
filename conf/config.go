@@ -29,6 +29,7 @@ type Config struct {
 	Consul         Consul         `yaml:"consul"` //Consul配置
 	SSO            SSO            `yaml:"sso"`
 	Oauth2Srv      Oauth2Srv      `yaml:"oauth2_srv"` //oauth2服务配置
+	Email          Email          `yaml:"email"`
 }
 
 type Ldap struct {
@@ -40,6 +41,17 @@ type Ldap struct {
 	Username   string   `yaml:"username"`
 	Password   string   `yaml:"password"`
 	Tls        bool     `yaml:"tls"`
+}
+
+type Email struct {
+	SMTPHost   string `json:"smtpHost"`
+	Port       int    `json:"port"`
+	Username   string `json:"username"`
+	Password   string `json:"password"`
+	From       string `json:"from"`
+	Tls        bool   `json:"tls"`
+	Anonymous  bool   `json:"anonymous"`
+	SkipVerify bool   `json:"skipVerify"`
 }
 
 type JWT struct {
@@ -119,6 +131,7 @@ type Server struct {
 	EnableSwagger   bool   `yaml:"enable_swagger"`
 	AutoUpdateApi   bool   `yaml:"auto_update_api"`
 	RegistryCenter  string `yaml:"registry_center"`
+	CronType        string `yaml:"cron_type"`
 }
 
 // GetConf gets configuration instance

@@ -1242,4 +1242,3 @@ func jsonStringToObject(s string, v interface{}) error {
 	data := []byte(s)
 	return json.Unmarshal(data, v)
 }
-

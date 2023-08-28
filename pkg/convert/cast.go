@@ -62,7 +62,7 @@ func ToInt(i interface{}) int {
 	return v
 }
 
-// ToUint casts an interface to a uint type.
+// ToUint casts an interface to a int type.
 func ToUint(i interface{}) uint {
 	v, _ := ToUintE(i)
 	return v

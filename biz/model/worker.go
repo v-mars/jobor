@@ -219,3 +219,29 @@ func GetWorkerInfoByName(name string, isPanic bool) (worker.WorkerResp, error) {
 	}
 	return u, nil
 }
+
+func GetWorkers(routingKey string) ([]JoborWorker, error) {
+	var workers []JoborWorker
+	//leaseUpdate := time.Now().Unix() - int64(proto.DefaultHeartbeatInterval.Seconds())
+	//fmt.Println("lease_update:", leaseUpdate)
+	//var o = models.Option{Where: "status=? and lease_update>=?",
+	//	Value: []interface{}{tbs.WorkerStatusRunning, leaseUpdate}}
+	//if len(routingKey) > 0 {
+	//	o.Where = o.Where + " and routing_key=?"
+	//	o.Value = append(o.Value, routingKey)
+	//}
+	//
+	//err := models.Get(db.DB, &tbs.JoborWorker{}, o, &workers)
+	////var onlineWorkers []*tbs.JoborWorker
+	////for _, worker := range workers {
+	////	if worker.Status==tbs.WorkerStatusRunning {
+	////		onlineWorkers = append(onlineWorkers, worker)
+	////	}
+	////}
+	if len(workers) == 0 {
+		err := fmt.Errorf("can not get valid worker from routing_key[%s]", routingKey)
+		return nil, err
+	}
+
+	return workers, nil
+}

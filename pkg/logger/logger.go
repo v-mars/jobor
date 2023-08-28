@@ -2,7 +2,7 @@ package logger
 
 import (
 	"fmt"
-	"jobor/internal/config"
+	"jobor/conf"
 	"jobor/pkg/utils"
 	"log"
 	"os"
@@ -13,12 +13,12 @@ import (
 )
 
 var (
-	logger     = logrus.New()
-	Jobor      = logrus.New()
-	Casbin     = logrus.New()
-	Gin        = logrus.New()
-	L400X      = logrus.New()
-	L500X      = logrus.New()
+	logger = logrus.New()
+	Jobor  = logrus.New()
+	Casbin = logrus.New()
+	Gin    = logrus.New()
+	L400X  = logrus.New()
+	L500X  = logrus.New()
 )
 var logLevels = map[string]logrus.Level{
 	"DEBUG": logrus.DebugLevel,
@@ -29,7 +29,7 @@ var logLevels = map[string]logrus.Level{
 
 func Initial() {
 	formatter := &Formatter{
-		LogFormat:       "",
+		LogFormat: "",
 		//LogFormat:       "%time% [%lvl%] %msg%",
 		TimestampFormat: "2006-01-02 15:04:05",
 	}
@@ -37,12 +37,12 @@ func Initial() {
 		LogFormat:       "%msg%",
 		TimestampFormat: "2006-01-02 15:04:05",
 	}
-	InitLog("jobor.log",formatter, Jobor)
-	InitLog("std.log",formatter, logger)
-	InitLog("400.log",formatter, L400X)
-	InitLog("500.log",formatter, L500X)
-	InitLog("casbin.log",formatter, Casbin)
-	InitLog("gin.log",ginFormatter, Gin)
+	InitLog("jobor.log", formatter, Jobor)
+	InitLog("std.log", formatter, logger)
+	InitLog("400.log", formatter, L400X)
+	InitLog("500.log", formatter, L500X)
+	InitLog("casbin.log", formatter, Casbin)
+	InitLog("gin.log", ginFormatter, Gin)
 
 }
 
@@ -100,10 +100,10 @@ func InitOutToFile(logPath, logFileName string) error {
 	return nil
 }
 
-func InitLog(logFileName string, formatter *Formatter, loggerObj *logrus.Logger){
+func InitLog(logFileName string, formatter *Formatter, loggerObj *logrus.Logger) {
 
-	conf := config.GetConf()
-	level, ok := logLevels[strings.ToUpper(conf.Server.LogLevel)]
+	c := conf.GetConf()
+	level, ok := logLevels[strings.ToUpper(c.Server.LogLevel)]
 	if !ok {
 		level = logrus.InfoLevel
 	}
@@ -115,8 +115,8 @@ func InitLog(logFileName string, formatter *Formatter, loggerObj *logrus.Logger)
 	loggerObj.SetLevel(level)
 
 	// Output to file
-	logFilePath := path.Join(conf.Server.LogPath, logFileName)
-	if err := InitOutToFile(conf.Server.LogPath, logFileName); err!=nil{
+	logFilePath := path.Join(c.Server.LogFileName, logFileName)
+	if err := InitOutToFile(c.Server.LogFileName, logFileName); err != nil {
 		log.Fatal(err)
 	}
 	rotateFileHook, err := NewRotateFileHook(RotateFileConfig{
@@ -134,8 +134,6 @@ func InitLog(logFileName string, formatter *Formatter, loggerObj *logrus.Logger)
 	}
 	loggerObj.AddHook(rotateFileHook)
 }
-
-
 
 //gin log file
 //logFilePath := path.Join(config.Configs.Server.LogPath, "gin.log")

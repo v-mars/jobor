@@ -33,32 +33,32 @@ message Api {
   map<string,string>  forms = 30[(api.query)="forms",(api.body)="forms"];
 }
 message TaskData {
-  string code = 32[(api.query)="data",(api.body)="data"];
-  Api api= 31[(api.query)="api",(api.body)="api"];
+  optional string code = 32[(api.query)="data",(api.body)="data,omitempty"];
+  Api api= 31[(api.query)="api",(api.body)="api,omitempty"];
 }
 
 message webhooks {
-  string webhook_url = 49[(api.query)="webhook_url",(api.body)="webhook_url"];
-  string secret = 50[(api.query)="secret",(api.body)="secret"];
+  string webhook_url = 49[(api.query)="webhook_url",(api.body)="webhook_url,omitempty"];
+  string secret = 50[(api.query)="secret",(api.body)="secret,omitempty"];
 }
 
 message email {
-  bool enable = 41[(api.query)="enable",(api.body)="enable"];
-  repeated string receivers = 42[(api.query)="receivers",(api.body)="receivers"];  // 多个邮箱地址以逗号分割
+  bool enable = 41[(api.query)="enable",(api.body)="enable,omitempty"];
+  repeated string receivers = 42[(api.query)="receivers",(api.body)="receivers,omitempty"];  // 多个邮箱地址以逗号分割
 }
 message webhook {
-  bool enable = 43[(api.query)="enable",(api.body)="enable"];
-  repeated string urls = 44[(api.query)="urls",(api.body)="urls"];  // 多个api url以逗号分割
+  bool enable = 43[(api.query)="enable",(api.body)="enable,omitempty"];
+  repeated string urls = 44[(api.query)="urls",(api.body)="urls,omitempty"];  // 多个api url以逗号分割
 }
 // 多个飞书webhook以逗号分割
 message lark {
-  bool enable = 45[(api.query)="enable",(api.body)="enable"];
-  webhooks webhooks = 52[(api.query)="webhooks",(api.body)="webhooks"];
+  bool enable = 45[(api.query)="enable",(api.body)="enable,omitempty"];
+  repeated webhooks webhooks = 52[(api.query)="webhooks",(api.body)="webhooks,omitempty"];
 }
 // 多个钉钉webhook以逗号分割
 message dingding {
-  bool enable = 48[(api.query)="enable",(api.body)="enable"];
-  webhooks webhooks = 51[(api.query)="webhooks",(api.body)="webhooks"];
+  bool enable = 48[(api.query)="enable",(api.body)="enable,omitempty"];
+  repeated webhooks webhooks = 51[(api.query)="webhooks",(api.body)="webhooks,omitempty"];
 }
 
 message Notify{
@@ -155,8 +155,8 @@ message PutTaskReq {
   optional string name = 2[(api.query)="name",(api.body)="name,omitempty"];
   optional string description = 3[(api.query)="description",(api.body)="description,omitempty"];
   optional string lang = 4[(api.query)="lang",(api.body)="lang,omitempty"];
-  TaskData data = 5[(api.query)="data",(api.body)="data,omitempty"];
-  Notify notify = 6[(api.query)="notify",(api.body)="notify,omitempty"];
+  TaskData data = 5[(api.query)="data",(api.body)="data,omitempty",(api.go_tag)="to_str:\"yes\""];
+  Notify notify = 6[(api.query)="notify",(api.body)="notify,omitempty",(api.go_tag)="to_str:\"yes\""];
   optional int64 user_id = 7[(api.query)="user_id",(api.go_tag)="json:\"user_id,omitempty\""];
   optional string user = 8[(api.query)="user",(api.body)="user,omitempty"];
   optional int64 count = 9[(api.query)="count",(api.go_tag)="json:\"count,omitempty\""];
