@@ -43,7 +43,8 @@ message Api {
   string auth_method = 41[(api.query)="auth_method",(api.body)="auth_method"];
   AuthData auth_data = 42[(api.query)="auth_data",(api.body)="auth_data"];
   repeated KvFiled header_list = 43[(api.query)="header_list",(api.body)="header_list"];
-  repeated KvFiled form_list = 44[(api.query)="form_list",(api.body)="form_list"];
+  repeated KvFiled form_data_list = 44[(api.query)="form_data_list",(api.body)="form_data_list"];
+  repeated KvFiled www_form_list = 45[(api.query)="www_form_list",(api.body)="www_form_list"];
   map<string,string> header = 39[(api.query)="header",(api.body)="header"];
   map<string,string>  forms = 30[(api.query)="forms",(api.body)="forms"];
 }
