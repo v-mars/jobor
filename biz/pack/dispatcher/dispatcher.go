@@ -9,8 +9,10 @@ import (
 	"github.com/robfig/cron/v3"
 	"google.golang.org/grpc"
 	"html/template"
+	"jobor/biz/dal/db"
 	"jobor/biz/dal/q"
 	"jobor/biz/model"
+	"jobor/biz/response"
 	"jobor/conf"
 	"jobor/pkg/notify/dingding"
 	"jobor/pkg/notify/email"
@@ -223,77 +225,85 @@ func RunTasks(evt, trigger string, t *model.JoborTask) {
 	//if Raft.St.RaftNode.Raft.State() != raft.Leader && trigger == TriggerAuto {
 	//	return
 	//}
-	var s = taskSession{TaskCtx: context.Background()}
-	//var tx = db.DB
-	//jsonTime := db.JSONTime{Time: time.Now()}
-	//workers := GetWorkerByRoutePolicy(t.RoutingKey, t.RoutePolicy)
-	//var taskLog = model.JoborLog{Name: t.Name, Lang: t.Lang, TaskId: t.ID, TriggerMethod: trigger, Expr: t.Expr,
-	//	Data: t.Data, StartTime: jsonTime, Result: model.TaskLogStatusWait,
-	//	Idempotent: fmt.Sprintf("%d", RegistryDispatcher.cron[t.ID].Entry.Prev.Unix()),
+
+	RunTasksWithBroker(evt, trigger, t)
+}
+
+func RunTasksWithRPC(evt, trigger string, t *model.JoborTask) {
+	//if Raft.St.RaftNode.Raft.State() != raft.Leader && trigger == TriggerAuto {
+	//	return
 	//}
-	//var startTimeTotal = time.Now()
+	var s = taskSession{TaskCtx: context.Background()}
+	var tx = db.DB
+	jsonTime := db.JSONTime{Time: time.Now()}
+	workers := GetWorkerByRoutePolicy(t.RoutingKey, t.RoutePolicy)
+	var taskLog = model.JoborLog{Name: t.Name, Lang: t.Lang, TaskId: t.ID, TriggerMethod: trigger, Expr: t.Expr,
+		Data: t.Data, StartTime: jsonTime, Result: model.TaskLogStatusWait,
+		Idempotent: fmt.Sprintf("%d", RegistryDispatcher.cron[t.ID].Entry.Prev.Unix()),
+	}
+	var startTimeTotal = time.Now()
 	defer func() {
 		//if Raft.St.RaftNode.Raft.State() != raft.Leader {
 		//	hlog.Infof("this dispatcher server is not Leader, task %s[%d] lang %s is skip run,now time: %s ", t.Name, t.ID, t.Lang, time.Now())
 		//	return
 		//}
-		//defer func() {
-		//	if errPanic := recover(); errPanic != any(nil) {
-		//		stack := response.Stack(3)
-		//		s.Err = fmt.Errorf("defer panic, 错误信息: %s\n堆栈信息：%s", errPanic, stack)
-		//		hlog.Error(s.Err)
-		//	}
-		//}()
-		//if errPanic := recover(); errPanic != any(nil) {
-		//	stack := response.Stack(3)
-		//	s.Err = fmt.Errorf("RunTasks panic, 错误信息: %s\n堆栈信息：%s", errPanic, stack)
-		//	hlog.Error(s.Err)
-		//	taskLog.ErrMsg = s.Err.Error()
-		//	taskLog.Result = model.TaskLogStatusUnknown
-		//} else if taskLog.Result == model.TaskLogStatusTimeout {
-		//	s.Err = fmt.Errorf("task %s[%d] lang=%s %s", t.Name, t.ID, t.Lang, "is timeout")
-		//	hlog.Error(s.Err)
-		//	taskLog.ErrMsg = s.Err.Error()
-		//} else if taskLog.Result == model.TaskLogStatusAbort {
-		//	s.Err = fmt.Errorf("task %s[%d] lang=%s %s", t.Name, t.ID, t.Lang, "is aborted")
-		//	hlog.Error(s.Err)
-		//	taskLog.ErrMsg = s.Err.Error()
-		//} else if s.Err != nil {
-		//	s.Err = fmt.Errorf("task %s[%d] lang=%s %s", t.Name, t.ID, t.Lang, s.Err)
-		//	hlog.Error(s.Err)
-		//	taskLog.ErrMsg = s.Err.Error()
-		//	taskLog.Result = model.TaskLogStatusFailed
-		//} else {
-		//	taskLog.Result = model.TaskLogStatusSuccess
-		//	hlog.Infof("task %s[%d] lang=%s 执行成功", t.Name, t.ID, t.Lang)
-		//}
-		////totalTime := time.Since(startTimeTotal)
-		////value, _ := strconv.ParseFloat(fmt.Sprintf("%.3f", totalTime.Seconds()), 64)
-		//var totalTime = time.Now().Unix() - startTimeTotal.Unix()
-		//taskLog.CostTime = db.SecTime((time.Second * time.Duration(totalTime)).String())
-		//taskLog.EndTime = db.JSONTime{Time: time.Now()}
-		//if s.Err = tx.Model(&taskLog).Omit([]string{"CreatedAt", "UpdatedAt"}...).Save(&taskLog).Error; s.Err != nil {
-		//	s.Err = fmt.Errorf("保存tasklog错误: %s", s.Err)
-		//	hlog.Error(s.Err)
-		//	return
-		//}
-		//if s.Err = tx.Model(&t).Updates(model.JoborTask{
-		//	Prev: jsonTime, Next: db.JSONTime{Time: RegistryDispatcher.cron[t.ID].Entry.Next}}).Error; s.Err != nil {
-		//	s.Err = fmt.Errorf("update task pre/next time err: %s", s.Err)
-		//	hlog.Error(s.Err)
-		//}
-		//s.Err = s.Alarm()
-		//s.Delete()
+		defer func() {
+			if errPanic := recover(); errPanic != any(nil) {
+				stack := response.Stack(3)
+				s.Err = fmt.Errorf("defer panic, 错误信息: %s\n堆栈信息：%s", errPanic, stack)
+				hlog.Error(s.Err)
+			}
+		}()
+		if errPanic := recover(); errPanic != any(nil) {
+			stack := response.Stack(3)
+			s.Err = fmt.Errorf("RunTasks panic, 错误信息: %s\n堆栈信息：%s", errPanic, stack)
+			hlog.Error(s.Err)
+			taskLog.ErrMsg = s.Err.Error()
+			taskLog.Result = model.TaskLogStatusUnknown
+		} else if taskLog.Result == model.TaskLogStatusTimeout {
+			s.Err = fmt.Errorf("task %s[%d] lang=%s %s", t.Name, t.ID, t.Lang, "is timeout")
+			hlog.Error(s.Err)
+			taskLog.ErrMsg = s.Err.Error()
+		} else if taskLog.Result == model.TaskLogStatusAbort {
+			s.Err = fmt.Errorf("task %s[%d] lang=%s %s", t.Name, t.ID, t.Lang, "is aborted")
+			hlog.Error(s.Err)
+			taskLog.ErrMsg = s.Err.Error()
+		} else if s.Err != nil {
+			s.Err = fmt.Errorf("task %s[%d] lang=%s %s", t.Name, t.ID, t.Lang, s.Err)
+			hlog.Error(s.Err)
+			taskLog.ErrMsg = s.Err.Error()
+			taskLog.Result = model.TaskLogStatusFailed
+		} else {
+			taskLog.Result = model.TaskLogStatusSuccess
+			hlog.Infof("task %s[%d] lang=%s 执行成功", t.Name, t.ID, t.Lang)
+		}
+		//totalTime := time.Since(startTimeTotal)
+		//value, _ := strconv.ParseFloat(fmt.Sprintf("%.3f", totalTime.Seconds()), 64)
+		var totalTime = time.Now().Unix() - startTimeTotal.Unix()
+		taskLog.CostTime = db.SecTime((time.Second * time.Duration(totalTime)).String())
+		taskLog.EndTime = db.JSONTime{Time: time.Now()}
+		if s.Err = tx.Model(&taskLog).Omit([]string{"CreatedAt", "UpdatedAt"}...).Save(&taskLog).Error; s.Err != nil {
+			s.Err = fmt.Errorf("保存tasklog错误: %s", s.Err)
+			hlog.Error(s.Err)
+			return
+		}
+		if s.Err = tx.Model(&t).Updates(model.JoborTask{
+			Prev: jsonTime, Next: db.JSONTime{Time: RegistryDispatcher.cron[t.ID].Entry.Next}}).Error; s.Err != nil {
+			s.Err = fmt.Errorf("update task pre/next time err: %s", s.Err)
+			hlog.Error(s.Err)
+		}
+		s.Err = s.Alarm()
+		s.Delete()
 	}()
 
-	//if s.Err = tx.Create(&taskLog).Error; s.Err != nil {
-	//	s.Err = fmt.Errorf("create tasklog err: %s", s.Err)
-	//	return
-	//}
-	//
-	//s.TaskLog = &taskLog
-	//s.Task = t
-	//s.Add()
+	if s.Err = tx.Create(&taskLog).Error; s.Err != nil {
+		s.Err = fmt.Errorf("create tasklog err: %s", s.Err)
+		return
+	}
+
+	s.TaskLog = &taskLog
+	s.Task = t
+	s.Add()
 	hlog.Infof("task %s[%d] lang %s success start,now time: %s ", t.Name, t.ID, t.Lang, time.Now())
 
 	//var executor = DataCode{Lang: Lang(t.Lang),ScriptCode: t.Data.Code}
@@ -304,7 +314,7 @@ func RunTasks(evt, trigger string, t *model.JoborTask) {
 		return
 	}
 	signature := &tasks.Signature{
-		Name:       "cron_task",
+		Name:       "TaskWorker",
 		RoutingKey: t.RoutingKey,
 		Args: []tasks.Arg{
 			{
@@ -328,9 +338,9 @@ func RunTasks(evt, trigger string, t *model.JoborTask) {
 	//defer s.TaskCancel()
 	//defer timeoutCac()
 	//time.Sleep(1 * time.Second)
-	//
-	//_ = marshal
-	//_ = workers
+
+	_ = marshal
+	_ = workers
 	//	conn, w, errConn := TryGetGrpcClientConn(s.TaskCtx, workers)
 	//	if errConn != nil {
 	//		s.Err = errConn
@@ -426,6 +436,62 @@ func RunTasks(evt, trigger string, t *model.JoborTask) {
 	//	if s.Err != nil {
 	//		return
 	//	}
+
+}
+
+func RunTasksWithBroker(evt, trigger string, t *model.JoborTask) {
+	var s = taskSession{TaskCtx: context.Background()}
+	defer func() {
+		defer func() {
+			if errPanic := recover(); errPanic != any(nil) {
+				stack := response.Stack(3)
+				s.Err = fmt.Errorf("defer panic, 错误信息: %s\n堆栈信息：%s", errPanic, stack)
+				hlog.Error(s.Err)
+			}
+		}()
+	}()
+	hlog.Infof("broker task %s[%d] lang %s routingKey %s success start,now time: %s ",
+		t.Name, t.ID, t.Lang, t.RoutingKey, time.Now())
+	var marshal []byte
+	marshal, s.Err = json.Marshal(t.Data)
+	if s.Err != nil {
+		hlog.Errorf("DataCode Marshal  err: %s", s.Err)
+		return
+	}
+	//if _, err := q.InitQSrv(&conf.GetConf().Redis, q.Queue); err != nil {
+	//	hlog.Fatal(err)
+	//	return
+	//}
+	//err := q.QSrv.RegisterTask("TaskWorker", q.TaskWorker)
+	//if err != nil {
+	//	hlog.Errorf("register task  err: %s", err)
+	//	return
+	//}
+
+	signature := &tasks.Signature{
+		Name: "TaskWorker",
+		//RoutingKey:   t.RoutingKey,
+		RetryCount:   t.Retry,
+		RetryTimeout: t.Timeout,
+		Args: []tasks.Arg{
+			{
+				Type:  "string",
+				Value: string(marshal),
+			},
+		},
+	}
+	asyncResult, err := q.QSrv.SendTask(signature)
+	if err != nil {
+		s.Err = err
+		return
+	}
+	//asyncResult.GetState()
+	_, err = asyncResult.Get(time.Duration(time.Millisecond * 5))
+	if err != nil {
+		//return fmt.Errorf("Getting task result failed with error: %s", err.Error())
+	}
+	hlog.Infof("broker task %s[%d] lang %s routingKey %s success start,asyncResult: %s ",
+		t.Name, t.ID, t.Lang, t.RoutingKey, asyncResult.GetState())
 
 }
 

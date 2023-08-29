@@ -195,7 +195,7 @@ func AddTask(ctx context.Context, Db *gorm.DB, req *task2.PostTaskReq) (JoborTas
 	}
 	tx := Db.Begin()
 	defer func() { tx.Rollback() }()
-	if err := Db.Table(row.TableName()).Create(&row).Error; err != nil {
+	if err := Db.Table(row.TableName()).Omit([]string{"Prev", "Next"}...).Create(&row).Error; err != nil {
 		return row, err
 	}
 	if err := redis.Publish(ctx, PubSubChannel, Event{TaskID: row.ID,
@@ -247,7 +247,7 @@ func DelTask(ctx context.Context, Db *gorm.DB, _ids []interface{}) ([]JoborTask,
 			Event{TaskID: convert.ToInt(_id), TE: DeleteEvent}); err != nil {
 			return nil, err
 		}
-		if err := Db.Table(NameTask).Where("id!=?", _id).Updates(
+		if err := Db.Table(NameTask).Where("id=?", _id).Updates(
 			map[string]interface{}{"deleted": true, "status": TaskStatusStop}).Error; err != nil {
 			return us, err
 		}

@@ -24,16 +24,31 @@ message TaskQuery {
   uint64 page = 111;
   uint64 pageSize = 112;
 }
+
+message AuthData{
+  string username = 1[(api.query)="username",(api.body)="username"];
+  string password = 2[(api.query)="password",(api.body)="password"];
+}
+
+message KvFiled{
+  string key = 1[(api.query)="key",(api.body)="key"];
+  string value = 2[(api.query)="value",(api.body)="value"];
+}
 message Api {
   string url = 35[(api.query)="url",(api.body)="url"];
   string method = 36[(api.query)="method",(api.body)="method"];
   string content_type = 37[(api.query)="content_type",(api.body)="content_type"];
   string payload = 38[(api.query)="payload",(api.body)="payload"];
+  string body = 40[(api.query)="body",(api.body)="body"];
+  string auth_method = 41[(api.query)="auth_method",(api.body)="auth_method"];
+  AuthData auth_data = 42[(api.query)="auth_data",(api.body)="auth_data"];
+  repeated KvFiled header_list = 43[(api.query)="header_list",(api.body)="header_list"];
+  repeated KvFiled form_list = 44[(api.query)="form_list",(api.body)="form_list"];
   map<string,string> header = 39[(api.query)="header",(api.body)="header"];
   map<string,string>  forms = 30[(api.query)="forms",(api.body)="forms"];
 }
 message TaskData {
-  optional string code = 32[(api.query)="data",(api.body)="data,omitempty"];
+  optional string content = 32[(api.query)="content",(api.body)="content,omitempty"];
   Api api= 31[(api.query)="api",(api.body)="api,omitempty"];
 }
 
@@ -145,9 +160,9 @@ message PostTaskReq {
   string expect_content = 16[(api.query)="expect_content",(api.body)="expect_content"];
   int32 expect_code = 17[(api.query)="expect_code",(api.body)="expect_code"];
   int32 retry = 18[(api.query)="retry",(api.body)="retry"];
-  string prev = 19[(api.query)="prev",(api.body)="prev"];
-  string next = 20[(api.query)="next",(api.body)="next"];
-  string updater = 21[(api.query)="updater",(api.body)="updater"];
+  optional string prev = 19[(api.query)="prev",(api.body)="prev,omitempty"];
+  optional string next = 20[(api.query)="next",(api.body)="next,omitempty"];
+  string updater = 21[(api.query)="updater",(api.body)="updater,omitempty"];
   bool deleted = 22[(api.query)="deleted",(api.go_tag)="json:\"deleted\""];
 }
 

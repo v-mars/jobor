@@ -274,7 +274,6 @@ func (t *JSONTime) UnmarshalJSON(data []byte) error {
 	var tt time.Time
 	if len(dataStr) == 13 {
 		tt = time.UnixMilli(convert.ToInt64(dataStr))
-		fmt.Println("jsontime:", tt, tt.String())
 	} else if len(dataStr) == 10 {
 		tt = time.Unix(convert.ToInt64(dataStr), 0)
 	} else {

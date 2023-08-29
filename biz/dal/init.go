@@ -79,7 +79,7 @@ func Init() {
 		hlog.Fatal(redis.Subscribe(context.TODO(), dispatcher.Fn, model.PubSubChannel))
 	}()
 
-	if _, err := q.InitQSrv(); err != nil {
+	if _, err := q.InitQSrv(&conf.GetConf().Redis, q.Queue); err != nil {
 		hlog.Fatal(err)
 		return
 	}

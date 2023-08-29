@@ -1,7 +1,6 @@
 package conf
 
 import (
-	"flag"
 	"github.com/bytedance/go-tagexpr/v2/validator"
 	"github.com/cloudwego/hertz/pkg/common/hlog"
 	"gopkg.in/yaml.v3"
@@ -19,6 +18,7 @@ func GetWorkerConf() *WorkerConfig {
 }
 
 type WorkerConfig struct {
+	WorkerName    string   `yaml:"worker_name"`
 	HttpAddress   string   `yaml:"http_address"`
 	RoutingKey    string   `yaml:"routing_key"`
 	Weight        int      `yaml:"weight"`
@@ -29,6 +29,7 @@ type WorkerConfig struct {
 	LogMaxBackups int      `yaml:"log_max_backups"`
 	LogMaxAge     int      `yaml:"log_max_age"`
 	Concurrency   int      `yaml:"concurrency"`
+	Redis         Redis    `yaml:"redis"`
 }
 
 func initWorkerConf() {
@@ -44,24 +45,20 @@ func initWorkerConf() {
 	wconf.LogLevel = "debug"
 	wconf.Concurrency = 20
 	wconf.Weight = 100
-	wconf.RoutingKey = "default"
 	err = yaml.Unmarshal(content, wconf)
 	if err != nil {
 		hlog.Error("parse yaml error - %v", err)
 		panic(err)
 	}
-	if err = validator.Validate(conf); err != nil {
+	if err = validator.Validate(wconf); err != nil {
 		hlog.Error("validate config error - %v", err)
 		panic(err)
+	}
+	if wconf.WorkerName == "" {
+		wconf.WorkerName, _ = os.Hostname()
 	}
 
 	//pretty.Printf("%+v\n", conf)
 }
 
-var FlagWorker string
-
-func init() {
-	flag.StringVar(&FlagWorker, "wc", "conf/worker.yaml", "config path, eg: -conf conf/worker.yaml")
-	flag.StringVar(&FlagWorker, "wconf", "conf/worker.yaml", "config path, eg: -conf conf/worker.yaml")
-	flag.Parse()
-}
+var FlagWorker = "conf/worker.yaml"
