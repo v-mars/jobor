@@ -177,6 +177,23 @@ const docTemplate = `{
                 ],
                 "responses": {}
             },
+            "post": {
+                "description": "jobor task run",
+                "tags": [
+                    "jobor task"
+                ],
+                "summary": "jobor task run summary",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "int valid",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            },
             "delete": {
                 "description": "jobor task delete",
                 "tags": [
@@ -537,8 +554,23 @@ const docTemplate = `{
         "task.Api": {
             "type": "object",
             "properties": {
+                "auth_data": {
+                    "$ref": "#/definitions/task.AuthData"
+                },
+                "auth_method": {
+                    "type": "string"
+                },
+                "body": {
+                    "type": "string"
+                },
                 "content_type": {
                     "type": "string"
+                },
+                "form_data_list": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/task.KvFiled"
+                    }
                 },
                 "forms": {
                     "type": "object",
@@ -552,6 +584,12 @@ const docTemplate = `{
                         "type": "string"
                     }
                 },
+                "header_list": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/task.KvFiled"
+                    }
+                },
                 "method": {
                     "type": "string"
                 },
@@ -559,6 +597,23 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "url": {
+                    "type": "string"
+                },
+                "www_form_list": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/task.KvFiled"
+                    }
+                }
+            }
+        },
+        "task.AuthData": {
+            "type": "object",
+            "properties": {
+                "password": {
+                    "type": "string"
+                },
+                "username": {
                     "type": "string"
                 }
             }
@@ -568,6 +623,12 @@ const docTemplate = `{
             "properties": {
                 "enable": {
                     "type": "boolean"
+                },
+                "webhooks": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/task.Webhooks"
+                    }
                 }
             }
         },
@@ -586,11 +647,28 @@ const docTemplate = `{
                 }
             }
         },
+        "task.KvFiled": {
+            "type": "object",
+            "properties": {
+                "key": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "string"
+                }
+            }
+        },
         "task.Lark": {
             "type": "object",
             "properties": {
                 "enable": {
                     "type": "boolean"
+                },
+                "webhooks": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/task.Webhooks"
+                    }
                 }
             }
         },
@@ -753,7 +831,7 @@ const docTemplate = `{
                 "api": {
                     "$ref": "#/definitions/task.Api"
                 },
-                "data": {
+                "content": {
                     "type": "string"
                 }
             }
@@ -770,6 +848,17 @@ const docTemplate = `{
                     "items": {
                         "type": "string"
                     }
+                }
+            }
+        },
+        "task.Webhooks": {
+            "type": "object",
+            "properties": {
+                "secret": {
+                    "type": "string"
+                },
+                "webhook_url": {
+                    "type": "string"
                 }
             }
         },

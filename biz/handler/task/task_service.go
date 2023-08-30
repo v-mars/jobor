@@ -159,3 +159,25 @@ func DeleteTask(ctx context.Context, c *app.RequestContext) {
 		response.SendDataResp(ctx, c, response.Succeed, objs)
 	}
 }
+
+// RunTask .
+//
+//	@Summary		jobor task run summary
+//	@Description	jobor task run
+//	@Tags			jobor task
+//	@Param			id	path	int	true	"int valid"
+//
+// @router /api/v1/jobor/task/{id} [POST]
+func RunTask(ctx context.Context, c *app.RequestContext) {
+	var err error
+	var req task.TaskQuery
+	err = c.BindAndValidate(&req)
+	if err = c.BindAndValidate(&req); err != nil {
+		response.ParamFailed(ctx, c, err)
+		return
+	}
+	_id := c.Params.ByName("id")
+	_ = _id
+
+	response.SendDataResp(ctx, c, response.Succeed, "")
+}

@@ -29,7 +29,7 @@ type TaskQuery struct {
 	unknownFields protoimpl.UnknownFields
 
 	Id          int64  `protobuf:"varint,1,opt,name=id,proto3" query:"id" form:"id" json:"id"`
-	Name        string `protobuf:"bytes,2,opt,name=name,proto3" query:"name" form:"name" json:"name"`
+	Name        string `protobuf:"bytes,2,opt,name=name,proto3" form:"name" json:"name" query:"name"`
 	Description string `protobuf:"bytes,3,opt,name=description,proto3" query:"description" form:"description" json:"description"`
 	Lang        string `protobuf:"bytes,4,opt,name=lang,proto3" query:"lang" form:"lang" json:"lang"`
 	UserId      int64  `protobuf:"varint,7,opt,name=user_id,json=userId,proto3" query:"user_id" form:"user_id" json:"user_id"`
@@ -226,8 +226,8 @@ type KvFiled struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Key   string `protobuf:"bytes,1,opt,name=key,proto3" query:"key" form:"key" json:"key"`
-	Value string `protobuf:"bytes,2,opt,name=value,proto3" form:"value" json:"value" query:"value"`
+	Key   string `protobuf:"bytes,1,opt,name=key,proto3" form:"key" json:"key" query:"key"`
+	Value string `protobuf:"bytes,2,opt,name=value,proto3" query:"value" form:"value" json:"value"`
 }
 
 func (x *KvFiled) Reset() {
@@ -282,13 +282,13 @@ type Api struct {
 	unknownFields protoimpl.UnknownFields
 
 	Url          string            `protobuf:"bytes,35,opt,name=url,proto3" query:"url" form:"url" json:"url"`
-	Method       string            `protobuf:"bytes,36,opt,name=method,proto3" query:"method" form:"method" json:"method"`
+	Method       string            `protobuf:"bytes,36,opt,name=method,proto3" form:"method" json:"method" query:"method"`
 	ContentType  string            `protobuf:"bytes,37,opt,name=content_type,json=contentType,proto3" query:"content_type" form:"content_type" json:"content_type"`
-	Payload      string            `protobuf:"bytes,38,opt,name=payload,proto3" form:"payload" json:"payload" query:"payload"`
+	Payload      string            `protobuf:"bytes,38,opt,name=payload,proto3" query:"payload" form:"payload" json:"payload"`
 	Body         string            `protobuf:"bytes,40,opt,name=body,proto3" query:"body" form:"body" json:"body"`
-	AuthMethod   string            `protobuf:"bytes,41,opt,name=auth_method,json=authMethod,proto3" form:"auth_method" json:"auth_method" query:"auth_method"`
+	AuthMethod   string            `protobuf:"bytes,41,opt,name=auth_method,json=authMethod,proto3" query:"auth_method" form:"auth_method" json:"auth_method"`
 	AuthData     *AuthData         `protobuf:"bytes,42,opt,name=auth_data,json=authData,proto3" query:"auth_data" form:"auth_data" json:"auth_data"`
-	HeaderList   []*KvFiled        `protobuf:"bytes,43,rep,name=header_list,json=headerList,proto3" query:"header_list" form:"header_list" json:"header_list"`
+	HeaderList   []*KvFiled        `protobuf:"bytes,43,rep,name=header_list,json=headerList,proto3" form:"header_list" json:"header_list" query:"header_list"`
 	FormDataList []*KvFiled        `protobuf:"bytes,44,rep,name=form_data_list,json=formDataList,proto3" form:"form_data_list" json:"form_data_list" query:"form_data_list"`
 	WwwFormList  []*KvFiled        `protobuf:"bytes,45,rep,name=www_form_list,json=wwwFormList,proto3" form:"www_form_list" json:"www_form_list" query:"www_form_list"`
 	Header       map[string]string `protobuf:"bytes,39,rep,name=header,proto3" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3" query:"header" form:"header" json:"header"`
@@ -526,7 +526,7 @@ type Email struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Enable    bool     `protobuf:"varint,41,opt,name=enable,proto3" query:"enable" form:"enable,omitempty" json:"enable,omitempty"`
+	Enable    bool     `protobuf:"varint,41,opt,name=enable,proto3" form:"enable,omitempty" json:"enable,omitempty" query:"enable"`
 	Receivers []string `protobuf:"bytes,42,rep,name=receivers,proto3" form:"receivers,omitempty" json:"receivers,omitempty" query:"receivers"` // 多个邮箱地址以逗号分割
 }
 
@@ -637,7 +637,7 @@ type Lark struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Enable   bool        `protobuf:"varint,45,opt,name=enable,proto3" form:"enable,omitempty" json:"enable,omitempty" query:"enable"`
+	Enable   bool        `protobuf:"varint,45,opt,name=enable,proto3" query:"enable" form:"enable,omitempty" json:"enable,omitempty"`
 	Webhooks []*Webhooks `protobuf:"bytes,52,rep,name=webhooks,proto3" form:"webhooks,omitempty" json:"webhooks,omitempty" query:"webhooks"`
 }
 
@@ -748,8 +748,8 @@ type Notify struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Email    *Email    `protobuf:"bytes,1,opt,name=email,proto3" query:"email" form:"email,omitempty" json:"email,omitempty"`
-	Webhook  *Webhook  `protobuf:"bytes,2,opt,name=webhook,proto3" form:"webhook,omitempty" json:"webhook,omitempty" query:"webhook"`
+	Email    *Email    `protobuf:"bytes,1,opt,name=email,proto3" form:"email,omitempty" json:"email,omitempty" query:"email"`
+	Webhook  *Webhook  `protobuf:"bytes,2,opt,name=webhook,proto3" query:"webhook" form:"webhook,omitempty" json:"webhook,omitempty"`
 	Lark     *Lark     `protobuf:"bytes,3,opt,name=lark,proto3" form:"lark,omitempty" json:"lark,omitempty" query:"lark"`
 	Dingding *Dingding `protobuf:"bytes,4,opt,name=dingding,proto3" form:"dingding,omitempty" json:"dingding,omitempty" query:"dingding"`
 }
@@ -821,13 +821,13 @@ type TaskResp struct {
 
 	Id            int64     `protobuf:"varint,1,opt,name=id,proto3" query:"id" form:"id" json:"id"`
 	Name          string    `protobuf:"bytes,2,opt,name=name,proto3" form:"name" json:"name" query:"name"`
-	Description   string    `protobuf:"bytes,3,opt,name=description,proto3" query:"description" form:"description" json:"description"`
+	Description   string    `protobuf:"bytes,3,opt,name=description,proto3" form:"description" json:"description" query:"description"`
 	Lang          string    `protobuf:"bytes,4,opt,name=lang,proto3" query:"lang" form:"lang" json:"lang"`
-	Data          *TaskData `protobuf:"bytes,5,opt,name=data,proto3" query:"data" form:"data" json:"data"`
+	Data          *TaskData `protobuf:"bytes,5,opt,name=data,proto3" form:"data" json:"data" query:"data"`
 	Notify        *Notify   `protobuf:"bytes,6,opt,name=notify,proto3" form:"notify" json:"notify" query:"notify"`
 	UserId        int64     `protobuf:"varint,7,opt,name=user_id,json=userId,proto3" query:"user_id" form:"user_id" json:"user_id"`
 	User          string    `protobuf:"bytes,8,opt,name=user,proto3" form:"user" json:"user" query:"user"`
-	Count         int64     `protobuf:"varint,9,opt,name=count,proto3" query:"count" form:"count" json:"count"`
+	Count         int64     `protobuf:"varint,9,opt,name=count,proto3" form:"count" json:"count" query:"count"`
 	Expr          string    `protobuf:"bytes,10,opt,name=expr,proto3" query:"expr" form:"expr" json:"expr"`
 	Timeout       int64     `protobuf:"varint,11,opt,name=timeout,proto3" query:"timeout" form:"timeout" json:"timeout"`
 	RoutePolicy   int32     `protobuf:"varint,12,opt,name=route_policy,json=routePolicy,proto3" query:"route_policy" form:"route_policy" json:"route_policy"`
@@ -835,11 +835,11 @@ type TaskResp struct {
 	Status        string    `protobuf:"bytes,14,opt,name=status,proto3" form:"status" json:"status" query:"status"`
 	AlarmPolicy   int32     `protobuf:"varint,15,opt,name=alarm_policy,json=alarmPolicy,proto3" form:"alarm_policy" json:"alarm_policy" query:"alarm_policy"`
 	ExpectContent string    `protobuf:"bytes,16,opt,name=expect_content,json=expectContent,proto3" form:"expect_content" json:"expect_content" query:"expect_content"`
-	ExpectCode    int32     `protobuf:"varint,17,opt,name=expect_code,json=expectCode,proto3" query:"expect_code" form:"expect_code" json:"expect_code"`
+	ExpectCode    int32     `protobuf:"varint,17,opt,name=expect_code,json=expectCode,proto3" form:"expect_code" json:"expect_code" query:"expect_code"`
 	Retry         int32     `protobuf:"varint,18,opt,name=retry,proto3" query:"retry" form:"retry" json:"retry"`
-	Prev          string    `protobuf:"bytes,19,opt,name=prev,proto3" form:"prev" json:"prev" query:"prev"`
-	Next          string    `protobuf:"bytes,20,opt,name=next,proto3" query:"next" form:"next" json:"next"`
-	Updater       string    `protobuf:"bytes,21,opt,name=updater,proto3" query:"updater" form:"updater" json:"updater"`
+	Prev          string    `protobuf:"bytes,19,opt,name=prev,proto3" query:"prev" form:"prev" json:"prev"`
+	Next          string    `protobuf:"bytes,20,opt,name=next,proto3" form:"next" json:"next" query:"next"`
+	Updater       string    `protobuf:"bytes,21,opt,name=updater,proto3" form:"updater" json:"updater" query:"updater"`
 	CreatedAt     string    `protobuf:"bytes,110,opt,name=created_at,json=createdAt,proto3" form:"created_at" json:"created_at" query:"created_at"`
 	UpdatedAt     string    `protobuf:"bytes,120,opt,name=updated_at,json=updatedAt,proto3" form:"updated_at" json:"updated_at" query:"updated_at"`
 }
@@ -1042,7 +1042,7 @@ type TaskAllResp struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Id   int64  `protobuf:"varint,1,opt,name=id,proto3" form:"id" json:"id" query:"id"`
+	Id   int64  `protobuf:"varint,1,opt,name=id,proto3" query:"id" form:"id" json:"id"`
 	Name string `protobuf:"bytes,2,opt,name=name,proto3" form:"name" json:"name" query:"name"`
 }
 
@@ -1099,19 +1099,19 @@ type TaskGetByIdResp struct {
 
 	Id            int64     `protobuf:"varint,1,opt,name=id,proto3" json:"id" query:"id"`
 	Name          string    `protobuf:"bytes,2,opt,name=name,proto3" form:"name" json:"name" query:"name"`
-	Description   string    `protobuf:"bytes,3,opt,name=description,proto3" query:"description" form:"description" json:"description"`
-	Lang          string    `protobuf:"bytes,4,opt,name=lang,proto3" query:"lang" form:"lang" json:"lang"`
+	Description   string    `protobuf:"bytes,3,opt,name=description,proto3" form:"description" json:"description" query:"description"`
+	Lang          string    `protobuf:"bytes,4,opt,name=lang,proto3" form:"lang" json:"lang" query:"lang"`
 	Data          *TaskData `protobuf:"bytes,5,opt,name=data,proto3" query:"data" form:"data" json:"data"`
-	Notify        *Notify   `protobuf:"bytes,6,opt,name=notify,proto3" form:"notify" json:"notify" query:"notify"`
-	UserId        int64     `protobuf:"varint,7,opt,name=user_id,json=userId,proto3" query:"user_id" form:"user_id" json:"user_id"`
+	Notify        *Notify   `protobuf:"bytes,6,opt,name=notify,proto3" query:"notify" form:"notify" json:"notify"`
+	UserId        int64     `protobuf:"varint,7,opt,name=user_id,json=userId,proto3" form:"user_id" json:"user_id" query:"user_id"`
 	User          string    `protobuf:"bytes,8,opt,name=user,proto3" form:"user" json:"user" query:"user"`
 	Count         int64     `protobuf:"varint,9,opt,name=count,proto3" form:"count" json:"count" query:"count"`
-	Expr          string    `protobuf:"bytes,10,opt,name=expr,proto3" query:"expr" form:"expr" json:"expr"`
+	Expr          string    `protobuf:"bytes,10,opt,name=expr,proto3" form:"expr" json:"expr" query:"expr"`
 	Timeout       int64     `protobuf:"varint,11,opt,name=timeout,proto3" query:"timeout" form:"timeout" json:"timeout"`
 	RoutePolicy   int32     `protobuf:"varint,12,opt,name=route_policy,json=routePolicy,proto3" query:"route_policy" form:"route_policy" json:"route_policy"`
 	RoutingKey    string    `protobuf:"bytes,13,opt,name=routing_key,json=routingKey,proto3" form:"routing_key" json:"routing_key" query:"routing_key"`
-	Status        string    `protobuf:"bytes,14,opt,name=status,proto3" query:"status" form:"status" json:"status"`
-	AlarmPolicy   int32     `protobuf:"varint,15,opt,name=alarm_policy,json=alarmPolicy,proto3" form:"alarm_policy" json:"alarm_policy" query:"alarm_policy"`
+	Status        string    `protobuf:"bytes,14,opt,name=status,proto3" form:"status" json:"status" query:"status"`
+	AlarmPolicy   int32     `protobuf:"varint,15,opt,name=alarm_policy,json=alarmPolicy,proto3" query:"alarm_policy" form:"alarm_policy" json:"alarm_policy"`
 	ExpectContent string    `protobuf:"bytes,16,opt,name=expect_content,json=expectContent,proto3" query:"expect_content" form:"expect_content" json:"expect_content"`
 	ExpectCode    int32     `protobuf:"varint,17,opt,name=expect_code,json=expectCode,proto3" query:"expect_code" form:"expect_code" json:"expect_code"`
 	Retry         int32     `protobuf:"varint,18,opt,name=retry,proto3" query:"retry" form:"retry" json:"retry"`
@@ -1329,25 +1329,25 @@ type PostTaskReq struct {
 	unknownFields protoimpl.UnknownFields
 
 	Name          string    `protobuf:"bytes,2,opt,name=name,proto3" query:"name" form:"name" json:"name"`
-	Description   string    `protobuf:"bytes,3,opt,name=description,proto3" query:"description" form:"description" json:"description"`
+	Description   string    `protobuf:"bytes,3,opt,name=description,proto3" form:"description" json:"description" query:"description"`
 	Lang          string    `protobuf:"bytes,4,opt,name=lang,proto3" query:"lang" form:"lang" json:"lang"`
-	Data          *TaskData `protobuf:"bytes,5,opt,name=data,proto3" query:"data" form:"data" json:"data"`
+	Data          *TaskData `protobuf:"bytes,5,opt,name=data,proto3" form:"data" json:"data" query:"data"`
 	Notify        *Notify   `protobuf:"bytes,6,opt,name=notify,proto3" form:"notify" json:"notify" query:"notify"`
 	UserId        int64     `protobuf:"varint,7,opt,name=user_id,json=userId,proto3" query:"user_id" form:"user_id" json:"user_id"`
 	User          string    `protobuf:"bytes,8,opt,name=user,proto3" query:"user" form:"user" json:"user"`
-	Count         int64     `protobuf:"varint,9,opt,name=count,proto3" query:"count" form:"count" json:"count"`
+	Count         int64     `protobuf:"varint,9,opt,name=count,proto3" form:"count" json:"count" query:"count"`
 	Expr          string    `protobuf:"bytes,10,opt,name=expr,proto3" form:"expr" json:"expr" query:"expr"`
 	Timeout       int64     `protobuf:"varint,11,opt,name=timeout,proto3" query:"timeout" form:"timeout" json:"timeout"`
-	RoutePolicy   int32     `protobuf:"varint,12,opt,name=route_policy,json=routePolicy,proto3" query:"route_policy" form:"route_policy" json:"route_policy"`
+	RoutePolicy   int32     `protobuf:"varint,12,opt,name=route_policy,json=routePolicy,proto3" form:"route_policy" json:"route_policy" query:"route_policy"`
 	RoutingKey    string    `protobuf:"bytes,13,opt,name=routing_key,json=routingKey,proto3" query:"routing_key" form:"routing_key" json:"routing_key"`
-	Status        string    `protobuf:"bytes,14,opt,name=status,proto3" form:"status" json:"status" query:"status"`
-	AlarmPolicy   int32     `protobuf:"varint,15,opt,name=alarm_policy,json=alarmPolicy,proto3" form:"alarm_policy" json:"alarm_policy" query:"alarm_policy"`
+	Status        string    `protobuf:"bytes,14,opt,name=status,proto3" query:"status" form:"status" json:"status"`
+	AlarmPolicy   int32     `protobuf:"varint,15,opt,name=alarm_policy,json=alarmPolicy,proto3" query:"alarm_policy" form:"alarm_policy" json:"alarm_policy"`
 	ExpectContent string    `protobuf:"bytes,16,opt,name=expect_content,json=expectContent,proto3" query:"expect_content" form:"expect_content" json:"expect_content"`
-	ExpectCode    int32     `protobuf:"varint,17,opt,name=expect_code,json=expectCode,proto3" form:"expect_code" json:"expect_code" query:"expect_code"`
+	ExpectCode    int32     `protobuf:"varint,17,opt,name=expect_code,json=expectCode,proto3" query:"expect_code" form:"expect_code" json:"expect_code"`
 	Retry         int32     `protobuf:"varint,18,opt,name=retry,proto3" query:"retry" form:"retry" json:"retry"`
 	Prev          *string   `protobuf:"bytes,19,opt,name=prev,proto3,oneof" query:"prev" form:"prev,omitempty" json:"prev,omitempty"`
 	Next          *string   `protobuf:"bytes,20,opt,name=next,proto3,oneof" query:"next" form:"next,omitempty" json:"next,omitempty"`
-	Updater       string    `protobuf:"bytes,21,opt,name=updater,proto3" query:"updater" form:"updater,omitempty" json:"updater,omitempty"`
+	Updater       string    `protobuf:"bytes,21,opt,name=updater,proto3" form:"updater,omitempty" json:"updater,omitempty" query:"updater"`
 	Deleted       bool      `protobuf:"varint,22,opt,name=deleted,proto3" query:"deleted" json:"deleted"`
 }
 
@@ -1535,25 +1535,25 @@ type PutTaskReq struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Name          *string   `protobuf:"bytes,2,opt,name=name,proto3,oneof" form:"name,omitempty" json:"name,omitempty" query:"name"`
+	Name          *string   `protobuf:"bytes,2,opt,name=name,proto3,oneof" query:"name" form:"name,omitempty" json:"name,omitempty"`
 	Description   *string   `protobuf:"bytes,3,opt,name=description,proto3,oneof" query:"description" form:"description,omitempty" json:"description,omitempty"`
-	Lang          *string   `protobuf:"bytes,4,opt,name=lang,proto3,oneof" query:"lang" form:"lang,omitempty" json:"lang,omitempty"`
-	Data          *TaskData `protobuf:"bytes,5,opt,name=data,proto3" query:"data" form:"data,omitempty" json:"data,omitempty" to_str:"yes"`
-	Notify        *Notify   `protobuf:"bytes,6,opt,name=notify,proto3" form:"notify,omitempty" json:"notify,omitempty" query:"notify" to_str:"yes"`
+	Lang          *string   `protobuf:"bytes,4,opt,name=lang,proto3,oneof" form:"lang,omitempty" json:"lang,omitempty" query:"lang"`
+	Data          *TaskData `protobuf:"bytes,5,opt,name=data,proto3" form:"data,omitempty" json:"data,omitempty" query:"data" to_str:"yes"`
+	Notify        *Notify   `protobuf:"bytes,6,opt,name=notify,proto3" query:"notify" form:"notify,omitempty" json:"notify,omitempty" to_str:"yes"`
 	UserId        *int64    `protobuf:"varint,7,opt,name=user_id,json=userId,proto3,oneof" query:"user_id" json:"user_id,omitempty"`
 	User          *string   `protobuf:"bytes,8,opt,name=user,proto3,oneof" query:"user" form:"user,omitempty" json:"user,omitempty"`
 	Count         *int64    `protobuf:"varint,9,opt,name=count,proto3,oneof" query:"count" json:"count,omitempty"`
-	Expr          *string   `protobuf:"bytes,10,opt,name=expr,proto3,oneof" query:"expr" form:"expr,omitempty" json:"expr,omitempty"`
+	Expr          *string   `protobuf:"bytes,10,opt,name=expr,proto3,oneof" form:"expr,omitempty" json:"expr,omitempty" query:"expr"`
 	Timeout       *int64    `protobuf:"varint,11,opt,name=timeout,proto3,oneof" query:"timeout" json:"timeout,omitempty"`
 	RoutePolicy   *int32    `protobuf:"varint,12,opt,name=route_policy,json=routePolicy,proto3,oneof" query:"route_policy" json:"route_policy,omitempty"`
 	RoutingKey    *string   `protobuf:"bytes,13,opt,name=routing_key,json=routingKey,proto3,oneof" form:"routing_key,omitempty" json:"routing_key,omitempty" query:"routing_key"`
-	Status        *string   `protobuf:"bytes,14,opt,name=status,proto3,oneof" query:"status" form:"status,omitempty" json:"status,omitempty"`
+	Status        *string   `protobuf:"bytes,14,opt,name=status,proto3,oneof" form:"status,omitempty" json:"status,omitempty" query:"status"`
 	AlarmPolicy   *int32    `protobuf:"varint,15,opt,name=alarm_policy,json=alarmPolicy,proto3,oneof" query:"alarm_policy" json:"alarm_policy,omitempty"`
-	ExpectContent *string   `protobuf:"bytes,16,opt,name=expect_content,json=expectContent,proto3,oneof" form:"expect_content,omitempty" json:"expect_content,omitempty" query:"expect_content"`
+	ExpectContent *string   `protobuf:"bytes,16,opt,name=expect_content,json=expectContent,proto3,oneof" query:"expect_content" form:"expect_content,omitempty" json:"expect_content,omitempty"`
 	ExpectCode    *int32    `protobuf:"varint,17,opt,name=expect_code,json=expectCode,proto3,oneof" query:"expect_code" json:"expect_code,omitempty"`
 	Retry         *int32    `protobuf:"varint,18,opt,name=retry,proto3,oneof" query:"retry" json:"retry,omitempty"`
 	Prev          *string   `protobuf:"bytes,19,opt,name=prev,proto3,oneof" query:"prev" form:"prev,omitempty" json:"prev,omitempty"`
-	Next          *string   `protobuf:"bytes,20,opt,name=next,proto3,oneof" query:"next" form:"next,omitempty" json:"next,omitempty"`
+	Next          *string   `protobuf:"bytes,20,opt,name=next,proto3,oneof" form:"next,omitempty" json:"next,omitempty" query:"next"`
 	Updater       *string   `protobuf:"bytes,21,opt,name=updater,proto3,oneof" query:"updater" form:"updater,omitempty" json:"updater,omitempty"`
 	Deleted       *bool     `protobuf:"varint,22,opt,name=deleted,proto3,oneof" query:"deleted" json:"deleted,omitempty"`
 }
@@ -2257,8 +2257,8 @@ var file_task_proto_rawDesc = []byte{
 	0x78, 0x70, 0x65, 0x63, 0x74, 0x5f, 0x63, 0x6f, 0x64, 0x65, 0x42, 0x08, 0x0a, 0x06, 0x5f, 0x72,
 	0x65, 0x74, 0x72, 0x79, 0x42, 0x07, 0x0a, 0x05, 0x5f, 0x70, 0x72, 0x65, 0x76, 0x42, 0x07, 0x0a,
 	0x05, 0x5f, 0x6e, 0x65, 0x78, 0x74, 0x42, 0x0a, 0x0a, 0x08, 0x5f, 0x75, 0x70, 0x64, 0x61, 0x74,
-	0x65, 0x72, 0x42, 0x0a, 0x0a, 0x08, 0x5f, 0x64, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x64, 0x32, 0xc3,
-	0x03, 0x0a, 0x0b, 0x54, 0x61, 0x73, 0x6b, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x12, 0x49,
+	0x65, 0x72, 0x42, 0x0a, 0x0a, 0x08, 0x5f, 0x64, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x64, 0x32, 0x8b,
+	0x04, 0x0a, 0x0b, 0x54, 0x61, 0x73, 0x6b, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x12, 0x49,
 	0x0a, 0x0a, 0x47, 0x65, 0x74, 0x54, 0x61, 0x73, 0x6b, 0x41, 0x6c, 0x6c, 0x12, 0x0f, 0x2e, 0x74,
 	0x61, 0x73, 0x6b, 0x2e, 0x54, 0x61, 0x73, 0x6b, 0x51, 0x75, 0x65, 0x72, 0x79, 0x1a, 0x11, 0x2e,
 	0x74, 0x61, 0x73, 0x6b, 0x2e, 0x54, 0x61, 0x73, 0x6b, 0x41, 0x6c, 0x6c, 0x52, 0x65, 0x73, 0x70,
@@ -2272,23 +2272,27 @@ var file_task_proto_rawDesc = []byte{
 	0x12, 0x0f, 0x2e, 0x74, 0x61, 0x73, 0x6b, 0x2e, 0x54, 0x61, 0x73, 0x6b, 0x51, 0x75, 0x65, 0x72,
 	0x79, 0x1a, 0x0e, 0x2e, 0x74, 0x61, 0x73, 0x6b, 0x2e, 0x54, 0x61, 0x73, 0x6b, 0x52, 0x65, 0x73,
 	0x70, 0x22, 0x16, 0xca, 0xc1, 0x18, 0x12, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x6a,
-	0x6f, 0x62, 0x6f, 0x72, 0x2f, 0x74, 0x61, 0x73, 0x6b, 0x12, 0x45, 0x0a, 0x08, 0x50, 0x6f, 0x73,
-	0x74, 0x54, 0x61, 0x73, 0x6b, 0x12, 0x11, 0x2e, 0x74, 0x61, 0x73, 0x6b, 0x2e, 0x50, 0x6f, 0x73,
-	0x74, 0x54, 0x61, 0x73, 0x6b, 0x52, 0x65, 0x71, 0x1a, 0x0e, 0x2e, 0x74, 0x61, 0x73, 0x6b, 0x2e,
-	0x54, 0x61, 0x73, 0x6b, 0x52, 0x65, 0x73, 0x70, 0x22, 0x16, 0xd2, 0xc1, 0x18, 0x12, 0x2f, 0x61,
-	0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x6a, 0x6f, 0x62, 0x6f, 0x72, 0x2f, 0x74, 0x61, 0x73, 0x6b,
-	0x12, 0x47, 0x0a, 0x07, 0x50, 0x75, 0x74, 0x54, 0x61, 0x73, 0x6b, 0x12, 0x10, 0x2e, 0x74, 0x61,
-	0x73, 0x6b, 0x2e, 0x50, 0x75, 0x74, 0x54, 0x61, 0x73, 0x6b, 0x52, 0x65, 0x71, 0x1a, 0x0e, 0x2e,
-	0x74, 0x61, 0x73, 0x6b, 0x2e, 0x54, 0x61, 0x73, 0x6b, 0x52, 0x65, 0x73, 0x70, 0x22, 0x1a, 0xda,
-	0xc1, 0x18, 0x16, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x6a, 0x6f, 0x62, 0x6f, 0x72,
-	0x2f, 0x74, 0x61, 0x73, 0x6b, 0x2f, 0x3a, 0x69, 0x64, 0x12, 0x49, 0x0a, 0x0a, 0x44, 0x65, 0x6c,
-	0x65, 0x74, 0x65, 0x54, 0x61, 0x73, 0x6b, 0x12, 0x0f, 0x2e, 0x74, 0x61, 0x73, 0x6b, 0x2e, 0x54,
-	0x61, 0x73, 0x6b, 0x51, 0x75, 0x65, 0x72, 0x79, 0x1a, 0x0e, 0x2e, 0x74, 0x61, 0x73, 0x6b, 0x2e,
-	0x54, 0x61, 0x73, 0x6b, 0x52, 0x65, 0x73, 0x70, 0x22, 0x1a, 0xe2, 0xc1, 0x18, 0x16, 0x2f, 0x61,
-	0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x6a, 0x6f, 0x62, 0x6f, 0x72, 0x2f, 0x74, 0x61, 0x73, 0x6b,
-	0x2f, 0x3a, 0x69, 0x64, 0x42, 0x16, 0x5a, 0x14, 0x6a, 0x6f, 0x62, 0x6f, 0x72, 0x2f, 0x6b, 0x69,
-	0x74, 0x65, 0x78, 0x5f, 0x67, 0x65, 0x6e, 0x2f, 0x74, 0x61, 0x73, 0x6b, 0x62, 0x06, 0x70, 0x72,
-	0x6f, 0x74, 0x6f, 0x33,
+	0x6f, 0x62, 0x6f, 0x72, 0x2f, 0x74, 0x61, 0x73, 0x6b, 0x12, 0x46, 0x0a, 0x07, 0x52, 0x75, 0x6e,
+	0x54, 0x61, 0x73, 0x6b, 0x12, 0x0f, 0x2e, 0x74, 0x61, 0x73, 0x6b, 0x2e, 0x54, 0x61, 0x73, 0x6b,
+	0x51, 0x75, 0x65, 0x72, 0x79, 0x1a, 0x0e, 0x2e, 0x74, 0x61, 0x73, 0x6b, 0x2e, 0x54, 0x61, 0x73,
+	0x6b, 0x52, 0x65, 0x73, 0x70, 0x22, 0x1a, 0xd2, 0xc1, 0x18, 0x16, 0x2f, 0x61, 0x70, 0x69, 0x2f,
+	0x76, 0x31, 0x2f, 0x6a, 0x6f, 0x62, 0x6f, 0x72, 0x2f, 0x74, 0x61, 0x73, 0x6b, 0x2f, 0x3a, 0x69,
+	0x64, 0x12, 0x45, 0x0a, 0x08, 0x50, 0x6f, 0x73, 0x74, 0x54, 0x61, 0x73, 0x6b, 0x12, 0x11, 0x2e,
+	0x74, 0x61, 0x73, 0x6b, 0x2e, 0x50, 0x6f, 0x73, 0x74, 0x54, 0x61, 0x73, 0x6b, 0x52, 0x65, 0x71,
+	0x1a, 0x0e, 0x2e, 0x74, 0x61, 0x73, 0x6b, 0x2e, 0x54, 0x61, 0x73, 0x6b, 0x52, 0x65, 0x73, 0x70,
+	0x22, 0x16, 0xd2, 0xc1, 0x18, 0x12, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x6a, 0x6f,
+	0x62, 0x6f, 0x72, 0x2f, 0x74, 0x61, 0x73, 0x6b, 0x12, 0x47, 0x0a, 0x07, 0x50, 0x75, 0x74, 0x54,
+	0x61, 0x73, 0x6b, 0x12, 0x10, 0x2e, 0x74, 0x61, 0x73, 0x6b, 0x2e, 0x50, 0x75, 0x74, 0x54, 0x61,
+	0x73, 0x6b, 0x52, 0x65, 0x71, 0x1a, 0x0e, 0x2e, 0x74, 0x61, 0x73, 0x6b, 0x2e, 0x54, 0x61, 0x73,
+	0x6b, 0x52, 0x65, 0x73, 0x70, 0x22, 0x1a, 0xda, 0xc1, 0x18, 0x16, 0x2f, 0x61, 0x70, 0x69, 0x2f,
+	0x76, 0x31, 0x2f, 0x6a, 0x6f, 0x62, 0x6f, 0x72, 0x2f, 0x74, 0x61, 0x73, 0x6b, 0x2f, 0x3a, 0x69,
+	0x64, 0x12, 0x49, 0x0a, 0x0a, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x54, 0x61, 0x73, 0x6b, 0x12,
+	0x0f, 0x2e, 0x74, 0x61, 0x73, 0x6b, 0x2e, 0x54, 0x61, 0x73, 0x6b, 0x51, 0x75, 0x65, 0x72, 0x79,
+	0x1a, 0x0e, 0x2e, 0x74, 0x61, 0x73, 0x6b, 0x2e, 0x54, 0x61, 0x73, 0x6b, 0x52, 0x65, 0x73, 0x70,
+	0x22, 0x1a, 0xe2, 0xc1, 0x18, 0x16, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x6a, 0x6f,
+	0x62, 0x6f, 0x72, 0x2f, 0x74, 0x61, 0x73, 0x6b, 0x2f, 0x3a, 0x69, 0x64, 0x42, 0x16, 0x5a, 0x14,
+	0x6a, 0x6f, 0x62, 0x6f, 0x72, 0x2f, 0x6b, 0x69, 0x74, 0x65, 0x78, 0x5f, 0x67, 0x65, 0x6e, 0x2f,
+	0x74, 0x61, 0x73, 0x6b, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -2349,17 +2353,19 @@ var file_task_proto_depIdxs = []int32{
 	0,  // 21: task.TaskService.GetTaskAll:input_type -> task.TaskQuery
 	0,  // 22: task.TaskService.GetTaskById:input_type -> task.TaskQuery
 	0,  // 23: task.TaskService.GetTask:input_type -> task.TaskQuery
-	14, // 24: task.TaskService.PostTask:input_type -> task.PostTaskReq
-	15, // 25: task.TaskService.PutTask:input_type -> task.PutTaskReq
-	0,  // 26: task.TaskService.DeleteTask:input_type -> task.TaskQuery
-	12, // 27: task.TaskService.GetTaskAll:output_type -> task.TaskAllResp
-	11, // 28: task.TaskService.GetTaskById:output_type -> task.TaskResp
-	11, // 29: task.TaskService.GetTask:output_type -> task.TaskResp
-	11, // 30: task.TaskService.PostTask:output_type -> task.TaskResp
-	11, // 31: task.TaskService.PutTask:output_type -> task.TaskResp
-	11, // 32: task.TaskService.DeleteTask:output_type -> task.TaskResp
-	27, // [27:33] is the sub-list for method output_type
-	21, // [21:27] is the sub-list for method input_type
+	0,  // 24: task.TaskService.RunTask:input_type -> task.TaskQuery
+	14, // 25: task.TaskService.PostTask:input_type -> task.PostTaskReq
+	15, // 26: task.TaskService.PutTask:input_type -> task.PutTaskReq
+	0,  // 27: task.TaskService.DeleteTask:input_type -> task.TaskQuery
+	12, // 28: task.TaskService.GetTaskAll:output_type -> task.TaskAllResp
+	11, // 29: task.TaskService.GetTaskById:output_type -> task.TaskResp
+	11, // 30: task.TaskService.GetTask:output_type -> task.TaskResp
+	11, // 31: task.TaskService.RunTask:output_type -> task.TaskResp
+	11, // 32: task.TaskService.PostTask:output_type -> task.TaskResp
+	11, // 33: task.TaskService.PutTask:output_type -> task.TaskResp
+	11, // 34: task.TaskService.DeleteTask:output_type -> task.TaskResp
+	28, // [28:35] is the sub-list for method output_type
+	21, // [21:28] is the sub-list for method input_type
 	21, // [21:21] is the sub-list for extension type_name
 	21, // [21:21] is the sub-list for extension extendee
 	0,  // [0:21] is the sub-list for field type_name

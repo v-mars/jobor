@@ -65,3 +65,13 @@ func _gettaskbyidMw() []app.HandlerFunc {
 	// your code...
 	return nil
 }
+
+func _runtaskMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _task1Mw() []app.HandlerFunc {
+	// your code...
+	return nil
+}

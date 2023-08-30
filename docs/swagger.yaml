@@ -15,8 +15,18 @@ definitions:
     type: object
   task.Api:
     properties:
+      auth_data:
+        $ref: '#/definitions/task.AuthData'
+      auth_method:
+        type: string
+      body:
+        type: string
       content_type:
         type: string
+      form_data_list:
+        items:
+          $ref: '#/definitions/task.KvFiled'
+        type: array
       forms:
         additionalProperties:
           type: string
@@ -25,17 +35,36 @@ definitions:
         additionalProperties:
           type: string
         type: object
+      header_list:
+        items:
+          $ref: '#/definitions/task.KvFiled'
+        type: array
       method:
         type: string
       payload:
         type: string
       url:
         type: string
+      www_form_list:
+        items:
+          $ref: '#/definitions/task.KvFiled'
+        type: array
+    type: object
+  task.AuthData:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
     type: object
   task.Dingding:
     properties:
       enable:
         type: boolean
+      webhooks:
+        items:
+          $ref: '#/definitions/task.Webhooks'
+        type: array
     type: object
   task.Email:
     properties:
@@ -47,10 +76,21 @@ definitions:
           type: string
         type: array
     type: object
+  task.KvFiled:
+    properties:
+      key:
+        type: string
+      value:
+        type: string
+    type: object
   task.Lark:
     properties:
       enable:
         type: boolean
+      webhooks:
+        items:
+          $ref: '#/definitions/task.Webhooks'
+        type: array
     type: object
   task.Notify:
     properties:
@@ -157,7 +197,7 @@ definitions:
     properties:
       api:
         $ref: '#/definitions/task.Api'
-      data:
+      content:
         type: string
     type: object
   task.Webhook:
@@ -169,6 +209,13 @@ definitions:
         items:
           type: string
         type: array
+    type: object
+  task.Webhooks:
+    properties:
+      secret:
+        type: string
+      webhook_url:
+        type: string
     type: object
   worker.PostWorkerReq:
     properties:
@@ -316,6 +363,18 @@ paths:
       description: jobor task get by id
       responses: {}
       summary: jobor task get by id summary
+      tags:
+      - jobor task
+    post:
+      description: jobor task run
+      parameters:
+      - description: int valid
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses: {}
+      summary: jobor task run summary
       tags:
       - jobor task
     put:

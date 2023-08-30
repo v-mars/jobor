@@ -202,6 +202,9 @@ service TaskService {
   rpc GetTask(TaskQuery) returns(TaskResp) {
     option (api.get) = "/api/v1/jobor/task";
   }
+  rpc RunTask(TaskQuery) returns(TaskResp) {
+    option (api.post) = "/api/v1/jobor/task/:id";
+  }
   rpc PostTask(PostTaskReq) returns(TaskResp) {
     option (api.post) = "/api/v1/jobor/task";
   }

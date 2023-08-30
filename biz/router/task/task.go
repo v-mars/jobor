@@ -23,15 +23,17 @@ func Register(r *server.Hertz) {
 			_v1 := _api.Group("/v1", _v1Mw()...)
 			{
 				_jobor := _v1.Group("/jobor", _joborMw()...)
-				_jobor.GET("/task", append(_gettaskMw(), task.GetTask)...)
+				_jobor.POST("/task", append(_posttaskMw(), task.PostTask)...)
 				_task := _jobor.Group("/task", _taskMw()...)
 				_task.PUT("/:id", append(_puttaskMw(), task.PutTask)...)
 				_task.DELETE("/:id", append(_deletetaskMw(), task.DeleteTask)...)
-				_jobor.POST("/task", append(_posttaskMw(), task.PostTask)...)
 				_jobor.GET("/tasks", append(_gettaskallMw(), task.GetTaskAll)...)
+				_jobor.GET("/task", append(_gettaskMw(), task.GetTask)...)
+				_task0 := _jobor.Group("/task", _task0Mw()...)
+				_task0.POST("/:id", append(_runtaskMw(), task.RunTask)...)
 				{
-					_task0 := _jobor.Group("/task", _task0Mw()...)
-					_task0.GET("/:id", append(_gettaskbyidMw(), task.GetTaskById)...)
+					_task1 := _jobor.Group("/task", _task1Mw()...)
+					_task1.GET("/:id", append(_gettaskbyidMw(), task.GetTaskById)...)
 				}
 			}
 		}
