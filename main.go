@@ -2,7 +2,11 @@
 
 package main
 
-import "jobor/cmd/srv_http"
+import (
+	"github.com/cloudwego/hertz/pkg/common/hlog"
+	"jobor/cmd/srv_http"
+	"jobor/cmd/srv_rpc"
+)
 
 //	@title			Jobor 定时任务 API
 //	@version		3.0
@@ -24,9 +28,10 @@ import "jobor/cmd/srv_http"
 //
 // //@schemes     http
 func main() {
+	//dal.Init()
 	//start grpc server service
 	go func() {
-		//hlog.Fatal(srv_rpc.Start())
+		hlog.Fatal(srv_rpc.StartSrvRpc())
 	}()
 	// start http server service
 	srv_http.Start()

@@ -1,8 +1,9 @@
 package dispatcher
 
 import (
+	"fmt"
+	"github.com/cloudwego/hertz/pkg/common/hlog"
 	"jobor/biz/model"
-	"jobor/pkg/logger"
 	"math/rand"
 	"time"
 )
@@ -46,9 +47,10 @@ func random(routingKey string) JoborWorker {
 	return func() *model.JoborWorker {
 		workers, err := model.GetWorkers(routingKey)
 		if err != nil {
-			logger.Jobor.Errorf("get online worker failed: %s", err)
+			hlog.Errorf("get online worker failed: %s", err)
 			return nil
 		}
+		fmt.Println("workers:", workers)
 		return &workers[rand.Int()%len(workers)]
 	}
 }
@@ -59,7 +61,7 @@ func roundRobin(routingKey string) JoborWorker {
 	return func() *model.JoborWorker {
 		workers, err := model.GetWorkers(routingKey)
 		if err != nil {
-			logger.Jobor.Errorf("get online worker failed: %s", err)
+			hlog.Errorf("get online worker failed: %s", err)
 			return nil
 		}
 		worker := workers[i%len(workers)]
@@ -73,7 +75,7 @@ func weight(routingKey string) JoborWorker {
 	return func() *model.JoborWorker {
 		workers, err := model.GetWorkers(routingKey)
 		if err != nil {
-			logger.Jobor.Errorf("get online worker failed: %s", err)
+			hlog.Errorf("get online worker failed: %s", err)
 			return nil
 		}
 		allWeight := 0
@@ -100,7 +102,7 @@ func leastTask(routingKey string) JoborWorker {
 	return func() *model.JoborWorker {
 		workers, err := model.GetWorkers(routingKey)
 		if err != nil {
-			logger.Jobor.Errorf("get online worker failed: %s", err)
+			hlog.Errorf("get online worker failed: %s", err)
 			return nil
 		}
 		return &workers[rand.Int()%len(workers)]

@@ -118,7 +118,8 @@ func (o *OIDC) OidcCallbackWithCode(ctx context.Context, redirectURL, code strin
 	// Parse and verify ID Token payload.
 	idToken, err := verifier.Verify(ctx, rawIDToken)
 	if err != nil {
-		fmt.Println("idToken:", idToken)
+		//fmt.Println("idToken:", idToken)
+		_ = idToken
 		hlog.CtxErrorf(ctx, "verifier id_token err, %s", err)
 		return nil, err
 	}

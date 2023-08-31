@@ -1,4 +1,4 @@
-package q
+package dispatcher
 
 import (
 	"fmt"
@@ -9,10 +9,11 @@ import (
 )
 
 const (
-	exchange     = "jobor_exchange"
-	ExchangeType = "direct"
-	BindingKey   = "jobor_tasks123"
-	Queue        = "jobor_queue"
+	exchange         = "jobor_exchange"
+	ExchangeType     = "direct"
+	BindingKey       = "jobor_tasks123"
+	Queue            = "jobor_queue"
+	RegisterTaskName = "TaskWorker"
 )
 
 var QSrv *machinery.Server
@@ -49,15 +50,10 @@ func InitQSrv(rds *conf.Redis, queue string) (*machinery.Server, error) {
 	}
 	QSrv = server
 	//server.SendTask()
-	err = QSrv.RegisterTask("TaskWorker", TaskWorker)
+	err = QSrv.RegisterTask(RegisterTaskName, TaskWorker)
 	if err != nil {
-		hlog.Errorf("register task  err: %s", err)
+		hlog.Errorf("register Task  err: %s", err)
 		return nil, err
 	}
 	return server, nil
-}
-
-func TaskWorker(data string) error {
-	hlog.Infof("TaskWorker: %s", data)
-	return nil
 }

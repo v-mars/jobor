@@ -191,6 +191,15 @@ message PutTaskReq {
   optional bool deleted = 22[(api.query)="deleted",(api.go_tag)="json:\"deleted,omitempty\""];
 }
 
+// The request message containing the user's name.
+message TaskRequest {
+  int64  task_id = 1;
+  int32 task_type = 2;
+  string task_lang = 3;
+  bytes task_data = 4;
+  string name = 5;
+}
+
 
 service TaskService {
   rpc GetTaskAll(TaskQuery) returns(TaskAllResp) {
@@ -203,7 +212,7 @@ service TaskService {
     option (api.get) = "/api/v1/jobor/task";
   }
   rpc RunTask(TaskQuery) returns(TaskResp) {
-    option (api.post) = "/api/v1/jobor/task/:id";
+    option (api.post) = "/api/v1/jobor/task/:id/run";
   }
   rpc PostTask(PostTaskReq) returns(TaskResp) {
     option (api.post) = "/api/v1/jobor/task";

@@ -4,9 +4,11 @@ package task
 
 import (
 	"context"
+	"fmt"
 	"github.com/cloudwego/hertz/pkg/app"
 	"jobor/biz/dal/db"
 	"jobor/biz/model"
+	"jobor/biz/pack/dispatcher"
 	"jobor/biz/response"
 	task "jobor/kitex_gen/task"
 )
@@ -167,7 +169,7 @@ func DeleteTask(ctx context.Context, c *app.RequestContext) {
 //	@Tags			jobor task
 //	@Param			id	path	int	true	"int valid"
 //
-// @router /api/v1/jobor/task/{id} [POST]
+// @router /api/v1/jobor/task/{id}/run [POST]
 func RunTask(ctx context.Context, c *app.RequestContext) {
 	var err error
 	var req task.TaskQuery
@@ -177,7 +179,15 @@ func RunTask(ctx context.Context, c *app.RequestContext) {
 		return
 	}
 	_id := c.Params.ByName("id")
-	_ = _id
-
+	t, err := model.GetTaskInfoById(_id, false)
+	if err != nil {
+		response.SendBaseResp(ctx, c, err)
+		return
+	}
+	if t.Deleted {
+		response.SendBaseResp(ctx, c, fmt.Errorf("task %s is delete,task can't execute", t.Name))
+		return
+	}
+	go dispatcher.RunTasks(model.TriggerAuto, model.TriggerManual, t)
 	response.SendDataResp(ctx, c, response.Succeed, "")
 }

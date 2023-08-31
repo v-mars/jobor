@@ -10,7 +10,8 @@ const (
 	AppVersion = "v1.20"
 
 	// AppName 项目名称
-	AppName = "dolphin.jobor"
+	AppName       = "dolphin.jobor"
+	AppWorkerName = "dolphin.jobor_worker"
 
 	// Dom 租户/域
 	Dom = "jobor"

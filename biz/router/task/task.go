@@ -30,7 +30,10 @@ func Register(r *server.Hertz) {
 				_jobor.GET("/tasks", append(_gettaskallMw(), task.GetTaskAll)...)
 				_jobor.GET("/task", append(_gettaskMw(), task.GetTask)...)
 				_task0 := _jobor.Group("/task", _task0Mw()...)
-				_task0.POST("/:id", append(_runtaskMw(), task.RunTask)...)
+				{
+					_id := _task0.Group("/:id", _idMw()...)
+					_id.POST("/run", append(_runtaskMw(), task.RunTask)...)
+				}
 				{
 					_task1 := _jobor.Group("/task", _task1Mw()...)
 					_task1.GET("/:id", append(_gettaskbyidMw(), task.GetTaskById)...)

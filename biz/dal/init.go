@@ -10,7 +10,6 @@ import (
 	"jobor/biz/dal/db"
 	"jobor/biz/dal/migrate"
 	"jobor/biz/dal/mysql"
-	"jobor/biz/dal/q"
 	"jobor/biz/dal/redis"
 	"jobor/biz/dal/redisStore"
 	"jobor/biz/model"
@@ -79,7 +78,7 @@ func Init() {
 		hlog.Fatal(redis.Subscribe(context.TODO(), dispatcher.Fn, model.PubSubChannel))
 	}()
 
-	if _, err := q.InitQSrv(&conf.GetConf().Redis, q.Queue); err != nil {
+	if _, err := dispatcher.InitQSrv(&conf.GetConf().Redis, dispatcher.Queue); err != nil {
 		hlog.Fatal(err)
 		return
 	}

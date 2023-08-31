@@ -75,3 +75,8 @@ func _task1Mw() []app.HandlerFunc {
 	// your code...
 	return nil
 }
+
+func _idMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}

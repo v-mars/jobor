@@ -2,6 +2,7 @@ package model
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"github.com/cloudwego/hertz/pkg/common/hlog"
 	"gorm.io/gorm"
@@ -10,6 +11,8 @@ import (
 	"jobor/kitex_gen/worker"
 	"jobor/pkg/convert"
 	"jobor/pkg/utils"
+	"jobor/rpc_biz"
+	"time"
 )
 
 const (
@@ -45,11 +48,17 @@ type Workers []JoborWorker
 
 func (u *Workers) List(req *worker.WorkerQuery, resp *response.PageDataList) (Workers, error) {
 	resp.List = u
-	if err := PageDataWithScopes(db.DB.Model(&JoborWorker{}), NameWorker, Find, resp,
-		GetScopesList(), SelectWorker(),
+	if err := PageDataWithScopes(db.DB.Model(&JoborWorker{}), NameWorker, Scan, resp,
+		GetScopesList(SelectWorker()),
 		WhereWorker(req),
 		OrderWorker(), GroupWorker()); err != nil {
 		return nil, err
+	}
+	leaseUpdate := time.Now().Unix() - int64(rpc_biz.DefaultHeartbeatInterval.Seconds())
+	for i, v := range *u {
+		if v.LeaseUpdate < leaseUpdate && v.Status == TaskLogStatusRunning {
+			(*u)[i].Status = WorkerStatusOffline
+		}
 	}
 	return *u, nil
 }
@@ -157,15 +166,15 @@ func DelWorker(ctx context.Context, Db *gorm.DB, _ids []interface{}) ([]JoborWor
 		return us, err
 	}
 	for _, _id := range _ids {
-		if err := Db.Table(NameWorker).Where("id!=?", _id).Update("deleted", true).Error; err != nil {
+		if err := Db.Table(NameWorker).Where("id!=?", _id).Delete(&JoborWorker{}).Error; err != nil {
 			return us, err
 		}
 	}
-	hlog.Infof("Jobor任务删除成功")
+	hlog.Infof("Jobor任务节点删除成功")
 	return us, nil
 }
 
-// GetByNameWorker 根据Jobor任务名称获取Jobor任务信息
+// GetByNameWorker 根据Jobor任务节点名称获取Jobor任务节点信息
 func (u *JoborWorker) GetByNameWorker(name string) (JoborWorker, error) {
 	err := db.DB.Table(u.TableName()).Where("name = ?", name).Take(&u).Error
 	if err != nil {
@@ -222,26 +231,49 @@ func GetWorkerInfoByName(name string, isPanic bool) (worker.WorkerResp, error) {
 
 func GetWorkers(routingKey string) ([]JoborWorker, error) {
 	var workers []JoborWorker
-	//leaseUpdate := time.Now().Unix() - int64(proto.DefaultHeartbeatInterval.Seconds())
-	//fmt.Println("lease_update:", leaseUpdate)
-	//var o = models.Option{Where: "status=? and lease_update>=?",
-	//	Value: []interface{}{tbs.WorkerStatusRunning, leaseUpdate}}
-	//if len(routingKey) > 0 {
-	//	o.Where = o.Where + " and routing_key=?"
-	//	o.Value = append(o.Value, routingKey)
+	leaseUpdate := time.Now().Unix() - int64(rpc_biz.DefaultHeartbeatInterval.Seconds())
+	var whereSql = "status=? and lease_update>=?"
+	var whereArgs = []interface{}{WorkerStatusRunning, leaseUpdate}
+	if len(routingKey) > 0 {
+		whereSql = whereSql + " and routing_key=?"
+		whereArgs = append(whereArgs, routingKey)
+	}
+	err := db.DB.Model(&JoborWorker{}).Where(whereSql, whereArgs...).Find(&workers).Error
+	if err != nil {
+		return nil, err
+	}
+	//var onlineWorkers []*tbs.JoborWorker
+	//for _, worker := range workers {
+	//	if worker.Status==tbs.WorkerStatusRunning {
+	//		onlineWorkers = append(onlineWorkers, worker)
+	//	}
 	//}
-	//
-	//err := models.Get(db.DB, &tbs.JoborWorker{}, o, &workers)
-	////var onlineWorkers []*tbs.JoborWorker
-	////for _, worker := range workers {
-	////	if worker.Status==tbs.WorkerStatusRunning {
-	////		onlineWorkers = append(onlineWorkers, worker)
-	////	}
-	////}
 	if len(workers) == 0 {
-		err := fmt.Errorf("can not get valid worker from routing_key[%s]", routingKey)
+		err = fmt.Errorf("can not get valid worker from routing_key[%s]", routingKey)
 		return nil, err
 	}
 
 	return workers, nil
+}
+
+func CreateOrUpdate(data JoborWorker) error {
+	var exist = JoborWorker{}
+	//if err:=db.DB.Model(&tbs.JoborWorker{}).Where(tbs.JoborWorker{Addr: data.Addr}).FirstOrCreate(&data).Error;err!=nil{
+	//return err
+	//}
+	if err := db.DB.Model(&JoborWorker{}).Where(JoborWorker{Addr: data.Addr}).First(&exist).Error; errors.Is(
+		err, gorm.ErrRecordNotFound) {
+		if err = db.DB.Model(&JoborWorker{}).Create(&data).Error; err != nil {
+			return err
+		}
+	} else if err != nil {
+		return err
+	} else {
+		if err = db.DB.Model(&JoborWorker{}).Where("addr=? and status!=?", data.Addr,
+			WorkerStatusStop).Updates(&data).Error; err != nil {
+			return err
+		}
+	}
+
+	return nil
 }

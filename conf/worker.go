@@ -20,6 +20,7 @@ func GetWorkerConf() *WorkerConfig {
 type WorkerConfig struct {
 	WorkerName    string   `yaml:"worker_name"`
 	HttpAddress   string   `yaml:"http_address"`
+	GRpcAddr      string   `yaml:"grpc_addr"`
 	RoutingKey    string   `yaml:"routing_key"`
 	Weight        int      `yaml:"weight"`
 	Servers       []string `yaml:"servers"`
@@ -40,7 +41,8 @@ func initWorkerConf() {
 	}
 
 	wconf = new(WorkerConfig)
-	wconf.HttpAddress = ":2002"
+	//wconf.HttpAddress = ":2002"
+	wconf.GRpcAddr = ":20021"
 	wconf.LogLevel = "./log/std.log"
 	wconf.LogLevel = "debug"
 	wconf.Concurrency = 20

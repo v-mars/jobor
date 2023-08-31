@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+package srv_rpc;
+// kitex -module jobor -service jobor_rpc  -no-fast-api -I idl -record  idl/srv_rpc.proto
+// The greeting service definition.
+option go_package = "pbapi";
+//option go_package = "kitex_gen/pbapi";
+
+//import "base.proto";
+
+
+
+// worker send Heartbeat to master server
+service Heartbeat {
+  // registry worker
+  rpc RegistryWorker(RegistryReq) returns (Empty) {};
+  // SendHeartbeat send to server req to itself alive
+  rpc SendHeartbeat(HeartbeatReq) returns (Empty) {};
+}
+
+message RegistryReq {
+  string ip = 1;
+  int32 port = 2;
+  int32 weight = 3;
+  string hostname = 4;
+  string version = 5;
+  string hostGroup = 6;
+  string remark = 7;
+  string routingKey = 8;
+}
+
+message HeartbeatReq {
+  string ip = 1;
+  int32 port = 2;
+  repeated string running_task = 3;
+}
+
+message Empty {}
+
+

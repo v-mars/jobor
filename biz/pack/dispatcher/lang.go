@@ -3,10 +3,13 @@ package dispatcher
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
+	"github.com/cloudwego/hertz/pkg/common/hlog"
 	"io"
 	"io/ioutil"
-	"jobor/pkg/logger"
+	"jobor/biz/response"
+	task2 "jobor/kitex_gen/task"
 	"net/http"
 	"os"
 	"os/exec"
@@ -35,46 +38,55 @@ type Runner interface {
 	Type() string
 }
 
-// GetDataRun get task Runner
+// GetDataRun get Task Runner
 // get api or other
-//func GetDataRun(t *pb.TaskRequest) (Runner, error) {
-//	var data tbs.TaskData
-//	err := json.Unmarshal(t.TaskData, &data)
-//	if err != nil {
-//		return nil, err
-//	}
-//	switch t.TaskLang {
-//	case LangShell, LangPython, LangPython3, LangGolang, LangWindowsBat:
-//		var code = DataCode{Lang: Lang(t.TaskLang), ScriptCode: data.Code}
-//		code.LangDesc = code.Lang.String()
-//		return code, err
-//	case LangApi:
-//		var api = DataAPI{URL: data.Api.Url, Method: data.Api.Method, PayLoad: data.Api.Payload}
-//		if api.Header == nil {
-//			api.Header = make(map[string]string)
-//		}
-//		if len(data.Api.ContentType) > 0 {
-//			api.Header["Content-Type"] = data.Api.ContentType
-//		}
-//		for _, mapVal := range data.Api.Header {
-//			api.Header[mapVal["key"]] = mapVal["value"]
-//		}
-//		if api.Header["Content-Type"] == "application/x-www-form-urlencoded" {
-//			api.PayLoad = ""
-//			for _, mapForm := range data.Api.Forms {
-//				if len(api.PayLoad) > 0 {
-//					api.PayLoad = fmt.Sprintf("%s&%s=%s", api.PayLoad, mapForm["key"], mapForm["value"])
-//				} else {
-//					api.PayLoad = fmt.Sprintf("%s=%s", mapForm["key"], mapForm["value"])
-//				}
-//			}
-//		}
-//		return api, nil
-//	default:
-//		err := fmt.Errorf("unsupport task lang %d", t.TaskType)
-//		return nil, err
-//	}
-//}
+func GetDataRun(t *task2.TaskRequest) (Runner, error) {
+	var data task2.TaskData
+	err := json.Unmarshal(t.TaskData, &data)
+	if err != nil {
+		return nil, err
+	}
+	switch t.TaskLang {
+	case LangShell, LangPython, LangPython3, LangGolang, LangWindowsBat:
+		var code = DataCode{Lang: Lang(t.TaskLang), ScriptCode: *data.Content}
+		code.LangDesc = code.Lang.String()
+		return code, err
+	case LangApi:
+		var api = DataAPI{URL: data.Api.Url, Method: data.Api.Method, PayLoad: data.Api.Body}
+		if api.Header == nil {
+			api.Header = make(map[string]string)
+		}
+		//if len(data.Api.ContentType) > 0 {
+		//	api.Header["Content-Type"] = data.Api.ContentType
+		//}
+		for _, mapVal := range data.Api.HeaderList {
+			api.Header[mapVal.Key] = mapVal.Value
+		}
+		if data.Api.ContentType == "application/x-www-form-urlencoded" {
+			api.PayLoad = ""
+			for _, mapForm := range data.Api.WwwFormList {
+				if len(api.PayLoad) > 0 {
+					api.PayLoad = fmt.Sprintf("%s&%s=%s", api.PayLoad, mapForm.Key, mapForm.Value)
+				} else {
+					api.PayLoad = fmt.Sprintf("%s=%s", mapForm.Key, mapForm.Value)
+				}
+			}
+		} else if data.Api.ContentType == "application/form-data" {
+			api.PayLoad = ""
+			for _, mapForm := range data.Api.FormDataList {
+				if len(api.PayLoad) > 0 {
+					api.PayLoad = fmt.Sprintf("%s&%s=%s", api.PayLoad, mapForm.Key, mapForm.Value)
+				} else {
+					api.PayLoad = fmt.Sprintf("%s=%s", mapForm.Key, mapForm.Value)
+				}
+			}
+		}
+		return api, nil
+	default:
+		err := fmt.Errorf("unsupport Task lang %s", t.TaskLang)
+		return nil, err
+	}
+}
 
 var _ Runner = DataCode{}
 
@@ -96,11 +108,11 @@ func (d DataAPI) Run(ctx context.Context) (out io.ReadCloser) {
 			// _,_=pw.Write([]byte(fmt.Sprintf("%3d", exitCode))) // write exitCode,total 3 byte
 		}()
 		// go1.13 use NewRequestWithContext
-
-		req, err := http.NewRequestWithContext(ctx, d.Method, d.URL, bytes.NewReader([]byte(d.PayLoad)))
+		hlog.CtxDebugf(ctx, "method: %s, url: %s, payLoad:", d.Method, d.URL, d.PayLoad)
+		req, err := http.NewRequestWithContext(ctx, strings.ToUpper(d.Method), d.URL, bytes.NewReader([]byte(d.PayLoad)))
 		if err != nil {
 			_, _ = pw.Write([]byte(err.Error()))
-			logger.Jobor.Errorf("http NewRequest failed: %s", err)
+			hlog.Errorf("http NewRequest failed: %s", err)
 			return
 		}
 
@@ -111,13 +123,13 @@ func (d DataAPI) Run(ctx context.Context) (out io.ReadCloser) {
 		client := http.DefaultClient
 		resp, err := client.Do(req)
 		if err != nil {
-			logger.Jobor.Errorf("client Do failed: %s", err)
+			hlog.Errorf("client Do failed: %s", err)
 			var customErr bytes.Buffer
 			switch ctx.Err() {
 			case context.DeadlineExceeded:
-				//customErr.WriteString(response.FailedCode(response.ErrCtxDeadlineExceeded))
+				customErr.WriteString(response.GetMsg(response.ErrCtxDeadlineExceeded))
 			case context.Canceled:
-				//customErr.WriteString(response.GetMsg(response.ErrCtxCanceled))
+				customErr.WriteString(response.GetMsg(response.ErrCtxCanceled))
 			default:
 				customErr.WriteString(err.Error())
 			}
@@ -128,7 +140,7 @@ func (d DataAPI) Run(ctx context.Context) (out io.ReadCloser) {
 
 		bs, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
-			logger.Jobor.Errorf("read failed: %s", err)
+			hlog.Errorf("read failed: %s", err)
 			return
 		}
 		_, _ = pw.Write(bs)
@@ -151,6 +163,74 @@ type DataCode struct {
 	Lang       Lang   `json:"kind"`
 	LangDesc   string `json:"langDesc" comment:"Lang"`
 	ScriptCode string `json:"script_code" comment:"ScriptCode"`
+}
+
+// Run run shell
+func (d DataCode) Run(ctx context.Context) (out io.ReadCloser) {
+	pr, pw := io.Pipe()
+	go func() {
+		var (
+			exitCode = DefaultExitCode
+			err      error
+			codePath string
+			cmd      *exec.Cmd
+		)
+		defer func(pw *io.PipeWriter) { _ = pw.Close() }(pw)
+		defer func() {
+			now := time.Now().Local().Format("2006-01-02 15:04:05")
+			finishTxt := fmt.Sprintf("#################### Bash Shell Finish ##################")
+			_, _ = pw.Write([]byte(fmt.Sprintf("\n%s\n%s Task Run Finished, Return exitCode:%5d", finishTxt, now, exitCode))) // write exitCode,total 5 byte
+			if codePath != "" {
+				_ = os.Remove(codePath)
+			}
+		}()
+		cmd, codePath, err = getCmd(ctx, string(d.Lang), d.ScriptCode)
+		if err != nil {
+			_, _ = pw.Write([]byte(err.Error()))
+			return
+		}
+		cmd.Stdout = pw
+		cmd.Stderr = pw
+		startTxt := fmt.Sprintf("#################### Bash Shell Start ##################\n\n")
+		_, _ = pw.Write([]byte(startTxt))
+		err = cmd.Start()
+		if err != nil {
+			_, _ = pw.Write([]byte(err.Error()))
+			return
+		}
+
+		err = cmd.Wait()
+		if err != nil {
+			// deal err
+			// if context err,will change err to custom msg
+			switch ctx.Err() {
+			case context.DeadlineExceeded:
+				_, err = pw.Write([]byte("ErrCtxDeadlineExceeded"))
+				if err != nil {
+					return
+				}
+			case context.Canceled:
+				_, _ = pw.Write([]byte("ErrCtxCanceled"))
+			default:
+				_, err = pw.Write([]byte(err.Error()))
+				if err != nil {
+					return
+				}
+			}
+			// try to get the exit code
+			if exitError, ok := err.(*exec.ExitError); ok {
+				exitCode = exitError.ExitCode()
+			}
+		} else {
+			exitCode = 0
+		}
+
+	}()
+	return pr
+}
+
+func (d DataCode) Type() string {
+	return string(d.Lang)
 }
 
 func getCmd(ctx context.Context, Lang string, code string) (*exec.Cmd, string, error) {
@@ -305,70 +385,6 @@ func runWindowsBat(ctx context.Context, scriptCode string) (*exec.Cmd, string, e
 	_ = tmpFile.Close()
 	cmd := exec.CommandContext(ctx, "cmd", "/C", batCodePath)
 	return cmd, batCodePath, nil
-}
-
-func (d DataCode) Run(ctx context.Context) (out io.ReadCloser) {
-	pr, pw := io.Pipe()
-	go func() {
-		var (
-			exitCode = DefaultExitCode
-			err      error
-			codePath string
-			cmd      *exec.Cmd
-		)
-		defer func(pw *io.PipeWriter) { _ = pw.Close() }(pw)
-		defer func() {
-			now := time.Now().Local().Format("2006-01-02 15:04:05")
-			_, _ = pw.Write([]byte(fmt.Sprintf("\n\r%s Task Run Finished, Return exitCode:%5d", now, exitCode))) // write exitCode,total 5 byte
-			if codePath != "" {
-				_ = os.Remove(codePath)
-			}
-		}()
-		cmd, codePath, err = getCmd(ctx, string(d.Lang), d.ScriptCode)
-		if err != nil {
-			_, _ = pw.Write([]byte(err.Error()))
-			return
-		}
-		cmd.Stdout = pw
-		cmd.Stderr = pw
-		err = cmd.Start()
-		if err != nil {
-			_, _ = pw.Write([]byte(err.Error()))
-			return
-		}
-
-		err = cmd.Wait()
-		if err != nil {
-			// deal err
-			// if context err,will change err to custom msg
-			switch ctx.Err() {
-			case context.DeadlineExceeded:
-				_, err = pw.Write([]byte("ErrCtxDeadlineExceeded"))
-				if err != nil {
-					return
-				}
-			case context.Canceled:
-				_, _ = pw.Write([]byte("ErrCtxCanceled"))
-			default:
-				_, err = pw.Write([]byte(err.Error()))
-				if err != nil {
-					return
-				}
-			}
-			// try to get the exit code
-			if exitError, ok := err.(*exec.ExitError); ok {
-				exitCode = exitError.ExitCode()
-			}
-		} else {
-			exitCode = 0
-		}
-
-	}()
-	return pr
-}
-
-func (d DataCode) Type() string {
-	return string(d.Lang)
 }
 
 // String return Lanf str
