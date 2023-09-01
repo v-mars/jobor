@@ -30,3 +30,18 @@ func _getlogMw() []app.HandlerFunc {
 	// your code...
 	return nil
 }
+
+func _logMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _idMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _aborttaskMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}

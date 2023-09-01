@@ -34,7 +34,7 @@ type JoborLog struct {
 	Idempotent    string        `gorm:"type:varchar(156);comment:幂等标志" json:"idempotent" form:"idempotent"`
 	StartTime     db.JSONTime   `gorm:"default: null;type:datetime;comment:开始时间" json:"start_time" form:"start_time"`
 	EndTime       db.JSONTime   `gorm:"default: null;type:datetime;comment:结束时间" json:"end_time" form:"end_time"`
-	CostTime      db.SecTime    `gorm:"type:float;default:0;comment:执行耗时" json:"cost_time" form:"cost_time"` // 单位：秒
+	CostTime      db.MillisTime `gorm:"type:float;default:0;comment:执行耗时(毫秒)" json:"cost_time" form:"cost_time"` // 单位：毫秒
 	//CostTime      float32       `gorm:"comment:'任务耗时'" json:"cost_time" form:"cost_time"`
 }
 
@@ -64,7 +64,7 @@ func (u *Logs) List(req *task_log.LogQuery, resp *response.PageDataList) (Logs, 
 	for i, v := range *u {
 		if v.Result == TaskLogStatusRunning || v.Result == TaskLogStatusWait {
 			var totalTime = time.Now().Unix() - v.StartTime.Unix()
-			(*u)[i].CostTime = db.SecTime((time.Second * time.Duration(totalTime)).String())
+			(*u)[i].CostTime = db.MillisTime((time.Second * time.Duration(totalTime)).String())
 		}
 	}
 	return *u, nil

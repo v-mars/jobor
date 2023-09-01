@@ -114,9 +114,9 @@ service LogService {
   rpc GetLog(LogQuery) returns(LogResp) {
     option (api.get) = "/api/v1/jobor/log";
   }
-//  rpc PostLog(PostLogReq) returns(LogResp) {
-//    option (api.post) = "/api/v1/jobor/log";
-//  }
+  rpc AbortTask(PostLogReq) returns(LogResp) {
+    option (api.post) = "/api/v1/jobor/log/:id/abort";
+  }
 //  rpc PutLog(PutLogReq) returns(LogResp) {
 //    option (api.put) = "/api/v1/jobor/log/:id";
 //  }

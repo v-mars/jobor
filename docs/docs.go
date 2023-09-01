@@ -83,6 +83,16 @@ const docTemplate = `{
                 "responses": {}
             }
         },
+        "/api/v1/jobor/log/:id/abort": {
+            "post": {
+                "description": "jobor task abort",
+                "tags": [
+                    "jobor log"
+                ],
+                "summary": "jobor task abort summary",
+                "responses": {}
+            }
+        },
         "/api/v1/jobor/migrate": {
             "get": {
                 "responses": {}
@@ -177,12 +187,12 @@ const docTemplate = `{
                 ],
                 "responses": {}
             },
-            "post": {
-                "description": "jobor task run",
+            "delete": {
+                "description": "jobor task delete",
                 "tags": [
                     "jobor task"
                 ],
-                "summary": "jobor task run summary",
+                "summary": "jobor task delete summary",
                 "parameters": [
                     {
                         "type": "integer",
@@ -193,13 +203,15 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {}
-            },
-            "delete": {
-                "description": "jobor task delete",
+            }
+        },
+        "/api/v1/jobor/task/{id}/run": {
+            "post": {
+                "description": "jobor task run",
                 "tags": [
                     "jobor task"
                 ],
-                "summary": "jobor task delete summary",
+                "summary": "jobor task run summary",
                 "parameters": [
                     {
                         "type": "integer",

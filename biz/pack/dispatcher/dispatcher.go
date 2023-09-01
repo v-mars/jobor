@@ -266,26 +266,27 @@ func RunTasksWithRPC(evt, trigger string, t *model.JoborTask) {
 			taskLog.ErrMsg = s.Err.Error()
 			taskLog.Result = model.TaskLogStatusUnknown
 		} else if taskLog.Result == model.TaskLogStatusTimeout {
-			s.Err = fmt.Errorf("task %s[%d] lang=%s %s", t.Name, t.ID, t.Lang, "is timeout")
+			s.Err = fmt.Errorf("任务 %s[%d] 类型=%s %s", t.Name, t.ID, t.Lang, "已经超时")
 			hlog.Error(s.Err)
 			taskLog.ErrMsg = s.Err.Error()
 		} else if taskLog.Result == model.TaskLogStatusAbort {
-			s.Err = fmt.Errorf("task %s[%d] lang=%s %s", t.Name, t.ID, t.Lang, "is aborted")
+			s.Err = fmt.Errorf("任务 %s[%d] 类型=%s %s", t.Name, t.ID, t.Lang, "已经终止")
 			hlog.Error(s.Err)
 			taskLog.ErrMsg = s.Err.Error()
 		} else if s.Err != nil {
-			s.Err = fmt.Errorf("task %s[%d] lang=%s %s", t.Name, t.ID, t.Lang, s.Err)
+			s.Err = fmt.Errorf("任务 %s[%d] 类型=%s %s", t.Name, t.ID, t.Lang, s.Err)
 			hlog.Error(s.Err)
 			taskLog.ErrMsg = s.Err.Error()
 			taskLog.Result = model.TaskLogStatusFailed
 		} else {
 			taskLog.Result = model.TaskLogStatusSuccess
-			hlog.Infof("task %s[%d] lang=%s 执行成功", t.Name, t.ID, t.Lang)
+			hlog.Infof("任务 %s[%d] 类型=%s 执行成功", t.Name, t.ID, t.Lang)
 		}
 		//totalTime := time.Since(startTimeTotal)
 		//value, _ := strconv.ParseFloat(fmt.Sprintf("%.3f", totalTime.Seconds()), 64)
-		var totalTime = time.Now().Unix() - startTimeTotal.Unix()
-		taskLog.CostTime = db.SecTime((time.Second * time.Duration(totalTime)).String())
+		var totalTime = time.Now().UnixMilli() - startTimeTotal.UnixMilli()
+		//taskLog.CostTime = db.MillisTime((time.Second * time.Duration(totalTime)).String())
+		taskLog.CostTime = db.MillisTime((time.Millisecond * time.Duration(totalTime)).String())
 		taskLog.EndTime = db.JSONTime{Time: time.Now()}
 		if s.Err = tx.Model(&taskLog).Omit([]string{"CreatedAt", "UpdatedAt"}...).Save(&taskLog).Error; s.Err != nil {
 			s.Err = fmt.Errorf("保存tasklog错误: %s", s.Err)
@@ -326,7 +327,7 @@ func RunTasksWithRPC(evt, trigger string, t *model.JoborTask) {
 	}
 	defer s.TaskCancel()
 	defer timeoutCac()
-	time.Sleep(1 * time.Second)
+	//time.Sleep(1 * time.Second)
 
 	//conn, w, errConn := TryGetGrpcClientConn(s.TaskCtx, workers)
 	//if errConn != nil {

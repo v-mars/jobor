@@ -4,9 +4,12 @@ package task_log
 
 import (
 	"context"
+	"fmt"
 	"jobor/biz/model"
+	"jobor/biz/pack/dispatcher"
 	"jobor/biz/response"
 	"jobor/kitex_gen/task_log"
+	"jobor/pkg/convert"
 
 	"github.com/cloudwego/hertz/pkg/app"
 )
@@ -39,4 +42,30 @@ func GetLog(ctx context.Context, c *app.RequestContext) {
 		return
 	}
 	response.SendDataResp(ctx, c, response.Succeed, resp)
+}
+
+// AbortTask .
+//
+//	@Summary		jobor task abort summary
+//	@Description	jobor task abort
+//	@Tags			jobor log
+//
+// @router /api/v1/jobor/log/:id/abort [POST]
+func AbortTask(ctx context.Context, c *app.RequestContext) {
+	var err error
+	var req task_log.PostLogReq
+	err = c.BindAndValidate(&req)
+	if err = c.BindAndValidate(&req); err != nil {
+		response.ParamFailed(ctx, c, err)
+		return
+	}
+	_id := c.Params.ByName("id")
+	_, ok := dispatcher.CacheTask.TaskLogs[convert.ToInt(_id)]
+	if !ok {
+		response.SendBaseResp(ctx, c, fmt.Errorf("任务[%s]已经完成或不存在", _id))
+		return
+	}
+	dispatcher.CacheTask.TaskLogs[convert.ToInt(_id)].TaskCancel()
+
+	response.SendDataResp(ctx, c, response.Succeed, "")
 }

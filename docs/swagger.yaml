@@ -307,6 +307,13 @@ paths:
       summary: jobor log get summary
       tags:
       - jobor log
+  /api/v1/jobor/log/:id/abort:
+    post:
+      description: jobor task abort
+      responses: {}
+      summary: jobor task abort summary
+      tags:
+      - jobor log
   /api/v1/jobor/migrate:
     get:
       responses: {}
@@ -365,18 +372,6 @@ paths:
       summary: jobor task get by id summary
       tags:
       - jobor task
-    post:
-      description: jobor task run
-      parameters:
-      - description: int valid
-        in: path
-        name: id
-        required: true
-        type: integer
-      responses: {}
-      summary: jobor task run summary
-      tags:
-      - jobor task
     put:
       description: jobor task put
       parameters:
@@ -393,6 +388,19 @@ paths:
           $ref: '#/definitions/task.PutTaskReq'
       responses: {}
       summary: jobor task put summary
+      tags:
+      - jobor task
+  /api/v1/jobor/task/{id}/run:
+    post:
+      description: jobor task run
+      parameters:
+      - description: int valid
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses: {}
+      summary: jobor task run summary
       tags:
       - jobor task
   /api/v1/jobor/tasks:
