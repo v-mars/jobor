@@ -85,7 +85,7 @@ func StartWorkerRpc() error {
 		//server.WithLogger(),
 		//server.WithACLRules(),
 		//server.WithErrorHandler(),
-		server.WithMuxTransport(), // IO多路复用
+		//server.WithMuxTransport(), // IO多路复用
 	)
 	_, port, _ := net.SplitHostPort(conf.GetWorkerConf().GRpcAddr)
 	intPort, _ := strconv.Atoi(port)
