@@ -1,7 +1,7 @@
 FROM iocean/golang:1.20 as builder
 WORKDIR /data
 COPY ./ ./
-RUN go env -w GO111MODULE="on" && go env -w GOPROXY="https://goproxy.cn" && CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./app ./cmdb/worker/main.go
+RUN go env -w GO111MODULE="on" && go env -w GOPROXY="https://goproxy.cn" && CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./app ./cmd/worker/main.go
 
 
 FROM iocean/ubuntu:22.10
@@ -15,7 +15,8 @@ ENV BEGIN_PORT=20021
 ENV SERVICE=jobor-worker
 ENV LOCATION=CN
 ENV LANG=C.UTF-8
-ENTRYPOINT exec ./app -c conf/worker.yaml
+CMD exec ./app -c conf/worker.yaml
+#ENTRYPOINT exec ./app -f conf/worker.yaml
 
 # docker build -f dockers/jobor_worker.Dockerfile -t iocean/jobor:worker-v1.0.1 .
 # docker push iocean/jobor:worker-v1.0.1

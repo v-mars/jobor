@@ -3,9 +3,10 @@
 package main
 
 import (
-	"github.com/cloudwego/hertz/pkg/common/hlog"
+	"fmt"
+	Cmd "jobor/cmd"
 	"jobor/cmd/srv_http"
-	"jobor/cmd/srv_rpc"
+	"os"
 )
 
 //	@title			Jobor 定时任务 API
@@ -29,10 +30,10 @@ import (
 // //@schemes     http
 func main() {
 	//dal.Init()
-	//start grpc server service
-	go func() {
-		hlog.Fatal(srv_rpc.StartSrvRpc())
-	}()
-	// start http server service
-	srv_http.Start()
+
+	srv_http.RootCmd.AddCommand(Cmd.Version())
+	if err := srv_http.RootCmd.Execute(); err != nil {
+		_ = fmt.Errorf("rootCmd.Execute failed %s", err.Error())
+		os.Exit(-1)
+	}
 }

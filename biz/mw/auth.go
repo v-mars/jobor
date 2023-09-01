@@ -74,9 +74,9 @@ func UserAuthMw(skipper ...SkipperFunc) app.HandlerFunc {
 			//c.Redirect(http.StatusSeeOther, []byte(redirectSSOUri))
 			//c.Abort()
 			if err == jwt.ErrEmptyAuthHeader {
-				response.SendBaseResp(ctx, c, response.Unauthenticated)
+				response.SendDataResp(ctx, c, response.Unauthenticated, "jobor_redirect")
 			} else {
-				response.SendBaseResp(ctx, c, response.AuthenticateFailed)
+				response.SendDataResp(ctx, c, response.AuthenticateFailed, "jobor_redirect")
 			}
 			c.Abort()
 			return

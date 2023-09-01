@@ -1,7 +1,6 @@
 package conf
 
 import (
-	"flag"
 	"gopkg.in/yaml.v2"
 	"os"
 	"strings"
@@ -217,7 +216,7 @@ func LogLevel() hlog.Level {
 var FlagConf string
 
 func init() {
-	flag.StringVar(&FlagConf, "c", "conf/config.yaml", "config path, eg: -conf conf/config.yaml")
-	flag.StringVar(&FlagConf, "conf", "conf/config.yaml", "config path, eg: -conf conf/config.yaml")
-	flag.Parse()
+	//flag.StringVar(&FlagConf, "c", "conf/config.yaml", "config path, eg: -conf conf/config.yaml")
+	//flag.StringVar(&FlagConf, "conf", "conf/config.yaml", "config path, eg: -conf conf/config.yaml")
+	//flag.Parse()
 }

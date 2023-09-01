@@ -3,10 +3,13 @@ package srv_http
 import (
 	"context"
 	"fmt"
+	"github.com/spf13/cobra"
 	"jobor/biz/dal"
 	"jobor/biz/dal/redisStore"
 	"jobor/biz/mw"
+	"jobor/cmd/srv_rpc"
 	"jobor/conf"
+	"os"
 	"time"
 
 	"github.com/cloudwego/hertz/pkg/app/server"
@@ -18,6 +21,47 @@ import (
 	"github.com/hertz-contrib/requestid"
 	"github.com/hertz-contrib/sessions"
 )
+
+var (
+	//cfg string
+
+	RootCmd = &cobra.Command{
+		Use:     "",
+		Short:   "Start Run Jobor Server",
+		Long:    `This is dolphin jobor server`,
+		Example: `## 启动命令 ./app -c ./conf/config.yaml`,
+		Run: func(cmd *cobra.Command, args []string) {
+			if len(conf.FlagConf) == 0 {
+				_ = cmd.Help()
+				os.Exit(0)
+			}
+			// 加载配置
+			conf.GetConf()
+
+			//start grpc server service
+			go func() {
+				hlog.Fatal(srv_rpc.StartSrvRpc())
+			}()
+			// start http server service
+			Start()
+		},
+	}
+)
+
+func init() {
+	//var c = &conf.WorkerConfig{}
+	//DefaultIP := "0.0.0.0"
+	//DefaultPort := int32(20052)
+	RootCmd.Flags().StringVarP(&conf.FlagConf, "conf", "c", "", "config file, example: ./conf/config.yaml")
+	//rootCmd.Flags().StringVarP(&c.IP, "ip", "i", DefaultIP, "服务IP")
+	//rootCmd.Flags().Int32VarP(&c.Port, "port", "p", DefaultPort, "服务启动的端口: 20052 e.g")
+	if conf.FlagConf == "" {
+		conf.FlagConf = "./conf/config.yaml"
+		//fmt.Println("请使用\"-c\"指定配置文件")
+		//os.Exit(-1)
+	}
+	return
+}
 
 const sessionName = "dbs_session"
 

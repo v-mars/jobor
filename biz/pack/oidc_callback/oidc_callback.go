@@ -33,8 +33,8 @@ type RedirectResp struct {
 
 var (
 	AuthUrl      = "/api/v1/oauth/authorize"
-	CallbackPath = "/api/v1/oidc/callback"
-	GotoRedirect = "/api/v1/oidc/redirect"
+	CallbackPath = "/api/v1/jobor/oidc/callback"
+	GotoRedirect = "/api/v1/jobor/oidc/redirect"
 )
 
 type OIDC struct {
@@ -265,7 +265,7 @@ type OpenIdConf struct {
 //	@Tags			login
 //	@Param			code	query	string	true	"code"
 //	@Param			state	query	string	false	"state"
-//	@router			/api/v1/oidc/callback [GET]
+//	@router			/api/v1/jobor/oidc/callback [GET]
 func SsoCallback(ctx context.Context, c *app.RequestContext) {
 	var err error
 	code, ok := c.GetQuery("code")
@@ -282,7 +282,7 @@ func SsoCallback(ctx context.Context, c *app.RequestContext) {
 	se := sessions.Default(c)
 	cacheState, _ := se.Get("state").(string)
 	if state != "" && state != cacheState {
-		err = fmt.Errorf("callback oidc client request missing code args")
+		err = fmt.Errorf("callback oidc client request/local missing state args")
 		response.FailedHttpCode(ctx, c, http.StatusBadRequest, err)
 		return
 	}
@@ -339,7 +339,7 @@ func SsoCallback(ctx context.Context, c *app.RequestContext) {
 //	@Description	oidc redirect login
 //	@Tags			login
 //	@Param			next	query	string	false	"next"
-//	@router			/api/v1/oidc/redirect [GET]
+//	@router			/api/v1/jobor/oidc/redirect [GET]
 func RedirectLogin(ctx context.Context, c *app.RequestContext) {
 	//code, ok := c.GetQuery("code")
 	next, ok := c.GetQuery("next")
