@@ -1,7 +1,8 @@
 FROM iocean/golang:1.20 as builder
 WORKDIR /data
 COPY ./ ./
-RUN go env -w GO111MODULE="on" && go mod tidy && go env -w GOPROXY="https://goproxy.cn" && CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./app ./main.go
+RUN go env -w GO111MODULE="on" && go mod tidy && go env -w GOPROXY="https://goproxy.cn" &&  \
+    CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./app ./main.go
 
 
 FROM iocean/ubuntu:22.10
