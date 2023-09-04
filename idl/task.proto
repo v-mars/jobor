@@ -21,6 +21,8 @@ message TaskQuery {
   int64 timeout = 11[(api.query)="timeout",(api.body)="timeout"];
   int32 route_policy = 12[(api.query)="route_policy",(api.body)="route_policy"];
   optional bool deleted = 22[(api.query)="deleted",(api.go_tag)="json:\"deleted,omitempty\""];
+  string routing_key = 13[(api.query)="routing_key",(api.body)="routing_key"];
+  string status = 14[(api.query)="status",(api.body)="status"];
   uint64 page = 111;
   uint64 pageSize = 112;
 }

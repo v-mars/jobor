@@ -11,14 +11,17 @@ import "task.proto";
 
 message LogQuery {
   int64 id = 1[(api.query)="id",(api.body)="id"];
-  string hostname = 2[(api.query)="hostname",(api.body)="hostname"];
-  string ip = 3[(api.query)="ip",(api.body)="ip"];
-  string addr = 4[(api.query)="addr",(api.body)="addr"];
-  string version = 5[(api.query)="version",(api.body)="version"];
-  string routing_key = 6[(api.query)="routing_key",(api.body)="routing_key"];
-  int32 weight = 7[(api.query)="weight",(api.body)="weight"];
-  int64 lease_update = 8[(api.query)="lease_update",(api.body)="lease_update"];
-  string status = 9[(api.query)="status",(api.body)="status"];
+  string name = 2[(api.query)="name",(api.body)="name"];
+  string lang = 3[(api.query)="lang",(api.body)="lang"];
+  int64 task_id = 4[(api.query)="task_id",(api.body)="task_id"];
+  string trigger_method = 5[(api.query)="trigger_method",(api.body)="trigger_method"];
+  string expr = 6[(api.query)="expr",(api.body)="expr"];
+  string resp = 8[(api.query)="resp",(api.body)="resp"];
+  float cost_time = 9[(api.query)="cost_time",(api.body)="cost_time"];
+  string result = 10[(api.query)="result",(api.body)="result"];
+  int32 err_code = 11[(api.query)="err_code",(api.body)="err_code"];
+  string err_msg = 12[(api.query)="err_msg",(api.body)="err_msg"];
+  string addr = 13[(api.query)="addr",(api.body)="addr"];
   uint64 page = 111;
   uint64 pageSize = 112;
 }

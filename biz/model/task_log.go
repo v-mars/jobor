@@ -98,7 +98,23 @@ func SelectAllLog() func(Db *gorm.DB) *gorm.DB {
 func WhereLog(req *task_log.LogQuery) func(Db *gorm.DB) *gorm.DB {
 	return func(Db *gorm.DB) *gorm.DB {
 		var sql = "name like ?"
-		var sqlArgs = []interface{}{"%" + req.Hostname + "%"}
+		var sqlArgs = []interface{}{"%" + req.Name + "%"}
+		if len(req.Lang) > 0 {
+			sql = sql + " and lang=?"
+			sqlArgs = append(sqlArgs, req.Lang)
+		}
+		if len(req.Result) > 0 {
+			sql = sql + " and result = ?"
+			sqlArgs = append(sqlArgs, req.Result)
+		}
+		if len(req.TriggerMethod) > 0 {
+			sql = sql + " and trigger_method = ?"
+			sqlArgs = append(sqlArgs, req.TriggerMethod)
+		}
+		if len(req.Addr) > 0 {
+			sql = sql + " and addr like ?"
+			sqlArgs = append(sqlArgs, req.Addr)
+		}
 		return Db.Where(sql, sqlArgs...)
 	}
 }

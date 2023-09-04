@@ -28,8 +28,9 @@ var (
 		"/login", "/404", "/static", "/favicon.ico", "/air", "/dashboard", "/hostid", "/license",
 		"/favicon.ico", "/ping", "/swagger/", "/api/v1/swagger/*", "/debug/pprof",
 		"/metrics", "/routes", "/reverse", "/air", "/api/v1/login", "/fs/",
-		"/api/v1/captcha", "/api/v1/oidc/redirect",
+		"/api/v1/captcha",
 		oidc_callback.CallbackPath,
+		oidc_callback.GotoRedirect,
 	}
 
 	// NoAuthorized 权限验证

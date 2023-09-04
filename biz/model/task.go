@@ -102,6 +102,7 @@ type JoborTask struct {
 	Next          db.JSONTime    `gorm:"default: null;type:datetime;comment:'下次执行时间'" json:"next" form:"next"`
 	Updater       string         `gorm:"type:varchar(156);" json:"updater" form:"updater"`
 	Deleted       bool           `gorm:"default:false;comment:逻辑删除" json:"deleted" form:"deleted"`
+	ExprZh        string         `gorm:"-" json:"expr_zh" form:"expr_zh"`
 	//D         TestD    `gorm:"type:text;comment:'任务执行详细，格式：json'" json:"d" form:"d"`
 
 }
@@ -128,6 +129,11 @@ func (u *Tasks) List(req *task2.TaskQuery, resp *response.PageDataList) (Tasks, 
 		WhereTask(req),
 		OrderTask(), GroupTask()); err != nil {
 		return nil, err
+	}
+	for i, v := range *u {
+		i := i
+		v := v
+		(*u)[i].ExprZh = utils.TranslateToChinese(v.Expr)
 	}
 	return *u, nil
 }
@@ -161,6 +167,22 @@ func WhereTask(req *task2.TaskQuery) func(Db *gorm.DB) *gorm.DB {
 	return func(Db *gorm.DB) *gorm.DB {
 		var sql = "name like ?"
 		var sqlArgs = []interface{}{"%" + req.Name + "%"}
+		if len(req.Lang) > 0 {
+			sql = sql + " and lang=?"
+			sqlArgs = append(sqlArgs, req.Lang)
+		}
+		if len(req.RoutingKey) > 0 {
+			sql = sql + " and routing_key like ?"
+			sqlArgs = append(sqlArgs, req.RoutingKey)
+		}
+		if len(req.Status) > 0 {
+			sql = sql + " and status = ?"
+			sqlArgs = append(sqlArgs, req.Status)
+		}
+		if req.RoutePolicy > 0 {
+			sql = sql + " and route_policy = ?"
+			sqlArgs = append(sqlArgs, req.RoutePolicy)
+		}
 		return Db.Where(sql, sqlArgs...)
 	}
 }
