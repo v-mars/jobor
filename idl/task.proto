@@ -67,6 +67,7 @@ message email {
 message WeChat {
   bool enable = 41[(api.query)="enable",(api.body)="enable,omitempty"];
   repeated string receivers = 42[(api.query)="receivers",(api.body)="receivers,omitempty"];  //
+  repeated string groups = 43[(api.query)="groups",(api.body)="groups,omitempty"];  //
 }
 message webhook {
   bool enable = 43[(api.query)="enable",(api.body)="enable,omitempty"];

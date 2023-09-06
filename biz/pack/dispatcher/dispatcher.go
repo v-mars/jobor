@@ -666,7 +666,7 @@ Worker：%s
 	if s.Task.Notify.Wechat.Enable {
 		notify := wechat.NewWeChat(conf.GetConf().EntWeChat.CorpId,
 			convert.ToInt(conf.GetConf().EntWeChat.NotifyAgentId), conf.GetConf().EntWeChat.NotifySecret)
-		err := notify.Send(s.Task.Notify.Wechat.Receivers, []string{}, []string{},
+		err := notify.Send(s.Task.Notify.Wechat.Receivers, s.Task.Notify.Wechat.Groups, []string{},
 			title, msg, nil)
 		if err != nil {
 			//return err
