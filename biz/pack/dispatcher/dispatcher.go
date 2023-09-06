@@ -18,9 +18,11 @@ import (
 	"jobor/kitex_gen/pbapi"
 	"jobor/kitex_gen/pbapi/taskservice"
 	task2 "jobor/kitex_gen/task"
+	"jobor/pkg/convert"
 	"jobor/pkg/notify/dingding"
 	"jobor/pkg/notify/email"
 	"jobor/pkg/notify/lark"
+	"jobor/pkg/notify/wechat"
 	"jobor/pkg/utils"
 	"strconv"
 	"strings"
@@ -54,6 +56,7 @@ func Fn(channel, payload string) error {
 var c = cron.New(cron.WithSeconds())
 
 func EventFunc(ed model.Event, t *model.JoborTask) error {
+	tt := *t
 	switch ed.TE {
 	case model.AddEvent:
 		hlog.Debugf("jobor cron taskId=%d add event [name=%s, expr=\"%s\"] is start", ed.TaskID, t.Name, t.Expr)
@@ -63,7 +66,7 @@ func EventFunc(ed model.Event, t *model.JoborTask) error {
 		if !ok && t.Status == model.TaskStatusRunning {
 			hlog.Debugf("jobor cron taskId=%d add event, dispatcher cron entry is not exist", ed.TaskID)
 			entryId, err := c.AddFunc(t.Expr, func() {
-				RunTasks("add", model.TriggerAuto, t)
+				RunTasks("add", model.TriggerAuto, tt)
 			}) //2 * * * * *, 2 表示每分钟的第2s执行一次
 			if err != nil {
 				return err
@@ -73,7 +76,7 @@ func EventFunc(ed model.Event, t *model.JoborTask) error {
 		} else if ok && t.Status == model.TaskStatusRunning {
 			c.Remove(o.Entry.ID)
 			entryId, err := c.AddFunc(t.Expr, func() {
-				RunTasks("add", model.TriggerAuto, t)
+				RunTasks("add", model.TriggerAuto, tt)
 			}) //2 * * * * *, 2 表示每分钟的第2s执行一次
 			if err != nil {
 				return err
@@ -96,7 +99,7 @@ func EventFunc(ed model.Event, t *model.JoborTask) error {
 		if !ok && t.Status == model.TaskStatusRunning {
 			hlog.Debugf("jobor cron taskId=%d change event, dispatcher cron entry is not exist", ed.TaskID)
 			entryId, err := c.AddFunc(t.Expr, func() {
-				RunTasks("change", model.TriggerAuto, t)
+				RunTasks("change", model.TriggerAuto, tt)
 			})
 			if err != nil {
 				return err
@@ -106,7 +109,7 @@ func EventFunc(ed model.Event, t *model.JoborTask) error {
 		} else if ok && t.Status == model.TaskStatusRunning {
 			c.Remove(o.Entry.ID)
 			entryId, err := c.AddFunc(t.Expr, func() {
-				RunTasks("change", model.TriggerAuto, t)
+				RunTasks("change", model.TriggerAuto, tt)
 			})
 			if err != nil {
 				return err
@@ -188,8 +191,9 @@ func InitCron() {
 
 	for _, t := range taskList {
 		hlog.CtxDebugf(ctx, "jobor cron taskId=%d add event [name=%s, expr=\"%s\"] is start", t.ID, t.Name, t.Expr)
+		t := t
 		entryId, err := c.AddFunc(t.Expr, func() {
-			RunTasks("init", model.TriggerAuto, &t)
+			RunTasks("init", model.TriggerAuto, t)
 		})
 		if err != nil {
 			hlog.CtxErrorf(ctx, "jobor cron taskId=%d add func [name=%s, expr=\"%s\"] is err, %s", t.ID, t.Name, t.Expr, err)
@@ -225,16 +229,16 @@ type taskSession struct {
 }
 
 // RunTasks evt 事件, add/change
-func RunTasks(evt, trigger string, t *model.JoborTask) {
+func RunTasks(evt, trigger string, t model.JoborTask) {
 	//if Raft.St.RaftNode.Raft.State() != raft.Leader && trigger == TriggerAuto {
 	//	return
 	//}
-
+	//var tt = *t
 	RunTasksWithRPC(evt, trigger, t)
 	//RunTasksWithBroker(evt, trigger, t)
 }
 
-func RunTasksWithRPC(evt, trigger string, t *model.JoborTask) {
+func RunTasksWithRPC(evt, trigger string, t model.JoborTask) {
 	//if Raft.St.RaftNode.Raft.State() != raft.Leader && trigger == TriggerAuto {
 	//	return
 	//}
@@ -308,7 +312,7 @@ func RunTasksWithRPC(evt, trigger string, t *model.JoborTask) {
 	}
 
 	s.TaskLog = &taskLog
-	s.Task = t
+	s.Task = &t
 	s.Add()
 	hlog.Infof("Task %s[%d] lang %s success start,now time: %s ", t.Name, t.ID, t.Lang, time.Now())
 
@@ -421,7 +425,7 @@ Next:
 		}
 		s.TaskLog.ErrCode = taskRespCode
 		if t.ExpectCode != taskRespCode {
-			return fmt.Errorf("%s Task %s[%d] resp code is %d, expect code %d", "server", t.Name, taskLog.ID, taskRespCode, t.ExpectCode)
+			return fmt.Errorf("任务 %s[%d] 返回码： %d, 期望返回码：%d", t.Name, taskLog.ID, taskRespCode, t.ExpectCode)
 		}
 		if t.ExpectContent != "" {
 			if !strings.Contains(taskLog.Resp, t.ExpectContent) {
@@ -437,7 +441,7 @@ Next:
 
 }
 
-func RunTasksWithBroker(evt, trigger string, t *model.JoborTask) {
+func RunTasksWithBroker(evt, trigger string, t model.JoborTask) {
 	var s = taskSession{TaskCtx: context.Background()}
 	defer func() {
 		defer func() {
@@ -551,7 +555,7 @@ func generateRow(row []string, odd int) string {
 		bgColor = "fff"
 	}
 	tds := strings.Join(arr, "\n")
-	res := fmt.Sprintf(`<tr style="height:25px; background-color:#%s; border-bottom:1px solid #e8e8e8">%s
+	res := fmt.Sprintf(`<tr style="height:25px; background-color:#%s; border:1px solid #e8e8e8">%s
 	</tr>`, bgColor, tds)
 	return res
 }
@@ -562,9 +566,9 @@ func generateForm(title string, rows [][]string) string {
 		trs = append(trs, generateRow(o, 1-i%2))
 	}
 	tr := strings.Join(trs, "\n")
-	tableTemplate := `
+	tableTemplate := fmt.Sprintf(`
 	<div style="overflow: auto; margin-bottom: 20px;">
-	<table border="0" style="width: 80%%; text-align:left; border-collapse:collapse; font-size:14px; color:rgba(0,0,0,0.75); line-height:1.1; word-break:break-all; white-space:nowrap; border-left:1px solid #e8e8e8; border-right:1px solid #e8e8e8; font-family:'Microsoft YaHei UI','Microsoft YaHei','微软雅黑',SimSun,'宋体',sans-serif,serif; margin:5px;border-top:1px solid #e8e8e8;">
+	<table border="0" style="width: %s; text-align:left; border-collapse:collapse; font-size:14px; color:rgba(0,0,0,0.75); line-height:1.1; word-break:break-all; white-space:nowrap; border-left:1px solid #e8e8e8; border-right:1px solid #e8e8e8; font-family:'Microsoft YaHei UI','Microsoft YaHei','微软雅黑',SimSun,'宋体',sans-serif,serif; margin:5px;border-top:1px solid #e8e8e8;">
 	<caption style="text-align: left; font-size: 16px; font-weight: bold; margin-bottom: 10px">
 	%s
 	</caption>
@@ -572,9 +576,8 @@ func generateForm(title string, rows [][]string) string {
 	%s
 	</tbody>
 	</table>
-	</div>`
-	res := fmt.Sprintf(tableTemplate, title, tr)
-	return res
+	</div>`, "80%", title, tr)
+	return tableTemplate
 }
 
 func (s *taskSession) GenerateHtml() string {
@@ -592,11 +595,11 @@ llapse; font-size:18px; line-height:1.1;  font-family:'Microsoft YaHei UI','Micr
 		{"表达式 ：", fmt.Sprintf("%s", s.TaskLog.Expr)},
 		{"Worker：", fmt.Sprintf("%s", s.TaskLog.Addr)},
 		{"执行时间：", fmt.Sprintf("[ %s - %s ]", s.TaskLog.StartTime.Format("2006-01-02 15:04:05"), s.TaskLog.EndTime.Format("2006-01-02 15:04:05"))},
-		{"耗   时：", fmt.Sprintf("%s", fmt.Sprintf("%.3f", s.TaskLog.CostTime))},
+		{"耗   时：", fmt.Sprintf("%s", fmt.Sprintf("%s", s.TaskLog.CostTime))},
 		{"状   态：", fmt.Sprintf("%s", s.TaskLog.Result)},
 	}
 	stdOut := [][]string{
-		{"返回内容：", fmt.Sprintf("%s", s.TaskLog.Resp+"test multi<div> &<br>line \n line2\n multi\n")}}
+		{"返回内容：", fmt.Sprintf("%s", s.TaskLog.Resp)}}
 	errMsg := [][]string{
 		{"错误状态码：", fmt.Sprintf("%d", s.TaskLog.ErrCode)},
 		{"错误信息：", fmt.Sprintf("%s", s.TaskLog.ErrMsg)},
@@ -611,7 +614,8 @@ llapse; font-size:18px; line-height:1.1;  font-family:'Microsoft YaHei UI','Micr
 func (s *taskSession) Notify() error {
 	var title = fmt.Sprintf("定时任务[%s]记录ID[%d]执行结果", s.Task.Name, s.TaskLog.ID)
 	var msg = fmt.Sprintf(
-		`任务 ID：%d
+		`
+任务 ID：%d
 任务名称：%s
 执行 ID：%d
 类   型：%s
@@ -627,7 +631,7 @@ Worker：%s
 		s.Task.ID, s.Task.Name, s.TaskLog.ID, s.TaskLog.Lang, s.TaskLog.TriggerMethod, s.TaskLog.Expr,
 		s.TaskLog.Addr, s.TaskLog.StartTime.Format("2006-01-02 15:04:05"),
 		s.TaskLog.EndTime.Format("2006-01-02 15:04:05"),
-		fmt.Sprintf("%.3f", s.TaskLog.CostTime), s.TaskLog.Result,
+		fmt.Sprintf("%s", s.TaskLog.CostTime), s.TaskLog.Result,
 		s.TaskLog.Resp, s.TaskLog.ErrCode, s.TaskLog.ErrMsg)
 	var apiData = map[string]interface{}{
 		"task_log_id":    s.TaskLog.ID,
@@ -651,13 +655,23 @@ Worker：%s
 	if s.Task.Notify.Email.Enable {
 		mailMsg := s.GenerateHtml()
 		notify := email.NewMail(conf.GetConf().Email.Username, conf.GetConf().Email.Password,
-			conf.GetConf().Email.SMTPHost, conf.GetConf().Email.From, conf.GetConf().Email.Port,
+			conf.GetConf().Email.SmtpServer, conf.GetConf().Email.From, conf.GetConf().Email.SmtpPort,
 			conf.GetConf().Email.Tls)
 		err := notify.Send(title, mailMsg, s.Task.Notify.Email.Receivers, []string{})
 		if err != nil {
-			return err
+			//return err
 		}
 		hlog.Debugf("Task notify email send is success")
+	}
+	if s.Task.Notify.Wechat.Enable {
+		notify := wechat.NewWeChat(conf.GetConf().EntWeChat.CorpId,
+			convert.ToInt(conf.GetConf().EntWeChat.NotifyAgentId), conf.GetConf().EntWeChat.NotifySecret)
+		err := notify.Send(s.Task.Notify.Wechat.Receivers, []string{}, []string{},
+			title, msg, nil)
+		if err != nil {
+			//return err
+		}
+		hlog.Debugf("Task notify wechat send is success")
 	}
 	if s.Task.Notify.Lark.Enable && s.Task.Notify.Lark != nil && s.Task.Notify.Lark.Webhooks != nil {
 		whs := (*(s.Task.Notify).Lark).Webhooks
@@ -665,7 +679,7 @@ Worker：%s
 			notify := lark.NewLark(v.WebhookUrl, 1, v.Secret)
 			err := notify.Send([]string{}, title, msg)
 			if err != nil {
-				return err
+				//return err
 			}
 		}
 		hlog.Debugf("Task notify lark send is success")
@@ -675,7 +689,7 @@ Worker：%s
 			notify := dingding.NewDing(v.WebhookUrl, 2, v.Secret)
 			err := notify.Send([]string{}, title, msg)
 			if err != nil {
-				return err
+				//return err
 			}
 		}
 		hlog.Debugf("Task notify dinding send is success")

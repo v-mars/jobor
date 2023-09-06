@@ -17,6 +17,14 @@ func GetWorkerConf() *WorkerConfig {
 	return wconf
 }
 
+func GetHostname() string {
+	e := os.Getenv("hostname")
+	if len(e) == 0 {
+		return "default"
+	}
+	return e
+}
+
 type WorkerConfig struct {
 	WorkerName    string   `yaml:"worker_name"`
 	HttpAddress   string   `yaml:"http_address"`

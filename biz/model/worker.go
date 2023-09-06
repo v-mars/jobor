@@ -166,7 +166,7 @@ func DelWorker(ctx context.Context, Db *gorm.DB, _ids []interface{}) ([]JoborWor
 		return us, err
 	}
 	for _, _id := range _ids {
-		if err := Db.Table(NameWorker).Where("id!=?", _id).Delete(&JoborWorker{}).Error; err != nil {
+		if err := Db.Table(NameWorker).Delete(&JoborWorker{}, _id).Error; err != nil {
 			return us, err
 		}
 	}

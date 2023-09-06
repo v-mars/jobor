@@ -59,3 +59,9 @@ email:
   smtpServer: "smtp.xxx.com"
   smtpPort: 587
   tls: false
+
+ent_wechat:
+  url: "https://qyapi.weixin.qq.com/cgi-bin"
+  corp_id: "xxx"
+  agent_id: "xxx"
+  secret: "xxxx"

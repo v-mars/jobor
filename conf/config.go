@@ -29,6 +29,7 @@ type Config struct {
 	SSO            SSO            `yaml:"sso"`
 	Oauth2Srv      Oauth2Srv      `yaml:"oauth2_srv"` //oauth2服务配置
 	Email          Email          `yaml:"email"`
+	EntWeChat      EntWeChat      `yaml:"ent_wechat"`
 }
 
 type Ldap struct {
@@ -43,14 +44,21 @@ type Ldap struct {
 }
 
 type Email struct {
-	SMTPHost   string `json:"smtpHost"`
-	Port       int    `json:"port"`
-	Username   string `json:"username"`
-	Password   string `json:"password"`
-	From       string `json:"from"`
-	Tls        bool   `json:"tls"`
-	Anonymous  bool   `json:"anonymous"`
-	SkipVerify bool   `json:"skipVerify"`
+	SmtpServer string `json:"smtpServer" yaml:"smtpServer"`
+	SmtpPort   int    `json:"smtpPort" yaml:"smtpPort"`
+	Username   string `json:"username" yaml:"username"`
+	Password   string `json:"password" yaml:"password"`
+	From       string `json:"from" yaml:"from"`
+	Tls        bool   `json:"tls" yaml:"tls"`
+	Anonymous  bool   `json:"anonymous" yaml:"anonymous"`
+	SkipVerify bool   `json:"skipVerify" yaml:"skipVerify"`
+}
+
+type EntWeChat struct {
+	Url           string `json:"url,omitempty" binding:"required" yaml:"url"`
+	CorpId        string `json:"corp_id,omitempty" binding:"required" yaml:"corp_id"`
+	NotifyAgentId string `json:"agent_id,omitempty" yaml:"agent_id"`
+	NotifySecret  string `json:"secret,omitempty" yaml:"secret"`
 }
 
 type JWT struct {

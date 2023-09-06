@@ -178,7 +178,7 @@ func (d DataCode) Run(ctx context.Context) (out io.ReadCloser) {
 		defer func(pw *io.PipeWriter) { _ = pw.Close() }(pw)
 		defer func() {
 			now := time.Now().Local().Format("2006-01-02 15:04:05")
-			finishTxt := fmt.Sprintf("#################### Bash Shell Finish ##################")
+			finishTxt := fmt.Sprintf("#################### Bash Shell Finish ####################")
 			_, _ = pw.Write([]byte(fmt.Sprintf("\n%s\n%s Task Run Finished, Return exitCode:%5d", finishTxt, now, exitCode))) // write exitCode,total 5 byte
 			if codePath != "" {
 				_ = os.Remove(codePath)
@@ -191,7 +191,7 @@ func (d DataCode) Run(ctx context.Context) (out io.ReadCloser) {
 		}
 		cmd.Stdout = pw
 		cmd.Stderr = pw
-		startTxt := fmt.Sprintf("#################### Bash Shell Start ##################\n\n")
+		startTxt := fmt.Sprintf("#################### Bash Shell Start ####################\n\n")
 		_, _ = pw.Write([]byte(startTxt))
 		err = cmd.Start()
 		if err != nil {

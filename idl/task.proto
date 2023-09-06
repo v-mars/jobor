@@ -64,6 +64,10 @@ message email {
   bool enable = 41[(api.query)="enable",(api.body)="enable,omitempty"];
   repeated string receivers = 42[(api.query)="receivers",(api.body)="receivers,omitempty"];  // 多个邮箱地址以逗号分割
 }
+message WeChat {
+  bool enable = 41[(api.query)="enable",(api.body)="enable,omitempty"];
+  repeated string receivers = 42[(api.query)="receivers",(api.body)="receivers,omitempty"];  //
+}
 message webhook {
   bool enable = 43[(api.query)="enable",(api.body)="enable,omitempty"];
   repeated string urls = 44[(api.query)="urls",(api.body)="urls,omitempty"];  // 多个api url以逗号分割
@@ -84,6 +88,7 @@ message Notify{
   webhook webhook = 2[(api.query)="webhook",(api.body)="webhook,omitempty"];
   lark lark = 3[(api.query)="lark",(api.body)="lark,omitempty"];
   dingding dingding = 4[(api.query)="dingding",(api.body)="dingding,omitempty"];
+  WeChat wechat = 5[(api.query)="wechat",(api.body)="wechat,omitempty"];
 }
 
 message TaskResp {

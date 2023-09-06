@@ -188,6 +188,6 @@ func RunTask(ctx context.Context, c *app.RequestContext) {
 		response.SendBaseResp(ctx, c, fmt.Errorf("task %s is delete,task can't execute", t.Name))
 		return
 	}
-	go dispatcher.RunTasks(model.TriggerAuto, model.TriggerManual, t)
+	go dispatcher.RunTasks(model.TriggerAuto, model.TriggerManual, *t)
 	response.SendDataResp(ctx, c, response.Succeed, "")
 }
