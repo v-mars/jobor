@@ -30,14 +30,14 @@ type LogQuery struct {
 	unknownFields protoimpl.UnknownFields
 
 	Id            int64   `protobuf:"varint,1,opt,name=id,proto3" query:"id" form:"id" json:"id"`
-	Name          string  `protobuf:"bytes,2,opt,name=name,proto3" form:"name" json:"name" query:"name"`
-	Lang          string  `protobuf:"bytes,3,opt,name=lang,proto3" form:"lang" json:"lang" query:"lang"`
+	Name          string  `protobuf:"bytes,2,opt,name=name,proto3" query:"name" form:"name" json:"name"`
+	Lang          string  `protobuf:"bytes,3,opt,name=lang,proto3" query:"lang" form:"lang" json:"lang"`
 	TaskId        int64   `protobuf:"varint,4,opt,name=task_id,json=taskId,proto3" query:"task_id" form:"task_id" json:"task_id"`
 	TriggerMethod string  `protobuf:"bytes,5,opt,name=trigger_method,json=triggerMethod,proto3" query:"trigger_method" form:"trigger_method" json:"trigger_method"`
 	Expr          string  `protobuf:"bytes,6,opt,name=expr,proto3" query:"expr" form:"expr" json:"expr"`
 	Resp          string  `protobuf:"bytes,8,opt,name=resp,proto3" query:"resp" form:"resp" json:"resp"`
-	CostTime      float32 `protobuf:"fixed32,9,opt,name=cost_time,json=costTime,proto3" query:"cost_time" form:"cost_time" json:"cost_time"`
-	Result        string  `protobuf:"bytes,10,opt,name=result,proto3" form:"result" json:"result" query:"result"`
+	CostTime      float32 `protobuf:"fixed32,9,opt,name=cost_time,json=costTime,proto3" form:"cost_time" json:"cost_time" query:"cost_time"`
+	Result        string  `protobuf:"bytes,10,opt,name=result,proto3" query:"result" form:"result" json:"result"`
 	ErrCode       int32   `protobuf:"varint,11,opt,name=err_code,json=errCode,proto3" query:"err_code" form:"err_code" json:"err_code"`
 	ErrMsg        string  `protobuf:"bytes,12,opt,name=err_msg,json=errMsg,proto3" query:"err_msg" form:"err_msg" json:"err_msg"`
 	Addr          string  `protobuf:"bytes,13,opt,name=addr,proto3" query:"addr" form:"addr" json:"addr"`
@@ -185,16 +185,16 @@ type LogResp struct {
 	Lang          string         `protobuf:"bytes,3,opt,name=lang,proto3" query:"lang" form:"lang" json:"lang"`
 	TaskId        int64          `protobuf:"varint,4,opt,name=task_id,json=taskId,proto3" form:"task_id" json:"task_id" query:"task_id"`
 	TriggerMethod string         `protobuf:"bytes,5,opt,name=trigger_method,json=triggerMethod,proto3" query:"trigger_method" form:"trigger_method" json:"trigger_method"`
-	Expr          string         `protobuf:"bytes,6,opt,name=expr,proto3" form:"expr" json:"expr" query:"expr"`
+	Expr          string         `protobuf:"bytes,6,opt,name=expr,proto3" query:"expr" form:"expr" json:"expr"`
 	Data          *task.TaskData `protobuf:"bytes,7,opt,name=data,proto3" query:"data" form:"data" json:"data"`
 	Resp          string         `protobuf:"bytes,8,opt,name=resp,proto3" query:"resp" form:"resp" json:"resp"`
 	CostTime      float32        `protobuf:"fixed32,9,opt,name=cost_time,json=costTime,proto3" query:"cost_time" form:"cost_time" json:"cost_time"`
-	Result        string         `protobuf:"bytes,10,opt,name=result,proto3" form:"result" json:"result" query:"result"`
+	Result        string         `protobuf:"bytes,10,opt,name=result,proto3" query:"result" form:"result" json:"result"`
 	ErrCode       int32          `protobuf:"varint,11,opt,name=err_code,json=errCode,proto3" query:"err_code" form:"err_code" json:"err_code"`
 	ErrMsg        string         `protobuf:"bytes,12,opt,name=err_msg,json=errMsg,proto3" query:"err_msg" form:"err_msg" json:"err_msg"`
-	Addr          string         `protobuf:"bytes,13,opt,name=addr,proto3" query:"addr" form:"addr" json:"addr"`
+	Addr          string         `protobuf:"bytes,13,opt,name=addr,proto3" form:"addr" json:"addr" query:"addr"`
 	StartTime     string         `protobuf:"bytes,14,opt,name=start_time,json=startTime,proto3" form:"start_time" json:"start_time" query:"start_time"`
-	EndTime       string         `protobuf:"bytes,15,opt,name=end_time,json=endTime,proto3" query:"end_time" form:"end_time" json:"end_time"`
+	EndTime       string         `protobuf:"bytes,15,opt,name=end_time,json=endTime,proto3" form:"end_time" json:"end_time" query:"end_time"`
 	CreatedAt     string         `protobuf:"bytes,110,opt,name=created_at,json=createdAt,proto3" query:"created_at" form:"created_at" json:"created_at"`
 	UpdatedAt     string         `protobuf:"bytes,120,opt,name=updated_at,json=updatedAt,proto3" query:"updated_at" form:"updated_at" json:"updated_at"`
 }
@@ -411,22 +411,22 @@ type LogGetByIdResp struct {
 	unknownFields protoimpl.UnknownFields
 
 	Id            int64          `protobuf:"varint,1,opt,name=id,proto3" json:"id" query:"id"`
-	Name          string         `protobuf:"bytes,2,opt,name=name,proto3" form:"name" json:"name" query:"name"`
-	Lang          string         `protobuf:"bytes,3,opt,name=lang,proto3" query:"lang" form:"lang" json:"lang"`
+	Name          string         `protobuf:"bytes,2,opt,name=name,proto3" query:"name" form:"name" json:"name"`
+	Lang          string         `protobuf:"bytes,3,opt,name=lang,proto3" form:"lang" json:"lang" query:"lang"`
 	TaskId        int64          `protobuf:"varint,4,opt,name=task_id,json=taskId,proto3" form:"task_id" json:"task_id" query:"task_id"`
 	TriggerMethod string         `protobuf:"bytes,5,opt,name=trigger_method,json=triggerMethod,proto3" query:"trigger_method" form:"trigger_method" json:"trigger_method"`
 	Expr          string         `protobuf:"bytes,6,opt,name=expr,proto3" query:"expr" form:"expr" json:"expr"`
-	Data          *task.TaskData `protobuf:"bytes,7,opt,name=data,proto3" form:"data" json:"data" query:"data"`
-	Resp          string         `protobuf:"bytes,8,opt,name=resp,proto3" form:"resp" json:"resp" query:"resp"`
-	CostTime      float32        `protobuf:"fixed32,9,opt,name=cost_time,json=costTime,proto3" form:"cost_time" json:"cost_time" query:"cost_time"`
+	Data          *task.TaskData `protobuf:"bytes,7,opt,name=data,proto3" query:"data" form:"data" json:"data"`
+	Resp          string         `protobuf:"bytes,8,opt,name=resp,proto3" query:"resp" form:"resp" json:"resp"`
+	CostTime      float32        `protobuf:"fixed32,9,opt,name=cost_time,json=costTime,proto3" query:"cost_time" form:"cost_time" json:"cost_time"`
 	Result        string         `protobuf:"bytes,10,opt,name=result,proto3" form:"result" json:"result" query:"result"`
-	ErrCode       int32          `protobuf:"varint,11,opt,name=err_code,json=errCode,proto3" form:"err_code" json:"err_code" query:"err_code"`
+	ErrCode       int32          `protobuf:"varint,11,opt,name=err_code,json=errCode,proto3" query:"err_code" form:"err_code" json:"err_code"`
 	ErrMsg        string         `protobuf:"bytes,12,opt,name=err_msg,json=errMsg,proto3" form:"err_msg" json:"err_msg" query:"err_msg"`
 	Addr          string         `protobuf:"bytes,13,opt,name=addr,proto3" query:"addr" form:"addr" json:"addr"`
-	StartTime     string         `protobuf:"bytes,14,opt,name=start_time,json=startTime,proto3" form:"start_time" json:"start_time" query:"start_time"`
-	EndTime       string         `protobuf:"bytes,15,opt,name=end_time,json=endTime,proto3" form:"end_time" json:"end_time" query:"end_time"`
+	StartTime     string         `protobuf:"bytes,14,opt,name=start_time,json=startTime,proto3" query:"start_time" form:"start_time" json:"start_time"`
+	EndTime       string         `protobuf:"bytes,15,opt,name=end_time,json=endTime,proto3" query:"end_time" form:"end_time" json:"end_time"`
 	CreatedAt     string         `protobuf:"bytes,110,opt,name=created_at,json=createdAt,proto3" form:"created_at" json:"created_at" query:"created_at"`
-	UpdatedAt     string         `protobuf:"bytes,120,opt,name=updated_at,json=updatedAt,proto3" query:"updated_at" form:"updated_at" json:"updated_at"`
+	UpdatedAt     string         `protobuf:"bytes,120,opt,name=updated_at,json=updatedAt,proto3" form:"updated_at" json:"updated_at" query:"updated_at"`
 }
 
 func (x *LogGetByIdResp) Reset() {
@@ -585,20 +585,20 @@ type PostLogReq struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Name          string         `protobuf:"bytes,2,opt,name=name,proto3" form:"name" json:"name" query:"name"`
+	Name          string         `protobuf:"bytes,2,opt,name=name,proto3" query:"name" form:"name" json:"name"`
 	Lang          string         `protobuf:"bytes,3,opt,name=lang,proto3" form:"lang" json:"lang" query:"lang"`
 	TaskId        int64          `protobuf:"varint,4,opt,name=task_id,json=taskId,proto3" form:"task_id" json:"task_id" query:"task_id"`
-	TriggerMethod string         `protobuf:"bytes,5,opt,name=trigger_method,json=triggerMethod,proto3" query:"trigger_method" form:"trigger_method" json:"trigger_method"`
-	Expr          string         `protobuf:"bytes,6,opt,name=expr,proto3" query:"expr" form:"expr" json:"expr"`
+	TriggerMethod string         `protobuf:"bytes,5,opt,name=trigger_method,json=triggerMethod,proto3" form:"trigger_method" json:"trigger_method" query:"trigger_method"`
+	Expr          string         `protobuf:"bytes,6,opt,name=expr,proto3" form:"expr" json:"expr" query:"expr"`
 	Data          *task.TaskData `protobuf:"bytes,7,opt,name=data,proto3" form:"data" json:"data" query:"data"`
-	Resp          string         `protobuf:"bytes,8,opt,name=resp,proto3" query:"resp" form:"resp" json:"resp"`
+	Resp          string         `protobuf:"bytes,8,opt,name=resp,proto3" form:"resp" json:"resp" query:"resp"`
 	CostTime      float32        `protobuf:"fixed32,9,opt,name=cost_time,json=costTime,proto3" query:"cost_time" form:"cost_time" json:"cost_time"`
-	Result        string         `protobuf:"bytes,10,opt,name=result,proto3" query:"result" form:"result" json:"result"`
-	ErrCode       int32          `protobuf:"varint,11,opt,name=err_code,json=errCode,proto3" query:"err_code" form:"err_code" json:"err_code"`
+	Result        string         `protobuf:"bytes,10,opt,name=result,proto3" form:"result" json:"result" query:"result"`
+	ErrCode       int32          `protobuf:"varint,11,opt,name=err_code,json=errCode,proto3" form:"err_code" json:"err_code" query:"err_code"`
 	ErrMsg        string         `protobuf:"bytes,12,opt,name=err_msg,json=errMsg,proto3" query:"err_msg" form:"err_msg" json:"err_msg"`
-	Addr          string         `protobuf:"bytes,13,opt,name=addr,proto3" query:"addr" form:"addr" json:"addr"`
-	StartTime     string         `protobuf:"bytes,14,opt,name=start_time,json=startTime,proto3" form:"start_time" json:"start_time" query:"start_time"`
-	EndTime       string         `protobuf:"bytes,15,opt,name=end_time,json=endTime,proto3" form:"end_time" json:"end_time" query:"end_time"`
+	Addr          string         `protobuf:"bytes,13,opt,name=addr,proto3" form:"addr" json:"addr" query:"addr"`
+	StartTime     string         `protobuf:"bytes,14,opt,name=start_time,json=startTime,proto3" query:"start_time" form:"start_time" json:"start_time"`
+	EndTime       string         `protobuf:"bytes,15,opt,name=end_time,json=endTime,proto3" query:"end_time" form:"end_time" json:"end_time"`
 }
 
 func (x *PostLogReq) Reset() {
@@ -736,20 +736,20 @@ type PutLogReq struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Name          *string        `protobuf:"bytes,2,opt,name=name,proto3,oneof" form:"name,omitempty" json:"name,omitempty" query:"name"`
-	Lang          *string        `protobuf:"bytes,3,opt,name=lang,proto3,oneof" query:"lang" form:"lang,omitempty" json:"lang,omitempty"`
+	Name          *string        `protobuf:"bytes,2,opt,name=name,proto3,oneof" query:"name" form:"name,omitempty" json:"name,omitempty"`
+	Lang          *string        `protobuf:"bytes,3,opt,name=lang,proto3,oneof" form:"lang,omitempty" json:"lang,omitempty" query:"lang"`
 	TaskId        *int64         `protobuf:"varint,4,opt,name=task_id,json=taskId,proto3,oneof" query:"task_id" json:"task_id,omitempty"`
-	TriggerMethod *string        `protobuf:"bytes,5,opt,name=trigger_method,json=triggerMethod,proto3,oneof" form:"trigger_method,omitempty" json:"trigger_method,omitempty" query:"trigger_method"`
+	TriggerMethod *string        `protobuf:"bytes,5,opt,name=trigger_method,json=triggerMethod,proto3,oneof" query:"trigger_method" form:"trigger_method,omitempty" json:"trigger_method,omitempty"`
 	Expr          *string        `protobuf:"bytes,6,opt,name=expr,proto3,oneof" query:"expr" form:"expr,omitempty" json:"expr,omitempty"`
-	Data          *task.TaskData `protobuf:"bytes,7,opt,name=data,proto3" query:"data" form:"data,omitempty" json:"data,omitempty"`
-	Resp          *string        `protobuf:"bytes,8,opt,name=resp,proto3,oneof" query:"resp" form:"resp,omitempty" json:"resp,omitempty"`
+	Data          *task.TaskData `protobuf:"bytes,7,opt,name=data,proto3" form:"data,omitempty" json:"data,omitempty" query:"data"`
+	Resp          *string        `protobuf:"bytes,8,opt,name=resp,proto3,oneof" form:"resp,omitempty" json:"resp,omitempty" query:"resp"`
 	CostTime      *float32       `protobuf:"fixed32,9,opt,name=cost_time,json=costTime,proto3,oneof" query:"cost_time" json:"cost_time,omitempty"`
 	Result        *string        `protobuf:"bytes,10,opt,name=result,proto3,oneof" query:"result" form:"result,omitempty" json:"result,omitempty"`
 	ErrCode       *int32         `protobuf:"varint,11,opt,name=err_code,json=errCode,proto3,oneof" query:"err_code" json:"err_code,omitempty"`
 	ErrMsg        *string        `protobuf:"bytes,12,opt,name=err_msg,json=errMsg,proto3,oneof" query:"err_msg" form:"err_msg,omitempty" json:"err_msg,omitempty"`
 	Addr          *string        `protobuf:"bytes,13,opt,name=addr,proto3,oneof" form:"addr,omitempty" json:"addr,omitempty" query:"addr"`
-	StartTime     *string        `protobuf:"bytes,14,opt,name=start_time,json=startTime,proto3,oneof" query:"start_time" form:"start_time,omitempty" json:"start_time,omitempty"`
-	EndTime       *string        `protobuf:"bytes,15,opt,name=end_time,json=endTime,proto3,oneof" query:"end_time" form:"end_time,omitempty" json:"end_time,omitempty"`
+	StartTime     *string        `protobuf:"bytes,14,opt,name=start_time,json=startTime,proto3,oneof" form:"start_time,omitempty" json:"start_time,omitempty" query:"start_time"`
+	EndTime       *string        `protobuf:"bytes,15,opt,name=end_time,json=endTime,proto3,oneof" form:"end_time,omitempty" json:"end_time,omitempty" query:"end_time"`
 }
 
 func (x *PutLogReq) Reset() {
@@ -1149,8 +1149,13 @@ var file_task_log_proto_rawDesc = []byte{
 	0x0b, 0x0a, 0x09, 0x5f, 0x65, 0x72, 0x72, 0x5f, 0x63, 0x6f, 0x64, 0x65, 0x42, 0x0a, 0x0a, 0x08,
 	0x5f, 0x65, 0x72, 0x72, 0x5f, 0x6d, 0x73, 0x67, 0x42, 0x07, 0x0a, 0x05, 0x5f, 0x61, 0x64, 0x64,
 	0x72, 0x42, 0x0d, 0x0a, 0x0b, 0x5f, 0x73, 0x74, 0x61, 0x72, 0x74, 0x5f, 0x74, 0x69, 0x6d, 0x65,
-	0x42, 0x0b, 0x0a, 0x09, 0x5f, 0x65, 0x6e, 0x64, 0x5f, 0x74, 0x69, 0x6d, 0x65, 0x32, 0xab, 0x01,
-	0x0a, 0x0a, 0x4c, 0x6f, 0x67, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x12, 0x46, 0x0a, 0x06,
+	0x42, 0x0b, 0x0a, 0x09, 0x5f, 0x65, 0x6e, 0x64, 0x5f, 0x74, 0x69, 0x6d, 0x65, 0x32, 0xfb, 0x01,
+	0x0a, 0x0a, 0x4c, 0x6f, 0x67, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x12, 0x4e, 0x0a, 0x0a,
+	0x47, 0x65, 0x74, 0x4c, 0x6f, 0x67, 0x42, 0x79, 0x49, 0x64, 0x12, 0x12, 0x2e, 0x74, 0x61, 0x73,
+	0x6b, 0x5f, 0x6c, 0x6f, 0x67, 0x2e, 0x4c, 0x6f, 0x67, 0x51, 0x75, 0x65, 0x72, 0x79, 0x1a, 0x11,
+	0x2e, 0x74, 0x61, 0x73, 0x6b, 0x5f, 0x6c, 0x6f, 0x67, 0x2e, 0x4c, 0x6f, 0x67, 0x52, 0x65, 0x73,
+	0x70, 0x22, 0x19, 0xca, 0xc1, 0x18, 0x15, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x6a,
+	0x6f, 0x62, 0x6f, 0x72, 0x2f, 0x6c, 0x6f, 0x67, 0x2f, 0x3a, 0x69, 0x64, 0x12, 0x46, 0x0a, 0x06,
 	0x47, 0x65, 0x74, 0x4c, 0x6f, 0x67, 0x12, 0x12, 0x2e, 0x74, 0x61, 0x73, 0x6b, 0x5f, 0x6c, 0x6f,
 	0x67, 0x2e, 0x4c, 0x6f, 0x67, 0x51, 0x75, 0x65, 0x72, 0x79, 0x1a, 0x11, 0x2e, 0x74, 0x61, 0x73,
 	0x6b, 0x5f, 0x6c, 0x6f, 0x67, 0x2e, 0x4c, 0x6f, 0x67, 0x52, 0x65, 0x73, 0x70, 0x22, 0x15, 0xca,
@@ -1192,12 +1197,14 @@ var file_task_log_proto_depIdxs = []int32{
 	6, // 1: task_log.LogGetByIdResp.data:type_name -> task.TaskData
 	6, // 2: task_log.PostLogReq.data:type_name -> task.TaskData
 	6, // 3: task_log.PutLogReq.data:type_name -> task.TaskData
-	0, // 4: task_log.LogService.GetLog:input_type -> task_log.LogQuery
-	4, // 5: task_log.LogService.AbortTask:input_type -> task_log.PostLogReq
-	1, // 6: task_log.LogService.GetLog:output_type -> task_log.LogResp
-	1, // 7: task_log.LogService.AbortTask:output_type -> task_log.LogResp
-	6, // [6:8] is the sub-list for method output_type
-	4, // [4:6] is the sub-list for method input_type
+	0, // 4: task_log.LogService.GetLogById:input_type -> task_log.LogQuery
+	0, // 5: task_log.LogService.GetLog:input_type -> task_log.LogQuery
+	4, // 6: task_log.LogService.AbortTask:input_type -> task_log.PostLogReq
+	1, // 7: task_log.LogService.GetLogById:output_type -> task_log.LogResp
+	1, // 8: task_log.LogService.GetLog:output_type -> task_log.LogResp
+	1, // 9: task_log.LogService.AbortTask:output_type -> task_log.LogResp
+	7, // [7:10] is the sub-list for method output_type
+	4, // [4:7] is the sub-list for method input_type
 	4, // [4:4] is the sub-list for extension type_name
 	4, // [4:4] is the sub-list for extension extendee
 	0, // [0:4] is the sub-list for field type_name

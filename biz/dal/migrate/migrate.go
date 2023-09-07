@@ -7,9 +7,9 @@ import (
 
 func Migrate() {
 
-	//err := db.DB.AutoMigrate(&tbs.K8sResource{})
+	//err := db.DB.AutoMigrate(&model.JoborLog{})
 	//if err != nil {
-	//	log.Fatal("AutoMigrate err:", err)
+	//	hlog.Fatal("AutoMigrate err:", err)
 	//}
 	//fmt.Println(db.DB.AutoMigrate(new(tbs.Key)).Error)
 	//MigSys()

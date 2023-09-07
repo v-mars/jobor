@@ -45,3 +45,13 @@ func _aborttaskMw() []app.HandlerFunc {
 	// your code...
 	return nil
 }
+
+func _log0Mw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _getlogbyidMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}

@@ -7,7 +7,7 @@ option go_package = "task";
 
 import "api.proto";
 //import "base.proto";
-//import "google/protobuf/struct.proto";
+import "google/protobuf/struct.proto";
 
 message TaskQuery {
   int64 id = 1[(api.query)="id",(api.body)="id"];
@@ -159,6 +159,10 @@ message PostTaskReq {
   Notify notify = 6[(api.query)="notify",(api.body)="notify"];
   int64 user_id = 7[(api.query)="user_id",(api.body)="user_id"];
   string user = 8[(api.query)="user",(api.body)="user"];
+  repeated string parent_task_ids = 25[(api.query)="parent_task_ids",(api.body)="parent_task_ids"];
+  bool parent_run_parallel = 26[(api.query)="parent_run_parallel",(api.body)="parent_run_parallel"];
+  repeated string child_task_ids = 27[(api.query)="child_task_ids",(api.body)="child_task_ids"];
+  bool child_run_parallel = 28[(api.query)="child_run_parallel",(api.body)="child_run_parallel"];
   int64 count = 9[(api.query)="count",(api.body)="count"];
   string expr = 10[(api.query)="expr",(api.body)="expr"];
   int64 timeout = 11[(api.query)="timeout",(api.body)="timeout"];
@@ -183,6 +187,10 @@ message PutTaskReq {
   Notify notify = 6[(api.query)="notify",(api.body)="notify,omitempty",(api.go_tag)="to_str:\"yes\""];
   optional int64 user_id = 7[(api.query)="user_id",(api.go_tag)="json:\"user_id,omitempty\""];
   optional string user = 8[(api.query)="user",(api.body)="user,omitempty"];
+  google.protobuf.ListValue parent_task_ids = 25[(api.query)="parent_task_ids,omitempty",(api.body)="parent_task_ids,omitempty",(api.go_tag)="to_str:\"yes\""];
+  optional bool parent_run_parallel = 26[(api.query)="parent_run_parallel",(api.go_tag)="json:\"parent_run_parallel,omitempty\""];
+  google.protobuf.ListValue child_task_ids = 27[(api.query)="child_task_ids,omitempty",(api.body)="child_task_ids,omitempty",(api.go_tag)="to_str:\"yes\""];
+  optional bool child_run_parallel = 28[(api.query)="child_run_parallel",(api.go_tag)="json:\"child_run_parallel,omitempty\""];
   optional int64 count = 9[(api.query)="count",(api.go_tag)="json:\"count,omitempty\""];
   optional string expr = 10[(api.query)="expr",(api.body)="expr,omitempty"];
   optional int64 timeout = 11[(api.query)="timeout",(api.go_tag)="json:\"timeout,omitempty\""];

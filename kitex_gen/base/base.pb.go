@@ -111,7 +111,7 @@ type IDReq struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	ID uint64 `protobuf:"varint,1,opt,name=ID,proto3" json:"ID" form:"ID" query:"ID"`
+	ID uint64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id" form:"Id" query:"Id"`
 }
 
 func (x *IDReq) Reset() {
@@ -213,7 +213,7 @@ type StatusCodeReq struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	ID     uint64 `protobuf:"varint,1,opt,name=ID,proto3" json:"ID" form:"ID" query:"ID"`
+	ID     uint64 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id" form:"Id" query:"Id"`
 	Status uint64 `protobuf:"varint,2,opt,name=status,proto3" json:"status" form:"status" query:"status"`
 }
 

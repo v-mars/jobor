@@ -93,8 +93,70 @@ const docTemplate = `{
                 "responses": {}
             }
         },
+        "/api/v1/jobor/log/{id}": {
+            "get": {
+                "description": "jobor task log get",
+                "tags": [
+                    "jobor log"
+                ],
+                "summary": "jobor task log get summary",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "int valid",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
         "/api/v1/jobor/migrate": {
             "get": {
+                "responses": {}
+            }
+        },
+        "/api/v1/jobor/oidc/callback": {
+            "get": {
+                "description": "oidc callback",
+                "tags": [
+                    "login"
+                ],
+                "summary": "oidc callback summary",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "code",
+                        "name": "code",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "state",
+                        "name": "state",
+                        "in": "query"
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/api/v1/jobor/oidc/redirect": {
+            "get": {
+                "description": "oidc redirect login",
+                "tags": [
+                    "login"
+                ],
+                "summary": "oidc redirect login summary",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "next",
+                        "name": "next",
+                        "in": "query"
+                    }
+                ],
                 "responses": {}
             }
         },
@@ -410,49 +472,6 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/v1/oidc/callback": {
-            "get": {
-                "description": "oidc callback",
-                "tags": [
-                    "login"
-                ],
-                "summary": "oidc callback summary",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "code",
-                        "name": "code",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "state",
-                        "name": "state",
-                        "in": "query"
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/api/v1/oidc/redirect": {
-            "get": {
-                "description": "oidc redirect login",
-                "tags": [
-                    "login"
-                ],
-                "summary": "oidc redirect login summary",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "next",
-                        "name": "next",
-                        "in": "query"
-                    }
-                ],
-                "responses": {}
-            }
-        },
         "/api/v1/sys/api": {
             "get": {
                 "responses": {}
@@ -541,6 +560,26 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "google_golang_org_protobuf_types_known_structpb.ListValue": {
+            "type": "object",
+            "properties": {
+                "values": {
+                    "description": "Repeated field of dynamically typed values.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/google_golang_org_protobuf_types_known_structpb.Value"
+                    }
+                }
+            }
+        },
+        "google_golang_org_protobuf_types_known_structpb.Value": {
+            "type": "object",
+            "properties": {
+                "kind": {
+                    "description": "The kind of value.\n\nTypes that are assignable to Kind:\n\n\t*Value_NullValue\n\t*Value_NumberValue\n\t*Value_StringValue\n\t*Value_BoolValue\n\t*Value_StructValue\n\t*Value_ListValue"
+                }
+            }
+        },
         "mw.LoginReq": {
             "type": "object",
             "properties": {
@@ -698,6 +737,9 @@ const docTemplate = `{
                 },
                 "webhook": {
                     "$ref": "#/definitions/task.Webhook"
+                },
+                "wechat": {
+                    "$ref": "#/definitions/task.WeChat"
                 }
             }
         },
@@ -706,6 +748,15 @@ const docTemplate = `{
             "properties": {
                 "alarm_policy": {
                     "type": "integer"
+                },
+                "child_run_parallel": {
+                    "type": "boolean"
+                },
+                "child_task_ids": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "count": {
                     "type": "integer"
@@ -739,6 +790,15 @@ const docTemplate = `{
                 },
                 "notify": {
                     "$ref": "#/definitions/task.Notify"
+                },
+                "parent_run_parallel": {
+                    "type": "boolean"
+                },
+                "parent_task_ids": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "prev": {
                     "type": "string"
@@ -775,6 +835,12 @@ const docTemplate = `{
                 "alarm_policy": {
                     "type": "integer"
                 },
+                "child_run_parallel": {
+                    "type": "boolean"
+                },
+                "child_task_ids": {
+                    "$ref": "#/definitions/google_golang_org_protobuf_types_known_structpb.ListValue"
+                },
                 "count": {
                     "type": "integer"
                 },
@@ -807,6 +873,12 @@ const docTemplate = `{
                 },
                 "notify": {
                     "$ref": "#/definitions/task.Notify"
+                },
+                "parent_run_parallel": {
+                    "type": "boolean"
+                },
+                "parent_task_ids": {
+                    "$ref": "#/definitions/google_golang_org_protobuf_types_known_structpb.ListValue"
                 },
                 "prev": {
                     "type": "string"
@@ -845,6 +917,26 @@ const docTemplate = `{
                 },
                 "content": {
                     "type": "string"
+                }
+            }
+        },
+        "task.WeChat": {
+            "type": "object",
+            "properties": {
+                "enable": {
+                    "type": "boolean"
+                },
+                "groups": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "receivers": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 }
             }
         },

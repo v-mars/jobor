@@ -22,7 +22,7 @@ const (
 	// AppPort 项目端口
 	AppPort = 5668
 
-	RequestIDHeaderValue = "X-Request-ID"
+	RequestIDHeaderValue = "X-Request-Id"
 	SchemeHeaderValue    = "X-jobor-Scheme"
 
 	// AppAccessLogFile 项目访问日志存放文件

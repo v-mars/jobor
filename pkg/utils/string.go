@@ -236,7 +236,7 @@ func CamelToSnakeCase(camel string) string {
 func GetOwnerAndNameFromId(id string) (string, string) {
 	tokens := strings.Split(id, "/")
 	if len(tokens) != 2 {
-		panic(errors.New("GetOwnerAndNameFromId() error, wrong token count for ID: " + id))
+		panic(errors.New("GetOwnerAndNameFromId() error, wrong token count for Id: " + id))
 	}
 
 	return tokens[0], tokens[1]
@@ -245,7 +245,7 @@ func GetOwnerAndNameFromId(id string) (string, string) {
 func GetOwnerFromId(id string) string {
 	tokens := strings.Split(id, "/")
 	if len(tokens) != 2 {
-		panic(errors.New("GetOwnerAndNameFromId() error, wrong token count for ID: " + id))
+		panic(errors.New("GetOwnerAndNameFromId() error, wrong token count for Id: " + id))
 	}
 
 	return tokens[0]
@@ -259,7 +259,7 @@ func GetOwnerAndNameFromIdNoCheck(id string) (string, string) {
 func GetOwnerAndNameAndOtherFromId(id string) (string, string, string) {
 	tokens := strings.Split(id, "/")
 	if len(tokens) != 3 {
-		panic(errors.New("GetOwnerAndNameAndOtherFromId() error, wrong token count for ID: " + id))
+		panic(errors.New("GetOwnerAndNameAndOtherFromId() error, wrong token count for Id: " + id))
 	}
 
 	return tokens[0], tokens[1], tokens[2]

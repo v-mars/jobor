@@ -10,7 +10,7 @@ const (
 )
 
 type AuditLog struct {
-	//ID        int    `gorm:"column:id;primary_key;comment:主键id" json:"id" form:"id"` // 主键
+	//Id        int    `gorm:"column:id;primary_key;comment:主键id" json:"id" form:"id"` // 主键
 	UserId   int64         `gorm:"comment:关联用户" json:"user_id" form:"user_id"`
 	Nickname string        `gorm:"type:varchar(128);comment:显示名" json:"nickname" form:"nickname"`
 	User     string        `gorm:"type:varchar(128);comment:用户名" json:"user" form:"user"`

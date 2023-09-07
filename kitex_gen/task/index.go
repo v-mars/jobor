@@ -7,6 +7,27 @@ import (
 	"fmt"
 )
 
+func (u *PutTaskReq) GetParentIdsInt() []int {
+	var arrayInt = make([]int, 0)
+	if u.ParentTaskIds != nil {
+		for _, v := range u.ParentTaskIds.GetValues() {
+			v := v
+			arrayInt = append(arrayInt, int(v.GetNumberValue()))
+		}
+	}
+	return arrayInt
+}
+func (u *PutTaskReq) GetChildIdsInt() []int {
+	var arrayInt = make([]int, 0)
+	if u.ChildTaskIds != nil {
+		for _, v := range u.ChildTaskIds.GetValues() {
+			v := v
+			arrayInt = append(arrayInt, int(v.GetNumberValue()))
+		}
+	}
+	return arrayInt
+}
+
 //type TaskData struct {
 //	Code string `json:"data"`
 //	Api  struct {

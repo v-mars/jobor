@@ -1,4 +1,17 @@
 definitions:
+  google_golang_org_protobuf_types_known_structpb.ListValue:
+    properties:
+      values:
+        description: Repeated field of dynamically typed values.
+        items:
+          $ref: '#/definitions/google_golang_org_protobuf_types_known_structpb.Value'
+        type: array
+    type: object
+  google_golang_org_protobuf_types_known_structpb.Value:
+    properties:
+      kind:
+        description: "The kind of value.\n\nTypes that are assignable to Kind:\n\n\t*Value_NullValue\n\t*Value_NumberValue\n\t*Value_StringValue\n\t*Value_BoolValue\n\t*Value_StructValue\n\t*Value_ListValue"
+    type: object
   mw.LoginReq:
     properties:
       password:
@@ -102,11 +115,19 @@ definitions:
         $ref: '#/definitions/task.Lark'
       webhook:
         $ref: '#/definitions/task.Webhook'
+      wechat:
+        $ref: '#/definitions/task.WeChat'
     type: object
   task.PostTaskReq:
     properties:
       alarm_policy:
         type: integer
+      child_run_parallel:
+        type: boolean
+      child_task_ids:
+        items:
+          type: string
+        type: array
       count:
         type: integer
       data:
@@ -129,6 +150,12 @@ definitions:
         type: string
       notify:
         $ref: '#/definitions/task.Notify'
+      parent_run_parallel:
+        type: boolean
+      parent_task_ids:
+        items:
+          type: string
+        type: array
       prev:
         type: string
       retry:
@@ -152,6 +179,10 @@ definitions:
     properties:
       alarm_policy:
         type: integer
+      child_run_parallel:
+        type: boolean
+      child_task_ids:
+        $ref: '#/definitions/google_golang_org_protobuf_types_known_structpb.ListValue'
       count:
         type: integer
       data:
@@ -174,6 +205,10 @@ definitions:
         type: string
       notify:
         $ref: '#/definitions/task.Notify'
+      parent_run_parallel:
+        type: boolean
+      parent_task_ids:
+        $ref: '#/definitions/google_golang_org_protobuf_types_known_structpb.ListValue'
       prev:
         type: string
       retry:
@@ -199,6 +234,19 @@ definitions:
         $ref: '#/definitions/task.Api'
       content:
         type: string
+    type: object
+  task.WeChat:
+    properties:
+      enable:
+        type: boolean
+      groups:
+        items:
+          type: string
+        type: array
+      receivers:
+        items:
+          type: string
+        type: array
     type: object
   task.Webhook:
     properties:
@@ -314,9 +362,51 @@ paths:
       summary: jobor task abort summary
       tags:
       - jobor log
+  /api/v1/jobor/log/{id}:
+    get:
+      description: jobor task log get
+      parameters:
+      - description: int valid
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses: {}
+      summary: jobor task log get summary
+      tags:
+      - jobor log
   /api/v1/jobor/migrate:
     get:
       responses: {}
+  /api/v1/jobor/oidc/callback:
+    get:
+      description: oidc callback
+      parameters:
+      - description: code
+        in: query
+        name: code
+        required: true
+        type: string
+      - description: state
+        in: query
+        name: state
+        type: string
+      responses: {}
+      summary: oidc callback summary
+      tags:
+      - login
+  /api/v1/jobor/oidc/redirect:
+    get:
+      description: oidc redirect login
+      parameters:
+      - description: next
+        in: query
+        name: next
+        type: string
+      responses: {}
+      summary: oidc redirect login summary
+      tags:
+      - login
   /api/v1/jobor/state-code:
     get:
       responses: {}
@@ -527,35 +617,6 @@ paths:
       - application/json
       responses: {}
       summary: user logout summary
-      tags:
-      - login
-  /api/v1/oidc/callback:
-    get:
-      description: oidc callback
-      parameters:
-      - description: code
-        in: query
-        name: code
-        required: true
-        type: string
-      - description: state
-        in: query
-        name: state
-        type: string
-      responses: {}
-      summary: oidc callback summary
-      tags:
-      - login
-  /api/v1/oidc/redirect:
-    get:
-      description: oidc redirect login
-      parameters:
-      - description: next
-        in: query
-        name: next
-        type: string
-      responses: {}
-      summary: oidc redirect login summary
       tags:
       - login
   /api/v1/sys/api:

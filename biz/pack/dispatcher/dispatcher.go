@@ -175,6 +175,7 @@ type Registry struct {
 
 var (
 	RegistryDispatcher = Registry{cron: make(map[int]Task)}
+	TaskConcurrency    = 5
 )
 
 func InitCron() {
@@ -190,17 +191,17 @@ func InitCron() {
 	c.Start()
 
 	for _, t := range taskList {
-		hlog.CtxDebugf(ctx, "jobor cron taskId=%d add event [name=%s, expr=\"%s\"] is start", t.ID, t.Name, t.Expr)
+		hlog.CtxDebugf(ctx, "jobor cron taskId=%d add event [name=%s, expr=\"%s\"] is start", t.Id, t.Name, t.Expr)
 		t := t
 		entryId, err := c.AddFunc(t.Expr, func() {
 			RunTasks("init", model.TriggerAuto, t)
 		})
 		if err != nil {
-			hlog.CtxErrorf(ctx, "jobor cron taskId=%d add func [name=%s, expr=\"%s\"] is err, %s", t.ID, t.Name, t.Expr, err)
+			hlog.CtxErrorf(ctx, "jobor cron taskId=%d add func [name=%s, expr=\"%s\"] is err, %s", t.Id, t.Name, t.Expr, err)
 		}
 		entry := c.Entry(entryId)
-		RegistryDispatcher.cron[t.ID] = Task{Name: t.Name, Expr: t.Expr, TaskId: t.ID, EntryID: entryId, Entry: entry}
-		hlog.CtxInfof(ctx, "jobor cron taskId=%d add event [name=%s, expr=\"%s\"] is success", t.ID, t.Name, t.Expr)
+		RegistryDispatcher.cron[t.Id] = Task{Name: t.Name, Expr: t.Expr, TaskId: t.Id, EntryID: entryId, Entry: entry}
+		hlog.CtxInfof(ctx, "jobor cron taskId=%d add event [name=%s, expr=\"%s\"] is success", t.Id, t.Name, t.Expr)
 	}
 
 	//defer c.Stop()
@@ -234,11 +235,14 @@ func RunTasks(evt, trigger string, t model.JoborTask) {
 	//	return
 	//}
 	//var tt = *t
-	RunTasksWithRPC(evt, trigger, t)
+	var ctx = context.Background()
+	//if t {
+	//}
+	RunTasksWithRPC(ctx, evt, trigger, t, nil, "")
 	//RunTasksWithBroker(evt, trigger, t)
 }
 
-func RunTasksWithRPC(evt, trigger string, t model.JoborTask) {
+func RunTasksWithRPC(ctx context.Context, evt, trigger string, t model.JoborTask, runbyid *int, parentChild string) {
 	//if Raft.St.RaftNode.Raft.State() != raft.Leader && trigger == TriggerAuto {
 	//	return
 	//}
@@ -246,21 +250,24 @@ func RunTasksWithRPC(evt, trigger string, t model.JoborTask) {
 	var tx = db.DB
 	jsonTime := db.JSONTime{Time: time.Now()}
 	workers := GetWorkerByRoutePolicy(t.RoutingKey, t.RoutePolicy)
-	var taskLog = model.JoborLog{Name: t.Name, Lang: t.Lang, TaskId: t.ID, TriggerMethod: trigger, Expr: t.Expr,
+	var taskLog = model.JoborLog{Name: t.Name, Lang: t.Lang, TaskId: t.Id, TriggerMethod: trigger, Expr: t.Expr,
 		Data: t.Data, StartTime: jsonTime, Result: model.TaskLogStatusWait,
-		Idempotent: fmt.Sprintf("%d", RegistryDispatcher.cron[t.ID].Entry.Prev.Unix()),
+		Idempotent: fmt.Sprintf("%d", RegistryDispatcher.cron[t.Id].Entry.Prev.Unix()),
+	}
+	if runbyid != nil {
+		taskLog.ByTaskLogId = *runbyid
 	}
 	var startTimeTotal = time.Now()
 	defer func() {
 		//if Raft.St.RaftNode.Raft.State() != raft.Leader {
-		//	hlog.Infof("this dispatcher server is not Leader, Task %s[%d] lang %s is skip run,now time: %s ", t.Name, t.ID, t.Lang, time.Now())
+		//	hlog.Infof("this dispatcher server is not Leader, Task %s[%d] lang %s is skip run,now time: %s ", t.Name, t.Id, t.Lang, time.Now())
 		//	return
 		//}
 		defer func() {
 			if errPanic := recover(); errPanic != any(nil) {
 				stack := response.Stack(3)
 				s.Err = fmt.Errorf("defer panic, 错误信息: %s\n堆栈信息：%s", errPanic, stack)
-				hlog.Error(s.Err)
+				hlog.Errorf("%s", s.Err)
 			}
 		}()
 		if errPanic := recover(); errPanic != any(nil) {
@@ -270,21 +277,21 @@ func RunTasksWithRPC(evt, trigger string, t model.JoborTask) {
 			taskLog.ErrMsg = s.Err.Error()
 			taskLog.Result = model.TaskLogStatusUnknown
 		} else if taskLog.Result == model.TaskLogStatusTimeout {
-			s.Err = fmt.Errorf("任务 %s[%d] 类型=%s %s", t.Name, t.ID, t.Lang, "已经超时")
+			s.Err = fmt.Errorf("任务 %s[%d] 类型=%s %s", t.Name, t.Id, t.Lang, "已经超时")
 			hlog.Error(s.Err)
 			taskLog.ErrMsg = s.Err.Error()
 		} else if taskLog.Result == model.TaskLogStatusAbort {
-			s.Err = fmt.Errorf("任务 %s[%d] 类型=%s %s", t.Name, t.ID, t.Lang, "已经终止")
+			s.Err = fmt.Errorf("任务 %s[%d] 类型=%s %s", t.Name, t.Id, t.Lang, "已经终止")
 			hlog.Error(s.Err)
 			taskLog.ErrMsg = s.Err.Error()
 		} else if s.Err != nil {
-			s.Err = fmt.Errorf("任务 %s[%d] 类型=%s %s", t.Name, t.ID, t.Lang, s.Err)
-			hlog.Error(s.Err)
+			s.Err = fmt.Errorf("任务 %s[%d] 类型=%s %s", t.Name, t.Id, t.Lang, s.Err)
+			hlog.Errorf("%s", s.Err)
 			taskLog.ErrMsg = s.Err.Error()
 			taskLog.Result = model.TaskLogStatusFailed
 		} else {
 			taskLog.Result = model.TaskLogStatusSuccess
-			hlog.Infof("任务 %s[%d] 类型=%s 执行成功", t.Name, t.ID, t.Lang)
+			hlog.Infof("任务 %s[%d] 类型=%s 执行成功", t.Name, t.Id, t.Lang)
 		}
 		//totalTime := time.Since(startTimeTotal)
 		//value, _ := strconv.ParseFloat(fmt.Sprintf("%.3f", totalTime.Seconds()), 64)
@@ -298,7 +305,7 @@ func RunTasksWithRPC(evt, trigger string, t model.JoborTask) {
 			return
 		}
 		if s.Err = tx.Model(&t).Updates(model.JoborTask{
-			Prev: jsonTime, Next: db.JSONTime{Time: RegistryDispatcher.cron[t.ID].Entry.Next}}).Error; s.Err != nil {
+			Prev: jsonTime, Next: db.JSONTime{Time: RegistryDispatcher.cron[t.Id].Entry.Next}}).Error; s.Err != nil {
 			s.Err = fmt.Errorf("update Task pre/next time err: %s", s.Err)
 			hlog.Error(s.Err)
 		}
@@ -310,11 +317,39 @@ func RunTasksWithRPC(evt, trigger string, t model.JoborTask) {
 		s.Err = fmt.Errorf("create tasklog err: %s", s.Err)
 		return
 	}
+	if runbyid != nil && len(parentChild) > 0 {
+		byTask := model.JoborLog{Model: db.Model{Id: taskLog.Id}}
+		if s.Err = db.DB.Model(&model.JoborLog{Model: db.Model{Id: *runbyid}}).Association(parentChild).Append(&byTask); s.Err != nil {
+			return
+		}
+	}
 
 	s.TaskLog = &taskLog
 	s.Task = &t
 	s.Add()
-	hlog.Infof("Task %s[%d] lang %s success start,now time: %s ", t.Name, t.ID, t.Lang, time.Now())
+	hlog.Infof("Task %s[%d] lang %s success start,now time: %s ", t.Name, t.Id, t.Lang, time.Now())
+	s.TaskCtx, s.TaskCancel = context.WithCancel(ctx)
+	timeoutCtx, timeoutCac := context.WithCancel(ctx)
+	if t.Timeout > 0 {
+		timeoutCtx, timeoutCac = context.WithTimeout(timeoutCtx, time.Second*time.Duration(t.Timeout))
+	}
+	defer s.TaskCancel()
+	defer timeoutCac()
+
+	// 执行父任务
+	s.Err = runMultiTasks(ctx, trigger, t.ParentRunParallel, &taskLog.Id, "Parents", t.ParentTaskIds...)
+	if s.Err != nil {
+		s.Err = fmt.Errorf("执行父任务[%v]失败，%s", t.ParentTaskIds, s.Err)
+		return
+	}
+	defer func() {
+		// 执行子任务
+		s.Err = runMultiTasks(ctx, trigger, t.ChildRunParallel, &taskLog.Id, "Childs", t.ChildTaskIds...)
+		if s.Err != nil {
+			s.Err = fmt.Errorf("执行子任务[%v]失败，%s", t.ParentTaskIds, s.Err)
+			return
+		}
+	}()
 
 	//var executor = DataCode{Lang: Lang(t.Lang),ScriptCode: t.Data.Code}
 	var marshal []byte
@@ -324,13 +359,6 @@ func RunTasksWithRPC(evt, trigger string, t model.JoborTask) {
 		return
 	}
 
-	s.TaskCtx, s.TaskCancel = context.WithCancel(context.Background())
-	timeoutCtx, timeoutCac := context.WithCancel(context.TODO())
-	if t.Timeout > 0 {
-		timeoutCtx, timeoutCac = context.WithTimeout(timeoutCtx, time.Second*time.Duration(t.Timeout))
-	}
-	defer s.TaskCancel()
-	defer timeoutCac()
 	//time.Sleep(1 * time.Second)
 
 	//conn, w, errConn := TryGetGrpcClientConn(s.TaskCtx, workers)
@@ -342,7 +370,6 @@ func RunTasksWithRPC(evt, trigger string, t model.JoborTask) {
 	//defer func(conn *grpc.ClientConn) { _ = conn.Close() }(conn)
 	//s.Conn = conn
 	w := workers()
-	fmt.Println("w:", w)
 	if w == nil {
 		s.Err = fmt.Errorf("can't get valid worker")
 		return
@@ -359,20 +386,20 @@ func RunTasksWithRPC(evt, trigger string, t model.JoborTask) {
 		hlog.Errorf("tet task worker rpc client err: %s", s.Err)
 		return
 	}
-	s.Stream, s.Err = tc.RunTask(s.TaskCtx, &task2.TaskRequest{TaskId: int64(t.ID), TaskLang: t.Lang, TaskData: marshal})
+	s.Stream, s.Err = tc.RunTask(s.TaskCtx, &task2.TaskRequest{TaskId: int64(t.Id), TaskLang: t.Lang, TaskData: marshal})
 	if s.Err != nil {
 		hlog.Errorf("run Task err: %s", s.Err)
 		return
 	}
 	defer func(Stream taskservice.TaskService_RunTaskClient) { _ = Stream.Close() }(s.Stream)
 	defer func(resStream taskservice.TaskService_RunTaskClient) { _ = resStream.Close() }(s.Stream)
-	hlog.Debugf("Task %s[%d] RunTasks success", t.Name, t.ID)
+	hlog.Debugf("Task %s[%d] RunTasks success", t.Name, t.Id)
 	taskLog.Resp = ""
 	streamChan := func() (chan *pbapi.StreamResponse, chan error) {
 		errChan := make(chan error, 1)
 		Message := make(chan *pbapi.StreamResponse, 1)
 		go func() {
-			defer func() { hlog.Debugf("Task %s[%d] res stream.recv finish", t.Name, t.ID) }()
+			defer func() { hlog.Debugf("Task %s[%d] res stream.recv finish", t.Name, t.Id) }()
 			rec, errRecv := s.Stream.Recv()
 			Message <- rec
 			errChan <- errRecv
@@ -381,27 +408,27 @@ func RunTasksWithRPC(evt, trigger string, t model.JoborTask) {
 	}
 	for {
 		msg, errChan := streamChan()
-		hlog.Debugf("Task %s[%d] res stream.recv start", t.Name, t.ID)
+		hlog.Debugf("Task %s[%d] res stream.recv start", t.Name, t.Id)
 		select {
 		//case <-s.Abort:
 		case <-s.TaskCtx.Done():
-			hlog.Debugf("Task %s[%d] is abort", t.Name, t.ID)
+			hlog.Debugf("Task %s[%d] is abort", t.Name, t.Id)
 			taskLog.Result = model.TaskLogStatusAbort
 			return
 		case <-timeoutCtx.Done():
-			hlog.Debugf("Task %s[%d] is timeout", t.Name, t.ID)
+			hlog.Debugf("Task %s[%d] is timeout", t.Name, t.Id)
 			taskLog.Result = model.TaskLogStatusTimeout
 			return
 		case d := <-msg:
-			hlog.Debugf("Task %s[%d] stream recv data: %s", t.Name, t.ID, d.GetResp())
+			hlog.Debugf("Task %s[%d] stream recv data: %s", t.Name, t.Id, d.GetResp())
 			taskLog.Resp += string(d.GetResp())
 		case e := <-errChan:
 			if e == io.EOF {
-				hlog.Infof("Task %s[%d] stream recv finish", t.Name, t.ID)
+				hlog.Infof("Task %s[%d] stream recv finish", t.Name, t.Id)
 				goto Next
 			}
 			if e != nil {
-				hlog.Errorf("Task %s[%d] resStream.Recv err: %s", t.Name, t.ID, e.Error())
+				hlog.Errorf("Task %s[%d] resStream.Recv err: %s", t.Name, t.Id, e.Error())
 				taskLog.Result = "failed"
 				s.Err = e
 				return
@@ -425,11 +452,11 @@ Next:
 		}
 		s.TaskLog.ErrCode = taskRespCode
 		if t.ExpectCode != taskRespCode {
-			return fmt.Errorf("任务 %s[%d] 返回码： %d, 期望返回码：%d", t.Name, taskLog.ID, taskRespCode, t.ExpectCode)
+			return fmt.Errorf("任务 %s[%d] 返回码： %d, 期望返回码：%d", t.Name, taskLog.Id, taskRespCode, t.ExpectCode)
 		}
 		if t.ExpectContent != "" {
 			if !strings.Contains(taskLog.Resp, t.ExpectContent) {
-				return fmt.Errorf("%s Task %s[%d] resp context not contains expect content: %s", "server", t.Name, taskLog.ID, t.ExpectContent)
+				return fmt.Errorf("%s Task %s[%d] resp context not contains expect content: %s", "server", t.Name, taskLog.Id, t.ExpectContent)
 			}
 		}
 		return nil
@@ -453,7 +480,7 @@ func RunTasksWithBroker(evt, trigger string, t model.JoborTask) {
 		}()
 	}()
 	hlog.Infof("broker Task %s[%d] lang %s routingKey %s success start,now time: %s ",
-		t.Name, t.ID, t.Lang, t.RoutingKey, time.Now())
+		t.Name, t.Id, t.Lang, t.RoutingKey, time.Now())
 	var marshal []byte
 	marshal, s.Err = json.Marshal(t.Data)
 	if s.Err != nil {
@@ -482,7 +509,7 @@ func RunTasksWithBroker(evt, trigger string, t model.JoborTask) {
 			},
 			{
 				Type:  "int64",
-				Value: t.ID,
+				Value: t.Id,
 			},
 			{
 				Type:  "string",
@@ -501,8 +528,33 @@ func RunTasksWithBroker(evt, trigger string, t model.JoborTask) {
 		//return fmt.Errorf("Getting Task result failed with error: %s", err.Error())
 	}
 	hlog.Infof("broker Task %s[%d] lang %s routingKey %s success start,asyncResult: %s ",
-		t.Name, t.ID, t.Lang, t.RoutingKey, asyncResult.GetState())
+		t.Name, t.Id, t.Lang, t.RoutingKey, asyncResult.GetState())
 
+}
+
+func runMultiTasks(ctx context.Context, trigger string, RunParallel bool, runbyid *int, parentChild string, taskids ...int) error {
+	con := make(chan struct{}, TaskConcurrency)
+	for _, v := range taskids {
+		v := v
+		t, err := model.GetTaskInfoById(v, false)
+		if err != nil {
+			err = fmt.Errorf("jobor runMultiTasks task id %v, 获取任务错误: %s", v, err)
+			hlog.Errorf(err.Error())
+			return err
+		}
+		if RunParallel {
+			con <- struct{}{}
+			go doConnMultiTask(ctx, con, trigger, *t, runbyid, parentChild)
+		} else {
+			RunTasksWithRPC(ctx, "", trigger, *t, runbyid, parentChild)
+		}
+	}
+	return nil
+}
+
+func doConnMultiTask(ctx context.Context, d chan struct{}, trigger string, t model.JoborTask, runbyid *int, parentChild string) {
+	RunTasksWithRPC(ctx, "", trigger, t, runbyid, parentChild)
+	<-d
 }
 
 func (s *taskSession) Alarm() error {
@@ -587,9 +639,9 @@ llapse; font-size:18px; line-height:1.1;  font-family:'Microsoft YaHei UI','Micr
 	Hello, 定时任务出现问题了:
     </div>`
 	taskDetail := [][]string{
-		{"任务 ID：", fmt.Sprintf("%d", s.Task.ID)},
+		{"任务 Id：", fmt.Sprintf("%d", s.Task.Id)},
 		{"任务名称：", fmt.Sprintf("%s", s.Task.Name)},
-		{"执行 ID：", fmt.Sprintf("%d", s.TaskLog.ID)},
+		{"执行 Id：", fmt.Sprintf("%d", s.TaskLog.Id)},
 		{"类   型：", fmt.Sprintf("%s", s.TaskLog.Lang)},
 		{"触发方式：", fmt.Sprintf("%s", s.TaskLog.TriggerMethod)},
 		{"表达式 ：", fmt.Sprintf("%s", s.TaskLog.Expr)},
@@ -612,12 +664,12 @@ llapse; font-size:18px; line-height:1.1;  font-family:'Microsoft YaHei UI','Micr
 }
 
 func (s *taskSession) Notify() error {
-	var title = fmt.Sprintf("定时任务[%s]记录ID[%d]执行结果", s.Task.Name, s.TaskLog.ID)
+	var title = fmt.Sprintf("定时任务[%s]记录ID[%d]执行结果", s.Task.Name, s.TaskLog.Id)
 	var msg = fmt.Sprintf(
 		`
-任务 ID：%d
+任务 Id：%d
 任务名称：%s
-执行 ID：%d
+执行 Id：%d
 类   型：%s
 触发方式：%s
 表达式 ：%s
@@ -628,14 +680,14 @@ Worker：%s
 返回内容：%s
 错误状态码：%d
 错误信息：%s`,
-		s.Task.ID, s.Task.Name, s.TaskLog.ID, s.TaskLog.Lang, s.TaskLog.TriggerMethod, s.TaskLog.Expr,
+		s.Task.Id, s.Task.Name, s.TaskLog.Id, s.TaskLog.Lang, s.TaskLog.TriggerMethod, s.TaskLog.Expr,
 		s.TaskLog.Addr, s.TaskLog.StartTime.Format("2006-01-02 15:04:05"),
 		s.TaskLog.EndTime.Format("2006-01-02 15:04:05"),
 		fmt.Sprintf("%s", s.TaskLog.CostTime), s.TaskLog.Result,
 		s.TaskLog.Resp, s.TaskLog.ErrCode, s.TaskLog.ErrMsg)
 	var apiData = map[string]interface{}{
-		"task_log_id":    s.TaskLog.ID,
-		"task_id":        s.Task.ID,
+		"task_log_id":    s.TaskLog.Id,
+		"task_id":        s.Task.Id,
 		"task_name":      s.Task.Name,
 		"lang":           s.TaskLog.Lang,
 		"worker_addr":    s.TaskLog.Addr,
@@ -713,14 +765,14 @@ func (s *taskSession) GetRespCode() (int, error) {
 
 func (s *taskSession) Add() {
 	CacheTask.Lock()
-	CacheTask.TaskLogs[s.TaskLog.ID] = s
+	CacheTask.TaskLogs[s.TaskLog.Id] = s
 	CacheTask.Unlock()
 }
 
 func (s *taskSession) Delete() {
 	//s.Close()
 	CacheTask.Lock()
-	delete(CacheTask.TaskLogs, s.TaskLog.ID)
+	delete(CacheTask.TaskLogs, s.TaskLog.Id)
 	CacheTask.Unlock()
 }
 
@@ -740,15 +792,15 @@ func (s *taskSession) Close() {
 	g.GOMAXPROCS(1)
 	// parent tasks
 	g.Go(func(ctx context.Context) error {
-		return nil //s.runMultiTasks(ctx, Task.ParentRunParallel, define.ParentTask, Task.ID, Task.ParentTaskIds...)
+		return nil //s.runMultiTasks(ctx, Task.ParentRunParallel, define.ParentTask, Task.Id, Task.ParentTaskIds...)
 	})
 	// server Task
 	g.Go(func(ctx context.Context) error {
-		return nil // s.runTask(ctx, Task.ID, Task.ID, define.MasterTask)
+		return nil // s.runTask(ctx, Task.Id, Task.Id, define.MasterTask)
 	})
 	// childs Task
 	g.Go(func(ctx context.Context) error {
-		return nil // s.runMultiTasks(ctx, Task.ChildRunParallel, define.ChildTask, Task.ID, Task.ChildTaskIds...)
+		return nil // s.runMultiTasks(ctx, Task.ChildRunParallel, define.ChildTask, Task.Id, Task.ChildTaskIds...)
 	})
 	err := g.Wait()
 	if err != nil {

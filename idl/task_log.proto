@@ -111,9 +111,9 @@ service LogService {
 //  rpc GetLogAll(LogQuery) returns(LogAllResp) {
 //    option (api.get) = "/api/v1/jobor/logs";
 //  }
-//  rpc GetLogById(LogQuery) returns(LogResp) {
-//    option (api.get) = "/api/v1/jobor/log/:id";
-//  }
+  rpc GetLogById(LogQuery) returns(LogResp) {
+    option (api.get) = "/api/v1/jobor/log/:id";
+  }
   rpc GetLog(LogQuery) returns(LogResp) {
     option (api.get) = "/api/v1/jobor/log";
   }

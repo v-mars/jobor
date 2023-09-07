@@ -81,28 +81,32 @@ func (ap AlarmPolicy) String() string {
 
 type JoborTask struct {
 	db.Model
-	Name          string         `gorm:"type:varchar(128);unique_index;not null;comment:任务名" json:"name" form:"name"`
-	Description   string         `gorm:"type:mediumtext;default:null;comment:任务描述" json:"description" form:"description"`
-	Lang          string         `gorm:"type:varchar(16);index:idx_code;not null;comment:任务类型:[shell,api,python,golang,e.g.]" json:"lang" form:"lang"`
-	Data          task2.TaskData `gorm:"type:mediumtext;not null;comment:任务执行详细，格式：json" json:"data" form:"data"`
-	Notify        task2.Notify   `gorm:"type:mediumtext;null;comment:告警通知，格式：json" json:"notify" form:"notify"`
-	UserId        int            `gorm:"index:user_id;comment:关联用户id" json:"user_id"`
-	User          string         `gorm:"index:user;comment:关联用户" json:"user"`
-	Count         int            `gorm:"comment:执行次数" json:"count" form:"count"`
-	Expr          string         `gorm:"type:varchar(32);not null;comment:定时任务表达式：0/1 * * ? * * * 秒分时天月星期" json:"expr" form:"expr"`
-	Timeout       int            `gorm:"default:-1;comment:超时时间" json:"timeout" form:"timeout"`
-	RoutePolicy   int            `gorm:"default:1;comment:路由策略 1:Random 2:RoundRobin 3:Weight 4:LeastTask" json:"route_policy" form:"route_policy"`
-	RoutingKey    string         `gorm:"type:varchar(32);default:'default';comment:执行worker路由标识" json:"routing_key" form:"routing_key"`
-	Status        string         `gorm:"type:varchar(32);default:'running';comment:定时任务状态: running,stop" json:"status" form:"status"`
-	AlarmPolicy   int            `gorm:"default:2;comment:告警策略：{0:never,1:always,2:failed,3:success}" json:"alarm_policy" form:"alarm_policy"`
-	ExpectContent string         `gorm:"type:varchar(500);default:null;comment:期望任务返回结果" json:"expect_content" form:"expect_content"`
-	ExpectCode    int            `gorm:"default:0;comment:期望任务状态码" json:"expect_code" form:"expect_code"`
-	Retry         int            `gorm:"default:0;comment:重试次数" json:"retry" form:"retry"`
-	Prev          db.JSONTime    `gorm:"default: null;type:datetime;comment:上次执行时间" json:"prev" form:"prev"`
-	Next          db.JSONTime    `gorm:"default: null;type:datetime;comment:'下次执行时间'" json:"next" form:"next"`
-	Updater       string         `gorm:"type:varchar(156);" json:"updater" form:"updater"`
-	Deleted       bool           `gorm:"default:false;comment:逻辑删除" json:"deleted" form:"deleted"`
-	ExprZh        string         `gorm:"-" json:"expr_zh" form:"expr_zh"`
+	Name              string         `gorm:"type:varchar(128);unique_index;not null;comment:任务名" json:"name" form:"name"`
+	Description       string         `gorm:"type:mediumtext;default:null;comment:任务描述" json:"description" form:"description"`
+	Lang              string         `gorm:"type:varchar(16);index:idx_code;not null;comment:任务类型:[shell,api,python,golang,e.g.]" json:"lang" form:"lang"`
+	Data              task2.TaskData `gorm:"type:mediumtext;not null;comment:任务执行详细，格式：json" json:"data" form:"data"`
+	Notify            task2.Notify   `gorm:"type:mediumtext;null;comment:告警通知，格式：json" json:"notify" form:"notify"`
+	UserId            int            `gorm:"index:user_id;comment:关联用户id" json:"user_id"`
+	User              string         `gorm:"index:user;comment:关联用户" json:"user"`
+	ParentTaskIds     db.IntArray    `gorm:"type:varchar(128);comment:父任务ID，最多20个" json:"parent_task_ids"`
+	ParentRunParallel bool           `gorm:"default:false;comment:父任务是否并行运行" json:"parent_run_parallel" form:"parent_run_parallel"`
+	ChildTaskIds      db.IntArray    `gorm:"type:varchar(128);comment:子任务ID，最多20个" json:"child_task_ids"`
+	ChildRunParallel  bool           `gorm:"default:false;comment:子任务是否并行运行" json:"child_run_parallel" form:"child_run_parallel"`
+	Count             int            `gorm:"comment:执行次数" json:"count" form:"count"`
+	Expr              string         `gorm:"type:varchar(32);not null;comment:定时任务表达式：0/1 * * ? * * * 秒分时天月星期" json:"expr" form:"expr"`
+	Timeout           int            `gorm:"default:-1;comment:超时时间" json:"timeout" form:"timeout"`
+	RoutePolicy       int            `gorm:"default:1;comment:路由策略 1:Random 2:RoundRobin 3:Weight 4:LeastTask" json:"route_policy" form:"route_policy"`
+	RoutingKey        string         `gorm:"type:varchar(32);default:'default';comment:执行worker路由标识" json:"routing_key" form:"routing_key"`
+	Status            string         `gorm:"type:varchar(32);default:'running';comment:定时任务状态: running,stop" json:"status" form:"status"`
+	AlarmPolicy       int            `gorm:"default:2;comment:告警策略：{0:never,1:always,2:failed,3:success}" json:"alarm_policy" form:"alarm_policy"`
+	ExpectContent     string         `gorm:"type:varchar(500);default:null;comment:期望任务返回结果" json:"expect_content" form:"expect_content"`
+	ExpectCode        int            `gorm:"default:0;comment:期望任务状态码" json:"expect_code" form:"expect_code"`
+	Retry             int            `gorm:"default:0;comment:重试次数" json:"retry" form:"retry"`
+	Prev              db.JSONTime    `gorm:"default: null;type:datetime;comment:上次执行时间" json:"prev" form:"prev"`
+	Next              db.JSONTime    `gorm:"default: null;type:datetime;comment:'下次执行时间'" json:"next" form:"next"`
+	Updater           string         `gorm:"type:varchar(156);" json:"updater" form:"updater"`
+	Deleted           bool           `gorm:"default:false;comment:逻辑删除" json:"deleted" form:"deleted"`
+	ExprZh            string         `gorm:"-" json:"expr_zh" form:"expr_zh"`
 	//D         TestD    `gorm:"type:text;comment:'任务执行详细，格式：json'" json:"d" form:"d"`
 
 }
@@ -220,7 +224,7 @@ func AddTask(ctx context.Context, Db *gorm.DB, req *task2.PostTaskReq) (JoborTas
 	if err := Db.Table(row.TableName()).Omit([]string{"Prev", "Next"}...).Create(&row).Error; err != nil {
 		return row, err
 	}
-	if err := redis.Publish(ctx, PubSubChannel, Event{TaskID: row.ID,
+	if err := redis.Publish(ctx, PubSubChannel, Event{TaskID: row.Id,
 		TE: ChangeEvent}); err != nil {
 		return row, err
 	}
@@ -230,6 +234,18 @@ func AddTask(ctx context.Context, Db *gorm.DB, req *task2.PostTaskReq) (JoborTas
 func ModTask(ctx context.Context, Db *gorm.DB, _id interface{}, req *task2.PutTaskReq) (JoborTask, error) {
 	var mapData map[string]interface{}
 	var err error
+	for _, pi := range req.GetParentIdsInt() {
+		pi := pi
+		if _id == pi {
+			return JoborTask{}, fmt.Errorf("父子任务中不能包含当前任务")
+		}
+	}
+	for _, pi := range req.GetChildIdsInt() {
+		pi := pi
+		if _id == pi {
+			return JoborTask{}, fmt.Errorf("父子任务中不能当前任务")
+		}
+	}
 	if mapData, err = convert.StructToMap(req); err != nil {
 		return JoborTask{}, err
 	}
@@ -247,7 +263,7 @@ func ModTask(ctx context.Context, Db *gorm.DB, _id interface{}, req *task2.PutTa
 		return taskObj, err
 	}
 	hlog.Debug("事务提交成功")
-	if err = redis.Publish(ctx, PubSubChannel, Event{TaskID: taskObj.ID,
+	if err = redis.Publish(ctx, PubSubChannel, Event{TaskID: taskObj.Id,
 		TE: ChangeEvent}); err != nil {
 		return taskObj, err
 	}
@@ -303,7 +319,7 @@ func GetTaskInfoById(id interface{}, isPanic bool) (*JoborTask, error) {
 		}
 		return &u, err
 	}
-	if u.Name == "" && u.ID == 0 {
+	if u.Name == "" && u.Id == 0 {
 		err = fmt.Errorf("the task information does not exist")
 		if isPanic {
 			panic(err)

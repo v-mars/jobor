@@ -23,6 +23,7 @@ type JoborLog struct {
 	Name          string        `gorm:"type:varchar(128);index:idx_code;comment:任务名" json:"name" form:"name"`
 	Lang          string        `gorm:"type:varchar(16);index:idx_code;not null;comment:任务类型:[shell,api,python,golang,e.g.]" json:"lang" form:"lang"`
 	TaskId        int           `gorm:"index:task_id;comment:关联任务id" json:"task_id"`
+	ByTaskLogId   int           `gorm:"index:by_task_log_id;comment:关联任务log id" json:"by_task_log_id"`
 	TriggerMethod string        `gorm:"type:varchar(16);comment:任务触发方式：auto,manual" json:"trigger_method"`
 	Expr          string        `gorm:"type:varchar(32);not null;comment:定时任务表达式：0/1 * * ? * * * 秒分时天月星期" json:"expr" form:"expr"`
 	Data          task.TaskData `gorm:"type:mediumtext;not null;comment:任务执行详细，格式：json" json:"data" form:"data"`
@@ -34,7 +35,9 @@ type JoborLog struct {
 	Idempotent    string        `gorm:"type:varchar(156);comment:幂等标志" json:"idempotent" form:"idempotent"`
 	StartTime     db.JSONTime   `gorm:"default: null;type:datetime;comment:开始时间" json:"start_time" form:"start_time"`
 	EndTime       db.JSONTime   `gorm:"default: null;type:datetime;comment:结束时间" json:"end_time" form:"end_time"`
-	CostTime      db.MillisTime `gorm:"type:float;default:0;comment:执行耗时(毫秒)" json:"cost_time" form:"cost_time"` // 单位：毫秒
+	CostTime      db.MillisTime `gorm:"type:float;default:0;comment:执行耗时(毫秒)" json:"cost_time" form:"cost_time"`                                                          // 单位：毫秒
+	Parents       []*JoborLog   `gorm:"many2many:jobor_log_parents;association_autoupdate:false;association_autocreate:false;constraint:OnDelete:CASCADE" json:"parents"` // Many-To-Many
+	Childs        []*JoborLog   `gorm:"many2many:jobor_log_childs;association_autoupdate:false;association_autocreate:false;constraint:OnDelete:CASCADE" json:"childs"`   // Many-To-Many
 	//CostTime      float32       `gorm:"comment:'任务耗时'" json:"cost_time" form:"cost_time"`
 }
 
@@ -56,7 +59,7 @@ type Logs []JoborLog
 func (u *Logs) List(req *task_log.LogQuery, resp *response.PageDataList) (Logs, error) {
 	resp.List = u
 	if err := PageDataWithScopes(db.DB.Model(&JoborLog{}), NameLog, Find, resp,
-		GetScopesList(SelectLog()),
+		GetScopesList(SelectLog()), PreloadLog("Parents"), PreloadLog("Childs"),
 		WhereLog(req),
 		OrderLog(), GroupLog()); err != nil {
 		return nil, err
@@ -97,7 +100,7 @@ func SelectAllLog() func(Db *gorm.DB) *gorm.DB {
 
 func WhereLog(req *task_log.LogQuery) func(Db *gorm.DB) *gorm.DB {
 	return func(Db *gorm.DB) *gorm.DB {
-		var sql = "name like ?"
+		var sql = "(by_task_log_id < 1 or by_task_log_id is null) and name like ?"
 		var sqlArgs = []interface{}{"%" + req.Name + "%"}
 		if len(req.Lang) > 0 {
 			sql = sql + " and lang=?"
@@ -212,10 +215,10 @@ func GetLogByName(ctx context.Context, Db *gorm.DB, name string) (*JoborLog, err
 	return &row, err
 }
 
-func GetLogInfoById(id interface{}, isPanic bool) (*task_log.LogResp, error) {
+func GetLogInfoById(id interface{}, isPanic bool) (*JoborLog, error) {
 	var err error
-	var u task_log.LogResp
-	err = db.DB.Table(NameLog).Where("id= ?", id).Take(&u).Error
+	var u JoborLog
+	err = db.DB.Table(NameLog).Where("id= ?", id).Scopes(PreloadLog("Parents"), PreloadLog("Childs")).First(&u).Error
 	if err != nil {
 		if isPanic {
 			panic(err)
@@ -227,7 +230,7 @@ func GetLogInfoById(id interface{}, isPanic bool) (*task_log.LogResp, error) {
 		if isPanic {
 			panic(err)
 		}
-		return &task_log.LogResp{}, err
+		return &u, err
 	}
 	return &u, nil
 }

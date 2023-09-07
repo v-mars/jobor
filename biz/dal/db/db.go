@@ -30,7 +30,7 @@ type ModelInterface interface {
 
 type Model struct {
 	GormDB    *gorm.DB `gorm:"-" json:"-" form:"-" all:"-"`
-	ID        int      `gorm:"column:id;primary_key;comment:主键id" json:"id" form:"id"` // 主键
+	Id        int      `gorm:"column:id;primary_key;comment:主键id" json:"id" form:"id"` // 主键
 	CreatedAt JSONTime `gorm:"not null;type:datetime;default:current_timestamp;comment:创建时间" json:"created_at" form:"created_at"`
 	UpdatedAt JSONTime `gorm:"not null;type:datetime;default:current_timestamp on update CURRENT_TIMESTAMP;comment:更新时间" json:"updated_at"  form:"updated_at"`
 }

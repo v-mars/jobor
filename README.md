@@ -68,8 +68,8 @@ sql_mode=STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_
 - [x] python3 task
 - [ ] golang task
 - [x] server task
-- [ ] father task
-- [ ] children task
+- [x] father task
+- [x] children task
 - [ ] 任务缓存执行
 
 ## 🤝 特别感谢

@@ -107,7 +107,7 @@ func (o *OIDC) OidcCallbackWithCode(ctx context.Context, redirectURL, code strin
 		return nil, err
 	}
 	hlog.CtxDebugf(ctx, "oidc client auth code is success")
-	// Extract the ID Token from OAuth2 token.
+	// Extract the Id Token from OAuth2 token.
 	rawIDToken, ok := oauth2Token.Extra("id_token").(string)
 	if !ok {
 		hlog.CtxErrorf(ctx, "handle missing id token")
@@ -115,7 +115,7 @@ func (o *OIDC) OidcCallbackWithCode(ctx context.Context, redirectURL, code strin
 	}
 
 	var verifier = o.Provider.Verifier(&oidc.Config{ClientID: oauth2Config.ClientID})
-	// Parse and verify ID Token payload.
+	// Parse and verify Id Token payload.
 	idToken, err := verifier.Verify(ctx, rawIDToken)
 	if err != nil {
 		//fmt.Println("idToken:", idToken)
@@ -171,7 +171,7 @@ func (o *OIDC) OidcCallbackWithPassword(ctx context.Context, username, password 
 	}
 	hlog.CtxDebugf(ctx, "oidc client auth username and password is success")
 
-	// Extract the ID Token from OAuth2 token.
+	// Extract the Id Token from OAuth2 token.
 	rawIDToken, ok := oauth2Token.Extra("id_token").(string)
 	if !ok {
 		hlog.CtxErrorf(ctx, "handle missing id token")
@@ -179,7 +179,7 @@ func (o *OIDC) OidcCallbackWithPassword(ctx context.Context, username, password 
 	}
 
 	var verifier = o.Provider.Verifier(&oidc.Config{ClientID: oauth2Config.ClientID})
-	// Parse and verify ID Token payload.
+	// Parse and verify Id Token payload.
 	idToken, err := verifier.Verify(ctx, rawIDToken)
 	if err != nil {
 		fmt.Println("idToken:", idToken)

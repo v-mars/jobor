@@ -69,3 +69,24 @@ func AbortTask(ctx context.Context, c *app.RequestContext) {
 
 	response.SendDataResp(ctx, c, response.Succeed, "")
 }
+
+// GetLogById .
+//
+//	@Summary		jobor task log get summary
+//	@Description	jobor task log get
+//	@Tags			jobor log
+//	@Param			id		path	int				true	"int valid"
+//
+// @router /api/v1/jobor/log/{id} [GET]
+func GetLogById(ctx context.Context, c *app.RequestContext) {
+	var err error
+	_id := c.Params.ByName("id")
+
+	Resp, err := model.GetLogInfoById(_id, false)
+	if err != nil {
+		response.SendBaseResp(ctx, c, err)
+		return
+	}
+
+	response.SendDataResp(ctx, c, response.Succeed, Resp)
+}

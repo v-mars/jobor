@@ -61,7 +61,7 @@ package telegram
 //			return err
 //		}
 //		go func(uid int) {
-//			_, _ = t.bot.Send(&tb.User{ID: uid}, title+"\n"+title)
+//			_, _ = t.bot.Send(&tb.User{Id: uid}, title+"\n"+title)
 //		}(uid)
 //	}
 //	return nil

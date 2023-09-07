@@ -29,6 +29,10 @@ func Register(r *server.Hertz) {
 					_id := _log.Group("/:id", _idMw()...)
 					_id.POST("/abort", append(_aborttaskMw(), task_log.AbortTask)...)
 				}
+				{
+					_log0 := _jobor.Group("/log", _log0Mw()...)
+					_log0.GET("/:id", append(_getlogbyidMw(), task_log.GetLogById)...)
+				}
 			}
 		}
 	}

@@ -15,7 +15,7 @@ func (h *RequestIdHook) Fire(e *logrus.Entry) error {
 	if ctx == nil {
 		return nil
 	}
-	value := ctx.Value("X-Request-ID")
+	value := ctx.Value("X-Request-Id")
 	if value != nil {
 		e.Data["log_id"] = value
 	}
