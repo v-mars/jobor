@@ -4,9 +4,9 @@ import (
 	"context"
 	"github.com/cloudwego/hertz/pkg/common/hlog"
 	"jobor/biz/dal/casbin"
+	"jobor/biz/model"
 	"jobor/biz/response"
 	"jobor/conf"
-	"jobor/kitex_gen/user"
 	"jobor/pkg/utils"
 
 	"github.com/cloudwego/hertz/pkg/app"
@@ -70,7 +70,7 @@ func PermissionMwWithRole(skipper ...SkipperFunc) app.HandlerFunc {
 			return
 		} else {
 			//c.Next(ctx)
-			userValue, err := user.GetUserSession(c, false)
+			userValue, err := model.GetUserSession(c, false)
 			if err != nil {
 				response.SendBaseResp(ctx, c, err)
 				return

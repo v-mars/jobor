@@ -3,14 +3,14 @@ package mw
 import (
 	"context"
 	"github.com/cloudwego/hertz/pkg/app"
+	"jobor/biz/model"
 	"jobor/biz/response"
-	"jobor/kitex_gen/user"
 	"jobor/pkg/utils"
 )
 
 func HandlerFuncWithRole(allowRoles []string) app.HandlerFunc {
 	return func(ctx context.Context, c *app.RequestContext) {
-		userValue, err := user.GetUserSession(c, false)
+		userValue, err := model.GetUserSession(c, false)
 		if err != nil {
 			response.SendBaseResp(ctx, c, err)
 			return

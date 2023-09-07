@@ -227,6 +227,7 @@ type taskSession struct {
 	TaskCtx    context.Context
 	Task       *model.JoborTask
 	Stream     taskservice.TaskService_RunTaskClient
+	RunTaskIds []int
 }
 
 // RunTasks evt 事件, add/change
@@ -317,6 +318,10 @@ func RunTasksWithRPC(ctx context.Context, evt, trigger string, t model.JoborTask
 		s.Err = fmt.Errorf("create tasklog err: %s", s.Err)
 		return
 	}
+	//s.RunTaskIds = append(s.RunTaskIds, taskLog.TaskId)
+	//if runbyid != nil {
+	//	CacheTask.TaskLogs[*runbyid].RunTaskIds = append(CacheTask.TaskLogs[*runbyid].RunTaskIds, taskLog.TaskId)
+	//}
 	if runbyid != nil && len(parentChild) > 0 {
 		byTask := model.JoborLog{Model: db.Model{Id: taskLog.Id}}
 		if s.Err = db.DB.Model(&model.JoborLog{Model: db.Model{Id: *runbyid}}).Association(parentChild).Append(&byTask); s.Err != nil {

@@ -9,7 +9,6 @@ import (
 	"jobor/biz/model"
 	"jobor/biz/response"
 	"jobor/conf"
-	"jobor/kitex_gen/user"
 	"time"
 
 	"github.com/cloudwego/hertz/pkg/common/hlog"
@@ -76,7 +75,7 @@ func GetStateCode(ctx context.Context, c *app.RequestContext) {
 //
 //	@router	/api/v1/jobor/gen-token [POST]
 func GenJwtToken(ctx context.Context, c *app.RequestContext) {
-	userinfo, err := user.GetUserSession(c, false)
+	userinfo, err := model.GetUserSession(c, false)
 	if err != nil {
 		hlog.CtxErrorf(ctx, err.Error())
 		response.SendBaseResp(ctx, c, err)
@@ -124,13 +123,13 @@ func GenJwtToken(ctx context.Context, c *app.RequestContext) {
 		Expiry time.Time `json:"expiry"`
 	}
 	var data Data
-	info, err := user.GetUserinfoById(req.Uid, false)
+	info, err := model.GetUserinfoById(req.Uid, false)
 	if err != nil {
 		hlog.CtxErrorf(ctx, err.Error())
 		response.SendBaseResp(ctx, c, err)
 		return
 	}
-	info.Roles, err = user.GetUserRoles(info.Username)
+	info.Roles, err = model.GetUserRoles(info.Username)
 	if err != nil {
 		hlog.CtxErrorf(ctx, err.Error())
 		response.SendBaseResp(ctx, c, err)

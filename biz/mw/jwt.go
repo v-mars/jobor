@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"jobor/biz/dal/redisStore"
+	"jobor/biz/model"
 	"jobor/biz/pack/oidc_callback"
 	"jobor/biz/response"
 	"jobor/conf"
@@ -169,16 +170,16 @@ func Authenticator(ctx context.Context, c *app.RequestContext) (interface{}, err
 		return nil, err
 	}
 	hlog.CtxDebugf(ctx, "get userInfo %s from oidc server", string(body))
-	u = user.GetUserinfoFromOidc(body)
-	u, err = user.GetUserinfoOrCreate(&u)
+	u = model.GetUserinfoFromOidc(body)
+	u, err = model.GetUserinfoOrCreate(&u)
 	if err != nil {
 		hlog.CtxErrorf(ctx, "claims unmarshals the raw JSON object claims into the provided object err, %s", err)
 		return nil, err
 	}
-	user.SetContentUserinfo(ctx, c, u)
+	model.SetContentUserinfo(ctx, c, u)
 	if conf.GetConf().Authentication.EnableSession {
 		session := sessions.Default(c)
-		if err = user.InitSession(ctx, session, u, conf.GetConf().SSO.ClientId, SessionOrg, true); err != nil {
+		if err = model.InitSession(ctx, session, u, conf.GetConf().SSO.ClientId, SessionOrg, true); err != nil {
 			return nil, err
 		}
 	}

@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/hertz-contrib/sessions"
+	"jobor/biz/model"
 	"jobor/biz/response"
 	"jobor/conf"
 	"jobor/kitex_gen/user"
@@ -306,22 +307,22 @@ func SsoCallback(ctx context.Context, c *app.RequestContext) {
 	u := user.Userinfo{}
 	//u.Username = gjson.Parse(string(claims)).Get("claims.username").String()
 	//u.Nickname = gjson.Parse(string(claims)).Get("claims.nickname").String()
-	u = user.GetUserinfoFromOidc(claims)
+	u = model.GetUserinfoFromOidc(claims)
 	if u.Username == "" || u.Nickname == "" {
 		er := fmt.Errorf("username or nickname is null")
 		hlog.CtxErrorf(ctx, er.Error())
 		response.FailedHttpCode(ctx, c, http.StatusBadRequest, er)
 		return
 	}
-	u, err = user.GetUserinfoOrCreate(&u)
+	u, err = model.GetUserinfoOrCreate(&u)
 	if err != nil {
 		hlog.CtxErrorf(ctx, "claims unmarshals the raw JSON object claims into the provided object err, %s", err)
 		response.FailedHttpCode(ctx, c, http.StatusBadRequest, err)
 		return
 	}
-	user.SetContentUserinfo(ctx, c, u)
+	model.SetContentUserinfo(ctx, c, u)
 	if conf.GetConf().Authentication.EnableSession {
-		if err = user.InitSession(ctx, se, u, conf.GetConf().SSO.ClientId, conf.Dom, true); err != nil {
+		if err = model.InitSession(ctx, se, u, conf.GetConf().SSO.ClientId, conf.Dom, true); err != nil {
 			hlog.CtxErrorf(ctx, err.Error())
 			response.FailedHttpCode(ctx, c, http.StatusBadRequest, err)
 			return

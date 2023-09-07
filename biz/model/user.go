@@ -1,4 +1,4 @@
-package user
+package model
 
 import (
 	"context"
@@ -12,8 +12,8 @@ import (
 	"gorm.io/gorm"
 	"jobor/biz/dal/casbin"
 	"jobor/biz/dal/db"
-	"jobor/biz/model"
 	"jobor/biz/response"
+	"jobor/kitex_gen/user"
 	"jobor/pkg/convert"
 	"jobor/pkg/utils"
 )
@@ -61,8 +61,8 @@ func (u *User) GetRoles() []string {
 	return roles
 }
 
-func (u *User) GetUserinfo() *Userinfo {
-	userinfo := Userinfo{
+func (u *User) GetUserinfo() *user.Userinfo {
+	userinfo := user.Userinfo{
 		Id: int64(u.ID), Username: u.Username, Nickname: u.Nickname, Email: u.Email, Avatar: u.Avatar,
 		Empno: u.Empno, UserType: u.UserType, Roles: u.GetRoles(), Status: u.Status,
 	}
@@ -71,18 +71,18 @@ func (u *User) GetUserinfo() *Userinfo {
 
 type Users []User
 
-func (u *Users) List(req *UserQuery, resp *response.PageDataList) (Users, error) {
+func (u *Users) List(req *user.UserQuery, resp *response.PageDataList) (Users, error) {
 	resp.List = u
 	//resp := response.PageDataList{List: &users}
-	if err := model.PageDataWithScopes(db.DB.Model(&User{}), TbName, model.Find, resp,
-		model.GetScopesList(), //SelectScopes(),
-		WhereScopes(req), model.PreloadScopes("Roles"),
-		OrderScopes(), GroupScopes()); err != nil {
+	if err := PageDataWithScopes(db.DB.Model(&User{}), TbName, Find, resp,
+		GetScopesList(), //UserSelectScopes(),
+		UserWhereScopes(req), PreloadScopes("Roles"),
+		UserOrderScopes(), UserGroupScopes()); err != nil {
 		return nil, err
 	}
 	return *u, nil
 }
-func (u *Users) ListUserinfo() (uis []*Userinfo) {
+func (u *Users) ListUserinfo() (uis []*user.Userinfo) {
 	if u != nil {
 		for _, v := range *u {
 			v := v
@@ -95,20 +95,20 @@ func NewModel(Db *gorm.DB) *User {
 	return &User{ModelOld: db.ModelOld{GormDB: db.DB}}
 }
 
-func SelectScopes() func(Db *gorm.DB) *gorm.DB {
+func UserSelectScopes() func(Db *gorm.DB) *gorm.DB {
 	return func(Db *gorm.DB) *gorm.DB {
 		// distinct
 		sql := `user.id,nickname,username,email,phone,userid,empno,user_type,avatar,status,user.ctime,user.*`
 		return Db.Select(sql)
 	}
 }
-func SelectAllScopes() func(Db *gorm.DB) *gorm.DB {
+func UserSelectAllScopes() func(Db *gorm.DB) *gorm.DB {
 	return func(Db *gorm.DB) *gorm.DB {
 		return Db.Select("distinct id,username,nickname,status")
 	}
 }
 
-func WhereScopes(req *UserQuery) func(Db *gorm.DB) *gorm.DB {
+func UserWhereScopes(req *user.UserQuery) func(Db *gorm.DB) *gorm.DB {
 	return func(Db *gorm.DB) *gorm.DB {
 		var sql = "(username like ? or nickname like ?)"
 		var sqlArgs = []interface{}{"%" + req.Name + "%", "%" + req.Name + "%"}
@@ -127,24 +127,24 @@ func WhereScopes(req *UserQuery) func(Db *gorm.DB) *gorm.DB {
 		return Db.Where(sql, sqlArgs...)
 	}
 }
-func JoinsScopes() func(Db *gorm.DB) *gorm.DB {
+func UserJoinsScopes() func(Db *gorm.DB) *gorm.DB {
 	return func(Db *gorm.DB) *gorm.DB {
 		return Db.Joins("")
 	}
 }
-func PreloadScopes(query string, args ...interface{}) func(Db *gorm.DB) *gorm.DB {
+func UserPreloadScopes(query string, args ...interface{}) func(Db *gorm.DB) *gorm.DB {
 	return func(Db *gorm.DB) *gorm.DB {
 		return Db.Preload(query, args...)
 	}
 }
 
-func OrderScopes() func(db *gorm.DB) *gorm.DB {
+func UserOrderScopes() func(db *gorm.DB) *gorm.DB {
 	return func(Db *gorm.DB) *gorm.DB {
 		return Db.Order("id desc")
 	}
 }
 
-func GroupScopes() func(Db *gorm.DB) *gorm.DB {
+func UserGroupScopes() func(Db *gorm.DB) *gorm.DB {
 	return func(Db *gorm.DB) *gorm.DB {
 		return Db.Group("user.id")
 	}
@@ -152,7 +152,7 @@ func GroupScopes() func(Db *gorm.DB) *gorm.DB {
 
 var dom = "sys"
 
-func Add(ctx context.Context, Db *gorm.DB, req *PostUserReq) (User, error) {
+func UserAdd(ctx context.Context, Db *gorm.DB, req *user.PostUserReq) (User, error) {
 	req.Password = utils.HashAndSalt([]byte(req.Password))
 	var row User
 	if err := utils.AnyToAny(req, &row); err != nil {
@@ -183,7 +183,7 @@ func Add(ctx context.Context, Db *gorm.DB, req *PostUserReq) (User, error) {
 	return row, nil
 }
 
-func Mod(ctx context.Context, Db *gorm.DB, _id interface{}, req *PutUserReq) (User, error) {
+func UserMod(ctx context.Context, Db *gorm.DB, _id interface{}, req *user.PutUserReq) (User, error) {
 	var mapData map[string]interface{}
 	var err error
 	if mapData, err = convert.StructToMap(req); err != nil {
@@ -241,7 +241,7 @@ func Mod(ctx context.Context, Db *gorm.DB, _id interface{}, req *PutUserReq) (Us
 	return userObj, nil
 }
 
-func Del(ctx context.Context, Db *gorm.DB, _ids []interface{}) ([]User, error) {
+func UserDel(ctx context.Context, Db *gorm.DB, _ids []interface{}) ([]User, error) {
 	var us []User
 	tx := Db.Begin()
 	defer func() { tx.Rollback() }()
@@ -304,9 +304,9 @@ func GetUserByUsername(ctx context.Context, Db *gorm.DB, username string) (*User
 	return &row, err
 }
 
-func GetUserinfoById(id interface{}, isPanic bool) (*Userinfo, error) {
+func GetUserinfoById(id interface{}, isPanic bool) (*user.Userinfo, error) {
 	var err error
-	var u Userinfo
+	var u user.Userinfo
 	err = db.DB.Table(TbName).Where("id= ?", id).Omit("Roles").Take(&u).Error
 	if err != nil {
 		if isPanic {
@@ -319,14 +319,14 @@ func GetUserinfoById(id interface{}, isPanic bool) (*Userinfo, error) {
 		if isPanic {
 			panic(err)
 		}
-		return &Userinfo{}, err
+		return &user.Userinfo{}, err
 	}
 	return &u, nil
 }
 
-func GetUserinfoByUsername(name string, isPanic bool) (Userinfo, error) {
+func GetUserinfoByUsername(name string, isPanic bool) (user.Userinfo, error) {
 	var err error
-	var u Userinfo
+	var u user.Userinfo
 	err = db.DB.Table(TbName).Where("username = ?", name).Take(&u).Error
 	if err != nil {
 		if isPanic {
@@ -339,12 +339,12 @@ func GetUserinfoByUsername(name string, isPanic bool) (Userinfo, error) {
 		if isPanic {
 			panic(err)
 		}
-		return Userinfo{}, err
+		return user.Userinfo{}, err
 	}
 	return u, nil
 }
 
-func GetUserValue(c *app.RequestContext, isPanic bool) (Userinfo, error) {
+func GetUserValue(c *app.RequestContext, isPanic bool) (user.Userinfo, error) {
 	userInter, ok := c.Get(HeaderTag)
 	var err error
 	//var u, ook = userInter.(UserInfo)
@@ -353,9 +353,9 @@ func GetUserValue(c *app.RequestContext, isPanic bool) (Userinfo, error) {
 		if isPanic {
 			panic(err)
 		}
-		return Userinfo{}, err
+		return user.Userinfo{}, err
 	}
-	var u Userinfo
+	var u user.Userinfo
 	if e := utils.AnyToAny(userInter, &u); e != nil {
 		err = fmt.Errorf("the user information parse is err: %s", e)
 		if isPanic {
@@ -377,9 +377,9 @@ func GetUserValue(c *app.RequestContext, isPanic bool) (Userinfo, error) {
 	return u, nil
 }
 
-func GetUserinfoOrCreate(ui *Userinfo) (Userinfo, error) {
+func GetUserinfoOrCreate(ui *user.Userinfo) (user.Userinfo, error) {
 	var err error
-	var u Userinfo
+	var u user.Userinfo
 	var row User
 	err = db.DB.Table(TbName).Where("username = ?", ui.Username).Take(&u).Error
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
@@ -413,63 +413,7 @@ func GetUserMap(ids []int) (r map[int]User, err error) {
 	return r, nil
 }
 
-func (i *Userinfo) IsAdmin() bool {
-	if utils.InOfStr("admin", i.Roles) {
-		return true
-	} else {
-		return false
-	}
-}
-
-func (i *Userinfo) IsDevOps() bool {
-	if utils.InOfStr("devops", i.Roles) {
-		return true
-	} else {
-		return false
-	}
-}
-
-func (i *Userinfo) IsOps() bool {
-	if utils.InOfStr("ops", i.Roles) {
-		return true
-	} else {
-		return false
-	}
-}
-
-func (i *Userinfo) IsQa() bool {
-	if utils.InOfStr("qa", i.Roles) {
-		return true
-	} else {
-		return false
-	}
-}
-
-func (i *Userinfo) IsDeveloper() bool {
-	if utils.InOfStr("developer", i.Roles) {
-		return true
-	} else {
-		return false
-	}
-}
-
-func (i *Userinfo) JsonString() string {
-	marshal, err := json.Marshal(i)
-	if err != nil {
-		panic(err)
-	}
-	return string(marshal)
-}
-
-func (i *Userinfo) Map() (mapRes map[string]interface{}) {
-	err := utils.AnyToAny(i, &mapRes)
-	if err != nil {
-		panic(err)
-	}
-	return mapRes
-}
-
-func GetUserSession(c *app.RequestContext, isPanic bool) (Userinfo, error) {
+func GetUserSession(c *app.RequestContext, isPanic bool) (user.Userinfo, error) {
 	userInter, ok := c.Get(headerTag)
 	var err error
 	//var u, ook = userInter.(UserInfo)
@@ -478,22 +422,22 @@ func GetUserSession(c *app.RequestContext, isPanic bool) (Userinfo, error) {
 		if isPanic {
 			panic(err)
 		}
-		return Userinfo{}, err
+		return user.Userinfo{}, err
 	}
-	var u Userinfo
+	var u user.Userinfo
 	if e := utils.AnyToAny(userInter, &u); e != nil {
 		err = fmt.Errorf("the user information parse is err: %s", e)
 		if isPanic {
 			panic(err)
 		}
-		return Userinfo{}, err
+		return user.Userinfo{}, err
 	}
 	if u.Username == "" && u.Id == 0 {
 		err = fmt.Errorf("the user information does not exist")
 		if isPanic {
 			panic(err)
 		}
-		return Userinfo{}, err
+		return user.Userinfo{}, err
 	}
 	u.Roles, err = GetUserRoles(u.Username)
 	if err != nil {
@@ -502,8 +446,8 @@ func GetUserSession(c *app.RequestContext, isPanic bool) (Userinfo, error) {
 	return u, nil
 }
 
-func GetUserinfoFromOidc(body json.RawMessage) Userinfo {
-	var u Userinfo
+func GetUserinfoFromOidc(body json.RawMessage) user.Userinfo {
+	var u user.Userinfo
 	gj := gjson.Parse(string(body))
 	u.Id = gj.Get("claims.id").Int()
 	u.Username = gj.Get("claims.username").String()
@@ -517,14 +461,14 @@ func GetUserinfoFromOidc(body json.RawMessage) Userinfo {
 	return u
 }
 
-func SetContentUserinfo(ctx context.Context, c *app.RequestContext, u Userinfo) {
+func SetContentUserinfo(ctx context.Context, c *app.RequestContext, u user.Userinfo) {
 	c.Set(uid, u.Id)
 	c.Set(username, u.Username)
 	c.Set(nickname, u.Nickname)
 	c.Set(headerTag, u)
 }
 
-func InitSession(ctx context.Context, session sessions.Session, userInfo Userinfo, clientId, org string, isLogin bool) error {
+func InitSession(ctx context.Context, session sessions.Session, userInfo user.Userinfo, clientId, org string, isLogin bool) error {
 	//session := sessions.Default(c)
 	session.Set(IsLogin, isLogin)
 	session.Set(uid, userInfo.Id)
@@ -540,17 +484,6 @@ func InitSession(ctx context.Context, session sessions.Session, userInfo Userinf
 	}
 	hlog.CtxDebugf(ctx, "login user %s write session cookie is success", userInfo.Username)
 	return nil
-}
-
-func (p *PutUserReq) GetRoleIdsInt() []int {
-	var arrayInt = make([]int, 0)
-	if p.RoleIds != nil {
-		for _, v := range p.RoleIds.GetValues() {
-			v := v
-			arrayInt = append(arrayInt, int(v.GetNumberValue()))
-		}
-	}
-	return arrayInt
 }
 
 func GetUserRoles(username string) ([]string, error) {
