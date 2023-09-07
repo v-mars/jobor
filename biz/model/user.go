@@ -19,7 +19,7 @@ import (
 )
 
 const (
-	TbName       = "user"
+	NameUser     = "user"
 	Local        = "local"
 	Ldap         = "ldap"
 	SSO          = "sso"
@@ -50,7 +50,7 @@ type User struct {
 }
 
 func (u *User) TableName() string {
-	return TbName
+	return NameUser
 }
 
 func (u *User) GetRoles() []string {
@@ -74,7 +74,7 @@ type Users []User
 func (u *Users) List(req *user.UserQuery, resp *response.PageDataList) (Users, error) {
 	resp.List = u
 	//resp := response.PageDataList{List: &users}
-	if err := PageDataWithScopes(db.DB.Model(&User{}), TbName, Find, resp,
+	if err := PageDataWithScopes(db.DB.Model(&User{}), NameUser, Find, resp,
 		GetScopesList(), //UserSelectScopes(),
 		UserWhereScopes(req), PreloadScopes("Roles"),
 		UserOrderScopes(), UserGroupScopes()); err != nil {
@@ -91,7 +91,7 @@ func (u *Users) ListUserinfo() (uis []*user.Userinfo) {
 	}
 	return uis
 }
-func NewModel(Db *gorm.DB) *User {
+func NewUserModel(Db *gorm.DB) *User {
 	return &User{ModelOld: db.ModelOld{GormDB: db.DB}}
 }
 
@@ -226,7 +226,7 @@ func UserMod(ctx context.Context, Db *gorm.DB, _id interface{}, req *user.PutUse
 	//		return userObj, err
 	//	}
 	//}
-	if err = tx.Table(TbName).Where("id=?", _id).Updates(mapData).Error; err != nil {
+	if err = tx.Table(NameUser).Where("id=?", _id).Updates(mapData).Error; err != nil {
 		return userObj, err
 	}
 	if err = tx.Commit().Error; err != nil {
@@ -260,7 +260,7 @@ func UserDel(ctx context.Context, Db *gorm.DB, _ids []interface{}) ([]User, erro
 			return us, err
 		}
 		hlog.Debug("用户关联角色删除成功")
-		if err := Db.Table(TbName).Where("username!='root'").Delete(&User{}, _id).Error; err != nil {
+		if err := Db.Table(NameUser).Where("username!='root'").Delete(&User{}, _id).Error; err != nil {
 			return us, err
 		}
 	}
@@ -300,14 +300,14 @@ func Auth(DB *gorm.DB, username, password string) (u User, ok bool, err error) {
 
 func GetUserByUsername(ctx context.Context, Db *gorm.DB, username string) (*User, error) {
 	var row = User{}
-	err := Db.Table(TbName).Where("username=?", username).First(&row).Error
+	err := Db.Table(NameUser).Where("username=?", username).First(&row).Error
 	return &row, err
 }
 
 func GetUserinfoById(id interface{}, isPanic bool) (*user.Userinfo, error) {
 	var err error
 	var u user.Userinfo
-	err = db.DB.Table(TbName).Where("id= ?", id).Omit("Roles").Take(&u).Error
+	err = db.DB.Table(NameUser).Where("id= ?", id).Omit("Roles").Take(&u).Error
 	if err != nil {
 		if isPanic {
 			panic(err)
@@ -327,7 +327,7 @@ func GetUserinfoById(id interface{}, isPanic bool) (*user.Userinfo, error) {
 func GetUserinfoByUsername(name string, isPanic bool) (user.Userinfo, error) {
 	var err error
 	var u user.Userinfo
-	err = db.DB.Table(TbName).Where("username = ?", name).Take(&u).Error
+	err = db.DB.Table(NameUser).Where("username = ?", name).Take(&u).Error
 	if err != nil {
 		if isPanic {
 			panic(err)
@@ -381,12 +381,12 @@ func GetUserinfoOrCreate(ui *user.Userinfo) (user.Userinfo, error) {
 	var err error
 	var u user.Userinfo
 	var row User
-	err = db.DB.Table(TbName).Where("username = ?", ui.Username).Take(&u).Error
+	err = db.DB.Table(NameUser).Where("username = ?", ui.Username).Take(&u).Error
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		return u, err
 	} else if errors.Is(err, gorm.ErrRecordNotFound) {
 		row = User{Username: u.Username, Nickname: u.Nickname, Email: u.Email, Status: true, UserType: Ldap}
-		if err = db.DB.Table(TbName).Omit("id").Create(&row).Error; err != nil {
+		if err = db.DB.Table(NameUser).Omit("id").Create(&row).Error; err != nil {
 			return u, err
 		}
 		u.Id = int64(row.ID)
