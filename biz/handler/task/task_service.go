@@ -43,7 +43,7 @@ func GetTaskAll(ctx context.Context, c *app.RequestContext) {
 //	@Summary		jobor task get by id summary
 //	@Description	jobor task get by id
 //	@Tags			jobor task
-//
+//	@Param			id	path	int	true	"int valid"
 //	@router			/api/v1/jobor/task/{id} [GET]
 func GetTaskById(ctx context.Context, c *app.RequestContext) {
 	var err error

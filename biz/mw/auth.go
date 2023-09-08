@@ -2,6 +2,7 @@ package mw
 
 import (
 	"context"
+	"fmt"
 	"jobor/biz/dal/redis"
 	"jobor/biz/response"
 	"jobor/conf"
@@ -74,9 +75,9 @@ func UserAuthMw(skipper ...SkipperFunc) app.HandlerFunc {
 			//c.Redirect(http.StatusSeeOther, []byte(redirectSSOUri))
 			//c.Abort()
 			if err == jwt.ErrEmptyAuthHeader {
-				response.SendDataResp(ctx, c, response.Unauthenticated, "jobor_redirect")
+				response.SendDataResp(ctx, c, response.Unauthenticated, fmt.Sprintf("%s_redirect", conf.Dom))
 			} else {
-				response.SendDataResp(ctx, c, response.AuthenticateFailed, "jobor_redirect")
+				response.SendDataResp(ctx, c, response.AuthenticateFailed, fmt.Sprintf("%s_redirect", conf.Dom))
 			}
 			c.Abort()
 			return
