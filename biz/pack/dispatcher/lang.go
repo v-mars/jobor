@@ -143,6 +143,11 @@ func (d DataAPI) Run(ctx context.Context) (out io.ReadCloser) {
 			hlog.Errorf("read failed: %s", err)
 			return
 		}
+		//for _, v := range resp.Header {
+		//	_ = v[0]
+		//}
+		//_, _ = pw.Write(resp.Request.Header)
+		//_, _ = pw.Write(resp.Header.Values())
 		_, _ = pw.Write(bs)
 
 		if resp.StatusCode > 0 {
