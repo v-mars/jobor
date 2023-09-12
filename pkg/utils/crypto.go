@@ -8,6 +8,7 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
+	log "github.com/sirupsen/logrus"
 	"jobor/pkg/convert"
 
 	"golang.org/x/crypto/bcrypt"
@@ -329,6 +330,7 @@ func EnTxtByAes(pwdStr, PwdKey string) string {
 	result, err := AesEncrypt(pwd, []byte(PwdKey))
 	//fmt.Println("EnTxtByAes:", err)
 	if err != nil {
+		log.Errorf("EnTxtByAes err, %s", err)
 		return ""
 	}
 	return hex.EncodeToString(result)
@@ -341,7 +343,11 @@ func DeTxtByAes(pwd, PwdKey string) string {
 	}
 	temp, _ := hex.DecodeString(pwd)
 	//执行AES解密
-	res, _ := AesDecrypt(temp, []byte(PwdKey))
+	res, err := AesDecrypt(temp, []byte(PwdKey))
+	if err != nil {
+		log.Errorf("DeTxtByAes err, %s", err)
+		return ""
+	}
 	return res
 }
 

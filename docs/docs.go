@@ -24,30 +24,6 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/api/v1/jobor/env": {
-            "get": {
-                "responses": {}
-            },
-            "post": {
-                "responses": {}
-            }
-        },
-        "/api/v1/jobor/env/:id": {
-            "get": {
-                "responses": {}
-            },
-            "put": {
-                "responses": {}
-            },
-            "delete": {
-                "responses": {}
-            }
-        },
-        "/api/v1/jobor/envs": {
-            "get": {
-                "responses": {}
-            }
-        },
         "/api/v1/jobor/gen-token": {
             "post": {
                 "responses": {}
@@ -221,6 +197,15 @@ const docTemplate = `{
                     "jobor task"
                 ],
                 "summary": "jobor task get by id summary",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "int valid",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
                 "responses": {}
             },
             "put": {
@@ -469,58 +454,6 @@ const docTemplate = `{
                         }
                     }
                 ],
-                "responses": {}
-            }
-        },
-        "/api/v1/sys/api": {
-            "get": {
-                "responses": {}
-            },
-            "post": {
-                "responses": {}
-            }
-        },
-        "/api/v1/sys/api-auto-update": {
-            "get": {
-                "responses": {}
-            }
-        },
-        "/api/v1/sys/api/:id": {
-            "put": {
-                "responses": {}
-            },
-            "delete": {
-                "responses": {}
-            }
-        },
-        "/api/v1/sys/apis": {
-            "get": {
-                "responses": {}
-            }
-        },
-        "/api/v1/sys/role": {
-            "get": {
-                "responses": {}
-            },
-            "post": {
-                "responses": {}
-            }
-        },
-        "/api/v1/sys/role-tree": {
-            "get": {
-                "responses": {}
-            }
-        },
-        "/api/v1/sys/role/:id": {
-            "put": {
-                "responses": {}
-            },
-            "delete": {
-                "responses": {}
-            }
-        },
-        "/api/v1/sys/roles": {
-            "get": {
                 "responses": {}
             }
         },
@@ -972,6 +905,9 @@ const docTemplate = `{
                 "addr": {
                     "type": "string"
                 },
+                "auth_mode": {
+                    "type": "string"
+                },
                 "hostname": {
                     "type": "string"
                 },
@@ -981,10 +917,28 @@ const docTemplate = `{
                 "lease_update": {
                     "type": "integer"
                 },
+                "mode": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "port": {
+                    "type": "integer"
+                },
+                "private": {
+                    "type": "string"
+                },
                 "routing_key": {
                     "type": "string"
                 },
+                "rsa": {
+                    "type": "string"
+                },
                 "status": {
+                    "type": "string"
+                },
+                "username": {
                     "type": "string"
                 },
                 "version": {
@@ -1001,6 +955,9 @@ const docTemplate = `{
                 "addr": {
                     "type": "string"
                 },
+                "auth_mode": {
+                    "type": "string"
+                },
                 "hostname": {
                     "type": "string"
                 },
@@ -1010,10 +967,28 @@ const docTemplate = `{
                 "lease_update": {
                     "type": "integer"
                 },
+                "mode": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "port": {
+                    "type": "integer"
+                },
+                "private": {
+                    "type": "string"
+                },
                 "routing_key": {
                     "type": "string"
                 },
+                "rsa": {
+                    "type": "string"
+                },
                 "status": {
+                    "type": "string"
+                },
+                "username": {
                     "type": "string"
                 },
                 "version": {

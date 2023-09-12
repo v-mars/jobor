@@ -269,15 +269,29 @@ definitions:
     properties:
       addr:
         type: string
+      auth_mode:
+        type: string
       hostname:
         type: string
       ip:
         type: string
       lease_update:
         type: integer
+      mode:
+        type: string
+      password:
+        type: string
+      port:
+        type: integer
+      private:
+        type: string
       routing_key:
         type: string
+      rsa:
+        type: string
       status:
+        type: string
+      username:
         type: string
       version:
         type: string
@@ -288,15 +302,29 @@ definitions:
     properties:
       addr:
         type: string
+      auth_mode:
+        type: string
       hostname:
         type: string
       ip:
         type: string
       lease_update:
         type: integer
+      mode:
+        type: string
+      password:
+        type: string
+      port:
+        type: integer
+      private:
+        type: string
       routing_key:
         type: string
+      rsa:
+        type: string
       status:
+        type: string
+      username:
         type: string
       version:
         type: string
@@ -315,21 +343,6 @@ info:
   version: "3.0"
 paths:
   /api/v1/jobor/audit-log:
-    get:
-      responses: {}
-  /api/v1/jobor/env:
-    get:
-      responses: {}
-    post:
-      responses: {}
-  /api/v1/jobor/env/:id:
-    delete:
-      responses: {}
-    get:
-      responses: {}
-    put:
-      responses: {}
-  /api/v1/jobor/envs:
     get:
       responses: {}
   /api/v1/jobor/gen-token:
@@ -458,6 +471,12 @@ paths:
       - jobor task
     get:
       description: jobor task get by id
+      parameters:
+      - description: int valid
+        in: path
+        name: id
+        required: true
+        type: integer
       responses: {}
       summary: jobor task get by id summary
       tags:
@@ -619,38 +638,6 @@ paths:
       summary: user logout summary
       tags:
       - login
-  /api/v1/sys/api:
-    get:
-      responses: {}
-    post:
-      responses: {}
-  /api/v1/sys/api-auto-update:
-    get:
-      responses: {}
-  /api/v1/sys/api/:id:
-    delete:
-      responses: {}
-    put:
-      responses: {}
-  /api/v1/sys/apis:
-    get:
-      responses: {}
-  /api/v1/sys/role:
-    get:
-      responses: {}
-    post:
-      responses: {}
-  /api/v1/sys/role-tree:
-    get:
-      responses: {}
-  /api/v1/sys/role/:id:
-    delete:
-      responses: {}
-    put:
-      responses: {}
-  /api/v1/sys/roles:
-    get:
-      responses: {}
   /api/v1/sys/user:
     get:
       responses: {}

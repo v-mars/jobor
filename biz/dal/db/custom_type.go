@@ -223,7 +223,7 @@ func (j SecTime) Value() (driver.Value, error) {
 
 type AesStr string
 
-var DefaultAesKey = "Joborb5Zxxxxx06GorMa"
+var DefaultAesKey = "AY3b5J788065B3Zr"
 
 // Scan 实现 sql.Scanner 接口，Scan 将 value 扫描至 Jsonb
 func (j *AesStr) Scan(value interface{}) error {

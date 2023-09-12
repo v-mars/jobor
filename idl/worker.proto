@@ -26,6 +26,7 @@ message WorkerQuery {
 message WorkerResp {
   int64 id = 1[(api.query)="id",(api.body)="id"];
   string hostname = 2[(api.query)="hostname",(api.body)="hostname"];
+  string description = 17[(api.query)="description",(api.body)="description"];
   string ip = 3[(api.query)="ip",(api.body)="ip"];
   string addr = 4[(api.query)="addr",(api.body)="addr"];
   string version = 5[(api.query)="version",(api.body)="version"];
@@ -33,6 +34,13 @@ message WorkerResp {
   int32 weight = 7[(api.query)="weight",(api.body)="weight"];
   int64 lease_update = 8[(api.query)="lease_update",(api.body)="lease_update"];
   string status = 9[(api.query)="status",(api.body)="status"];
+  int32 port = 10[(api.query)="port",(api.body)="port"];
+  string mode = 11[(api.query)="mode",(api.body)="mode"];
+  string auth_mode = 12[(api.query)="auth_mode",(api.body)="auth_mode"];
+  string username = 13[(api.query)="username",(api.body)="username"];
+  string password = 14[(api.query)="password",(api.body)="password"];
+  string rsa = 15[(api.query)="rsa",(api.body)="rsa"];
+  string private = 16[(api.query)="private",(api.body)="private"];
   string created_at = 110[(api.query)="created_at",(api.body)="created_at"];
   string updated_at = 120[(api.query)="updated_at",(api.body)="updated_at"];
 }
@@ -45,6 +53,7 @@ message WorkerAllResp {
 message WorkerGetByIdResp {
   int64 id = 1[(api.query)="id"];
   string hostname = 2[(api.query)="hostname",(api.body)="hostname"];
+  string description = 17[(api.query)="description",(api.body)="description"];
   string ip = 3[(api.query)="ip",(api.body)="ip"];
   string addr = 4[(api.query)="addr",(api.body)="addr"];
   string version = 5[(api.query)="version",(api.body)="version"];
@@ -52,12 +61,20 @@ message WorkerGetByIdResp {
   int32 weight = 7[(api.query)="weight",(api.body)="weight"];
   int64 lease_update = 8[(api.query)="lease_update",(api.body)="lease_update"];
   string status = 9[(api.query)="status",(api.body)="status"];
+  int32 port = 10[(api.query)="port",(api.body)="port"];
+  string mode = 11[(api.query)="mode",(api.body)="mode"];
+  string auth_mode = 12[(api.query)="auth_mode",(api.body)="auth_mode"];
+  string username = 13[(api.query)="username",(api.body)="username"];
+  string password = 14[(api.query)="password",(api.body)="password"];
+  string rsa = 15[(api.query)="rsa",(api.body)="rsa"];
+  string private = 16[(api.query)="private",(api.body)="private"];
   string created_at = 110[(api.query)="created_at",(api.body)="created_at"];
   string updated_at = 120[(api.query)="updated_at",(api.body)="updated_at"];
 }
 
 
 message PostWorkerReq {
+  string description = 17[(api.query)="description",(api.body)="description"];
   string hostname = 2[(api.query)="hostname",(api.body)="hostname"];
   string ip = 3[(api.query)="ip",(api.body)="ip"];
   string addr = 4[(api.query)="addr",(api.body)="addr"];
@@ -66,9 +83,17 @@ message PostWorkerReq {
   int32 weight = 7[(api.query)="weight",(api.body)="weight"];
   int64 lease_update = 8[(api.query)="lease_update",(api.body)="lease_update"];
   string status = 9[(api.query)="status",(api.body)="status"];
+  int32 port = 10[(api.query)="port",(api.body)="port"];
+  string mode = 11[(api.query)="mode",(api.body)="mode"];
+  string auth_mode = 12[(api.query)="auth_mode",(api.body)="auth_mode"];
+  string username = 13[(api.query)="username",(api.body)="username"];
+  string password = 14[(api.query)="password",(api.body)="password"];
+  string rsa = 15[(api.query)="rsa",(api.body)="rsa"];
+  string private = 16[(api.query)="private",(api.body)="private"];
 }
 
 message PutWorkerReq {
+  optional string description = 17[(api.query)="description",(api.body)="description,omitempty"];
   optional string hostname = 2[(api.query)="hostname",(api.body)="hostname,omitempty"];
   optional string ip = 3[(api.query)="ip",(api.body)="ip,omitempty"];
   optional string addr = 4[(api.query)="addr",(api.body)="addr,omitempty"];
@@ -77,6 +102,13 @@ message PutWorkerReq {
   optional int32 weight = 7[(api.query)="weight",(api.go_tag)="json:\"weight,omitempty\""];
   optional int64 lease_update = 8[(api.query)="lease_update",(api.go_tag)="json:\"lease_update,omitempty\""];
   optional string status = 9[(api.query)="status",(api.body)="status,omitempty"];
+  optional int32 port = 10[(api.query)="port",(api.go_tag)="json:\"port,omitempty\""];
+  optional string mode = 11[(api.query)="mode",(api.body)="mode,omitempty"];
+  optional string auth_mode = 12[(api.query)="auth_mode",(api.body)="auth_mode,omitempty"];
+  optional string username = 13[(api.query)="username",(api.body)="username,omitempty"];
+  optional string password = 14[(api.query)="password",(api.body)="password,omitempty",(api.go_tag)="keep_data:\"yes\""];
+  optional string rsa = 15[(api.query)="rsa",(api.body)="rsa,omitempty",(api.go_tag)="keep_data:\"yes\""];
+  optional string private = 16[(api.query)="private",(api.body)="private,omitempty",(api.go_tag)="keep_data:\"yes\""];
 }
 
 

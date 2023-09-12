@@ -5,7 +5,6 @@ import (
 	"encoding/gob"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"strings"
 )
 
@@ -15,7 +14,6 @@ func AnyToAny(src interface{}, des interface{}) error {
 		return err
 	}
 	err = json.Unmarshal(bytesData, des)
-	fmt.Println("AnyToAny:", err)
 	return err
 }
 

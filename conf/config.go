@@ -163,7 +163,7 @@ func initConf() {
 	conf.Server.LogLevel = "debug"
 	conf.Server.EnableSwagger = true
 	conf.Ext.WebAesKey = "Webkbjobor1qaz*WSP"
-	conf.Ext.DataAesKey = "Airkbjobor1qaz*WSP"
+	conf.Ext.DataAesKey = "AY3b5J788065B3Zr"
 	conf.Oauth2Srv.AccessKey = "AirkJobor1qacc*UAC"
 	conf.Oauth2Srv.RefreshKey = "AirkbJoborRefz*Jobor"
 	conf.Authentication.LoginFailCaptcha = 50

@@ -5,9 +5,6 @@ package router
 import (
 	"github.com/cloudwego/hertz/pkg/app/server"
 	audit "jobor/biz/router/audit"
-	env "jobor/biz/router/env"
-	role "jobor/biz/router/role"
-	sys_api "jobor/biz/router/sys_api"
 	task "jobor/biz/router/task"
 	task_log "jobor/biz/router/task_log"
 	user "jobor/biz/router/user"
@@ -25,11 +22,5 @@ func GeneratedRegister(r *server.Hertz) {
 
 	user.Register(r)
 
-	role.Register(r)
-
-	sys_api.Register(r)
-
 	audit.Register(r)
-
-	env.Register(r)
 }
