@@ -251,7 +251,7 @@ func RunTasksWithRPC(ctx context.Context, evt, trigger string, t model.JoborTask
 	var s = taskSession{TaskCtx: context.Background()}
 	var tx = db.DB
 	jsonTime := db.JSONTime{Time: time.Now()}
-	workers := GetWorkerByRoutePolicy(t.RoutingKey, t.RoutePolicy, t.Lang)
+	workers := GetWorkerByRoutePolicy(t.RoutingKeys, t.RoutePolicy, t.Lang)
 	var taskLog = model.JoborLog{Name: t.Name, Lang: t.Lang, TaskId: t.Id, TriggerMethod: trigger, Expr: t.Expr,
 		Data: t.Data, StartTime: jsonTime, Result: model.TaskLogStatusWait, ExpectCode: t.ExpectCode,
 		ExpectContent: t.ExpectContent,

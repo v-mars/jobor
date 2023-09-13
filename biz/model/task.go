@@ -96,6 +96,7 @@ type JoborTask struct {
 	Expr              string         `gorm:"type:varchar(32);not null;comment:定时任务表达式：0/1 * * ? * * * 秒分时天月星期" json:"expr" form:"expr"`
 	Timeout           int            `gorm:"default:-1;comment:超时时间" json:"timeout" form:"timeout"`
 	RoutePolicy       int            `gorm:"default:1;comment:路由策略 1:Random 2:RoundRobin 3:Weight 4:LeastTask" json:"route_policy" form:"route_policy"`
+	RoutingKeys       db.StringArray `gorm:"type:varchar(255);comment:任务标识，多选" json:"routing_keys"`
 	RoutingKey        string         `gorm:"type:varchar(32);default:'default';comment:执行worker路由标识" json:"routing_key" form:"routing_key"`
 	Status            string         `gorm:"type:varchar(32);default:'running';comment:定时任务状态: running,stop" json:"status" form:"status"`
 	AlarmPolicy       int            `gorm:"default:2;comment:告警策略：{0:never,1:always,2:failed,3:success}" json:"alarm_policy" form:"alarm_policy"`

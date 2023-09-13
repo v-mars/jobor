@@ -27,25 +27,25 @@ func init() {
 }
 
 // GetWorkerByRoutePolicy return a type JoborWorker, it will return a worker
-func GetWorkerByRoutePolicy(routingKey string, routePolicy int, lang string) JoborWorker {
+func GetWorkerByRoutePolicy(routingKeys []string, routePolicy int, lang string) JoborWorker {
 	switch routePolicy {
 	case Random:
-		return random(routingKey, lang)
+		return random(routingKeys, lang)
 	case RoundRobin:
-		return roundRobin(routingKey, lang)
+		return roundRobin(routingKeys, lang)
 	case Weight:
-		return weight(routingKey, lang)
+		return weight(routingKeys, lang)
 	case LeastTask:
-		return leastTask(routingKey, lang)
+		return leastTask(routingKeys, lang)
 	default:
-		return random(routingKey, lang)
+		return random(routingKeys, lang)
 	}
 }
 
 // 随机调度
-func random(routingKey string, lang string) JoborWorker {
+func random(routingKeys []string, lang string) JoborWorker {
 	return func() *model.JoborWorker {
-		workers, err := model.GetWorkers(routingKey, lang)
+		workers, err := model.GetWorkers(routingKeys, lang)
 		if err != nil {
 			err = fmt.Errorf("get online worker failed: %s", err)
 			hlog.Errorf(err.Error())
@@ -56,10 +56,10 @@ func random(routingKey string, lang string) JoborWorker {
 }
 
 // 轮询调度
-func roundRobin(routingKey string, lang string) JoborWorker {
+func roundRobin(routingKeys []string, lang string) JoborWorker {
 	var i = rand.Int()
 	return func() *model.JoborWorker {
-		workers, err := model.GetWorkers(routingKey, lang)
+		workers, err := model.GetWorkers(routingKeys, lang)
 		if err != nil {
 			err = fmt.Errorf("get online worker failed: %s", err)
 			hlog.Errorf(err.Error())
@@ -72,9 +72,9 @@ func roundRobin(routingKey string, lang string) JoborWorker {
 }
 
 // 权重调度
-func weight(routingKey string, lang string) JoborWorker {
+func weight(routingKeys []string, lang string) JoborWorker {
 	return func() *model.JoborWorker {
-		workers, err := model.GetWorkers(routingKey, lang)
+		workers, err := model.GetWorkers(routingKeys, lang)
 		if err != nil {
 			err = fmt.Errorf("get online worker failed: %s", err)
 			hlog.Errorf(err.Error())
@@ -100,9 +100,9 @@ func weight(routingKey string, lang string) JoborWorker {
 }
 
 // 最少调度
-func leastTask(routingKey string, lang string) JoborWorker {
+func leastTask(routingKeys []string, lang string) JoborWorker {
 	return func() *model.JoborWorker {
-		workers, err := model.GetWorkers(routingKey, lang)
+		workers, err := model.GetWorkers(routingKeys, lang)
 		if err != nil {
 			err = fmt.Errorf("get online worker failed: %s", err)
 			hlog.Errorf(err.Error())

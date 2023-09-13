@@ -270,7 +270,7 @@ func GetRoutingKeyList() ([]*string, error) {
 	return types, nil
 }
 
-func GetWorkers(routingKey, lang string) ([]JoborWorker, error) {
+func GetWorkers(routingKeys []string, lang string) ([]JoborWorker, error) {
 	var workers []JoborWorker
 	leaseUpdate := time.Now().Unix() - int64(rpc_biz.DefaultHeartbeatInterval.Seconds())
 	var whereArgs = []interface{}{WorkerStatusRunning, leaseUpdate}
@@ -280,9 +280,9 @@ func GetWorkers(routingKey, lang string) ([]JoborWorker, error) {
 		whereArgs = append(whereArgs, WorkerModeSsh)
 	}
 
-	if len(routingKey) > 0 {
-		whereSql = whereSql + " and routing_key=?"
-		whereArgs = append(whereArgs, routingKey)
+	if len(routingKeys) > 0 {
+		whereSql = whereSql + " and routing_key in (?)"
+		whereArgs = append(whereArgs, routingKeys)
 	}
 	err := db.DB.Model(&JoborWorker{}).Where(whereSql, whereArgs...).Find(&workers).Error
 	if err != nil {
@@ -295,7 +295,7 @@ func GetWorkers(routingKey, lang string) ([]JoborWorker, error) {
 	//	}
 	//}
 	if len(workers) == 0 {
-		err = fmt.Errorf("can not get valid worker from routing_key[%s]", routingKey)
+		err = fmt.Errorf("can not get valid worker from routing_key[%v]", routingKeys)
 		return nil, err
 	}
 

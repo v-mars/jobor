@@ -106,6 +106,7 @@ message TaskResp {
   int64 timeout = 11[(api.query)="timeout",(api.body)="timeout"];
   int32 route_policy = 12[(api.query)="route_policy",(api.body)="route_policy"];
   string routing_key = 13[(api.query)="routing_key",(api.body)="routing_key"];
+  repeated string routing_keys = 22[(api.query)="routing_keys",(api.body)="routing_keys"];
   string status = 14[(api.query)="status",(api.body)="status"];
   int32 alarm_policy = 15[(api.query)="alarm_policy",(api.body)="alarm_policy"];
   string expect_content = 16[(api.query)="expect_content",(api.body)="expect_content"];
@@ -163,6 +164,7 @@ message PostTaskReq {
   bool parent_run_parallel = 26[(api.query)="parent_run_parallel",(api.body)="parent_run_parallel"];
   repeated string child_task_ids = 27[(api.query)="child_task_ids",(api.body)="child_task_ids"];
   bool child_run_parallel = 28[(api.query)="child_run_parallel",(api.body)="child_run_parallel"];
+  repeated string routing_keys = 29[(api.query)="routing_keys",(api.body)="routing_keys"];
   int64 count = 9[(api.query)="count",(api.body)="count"];
   string expr = 10[(api.query)="expr",(api.body)="expr"];
   int64 timeout = 11[(api.query)="timeout",(api.body)="timeout"];
@@ -191,6 +193,7 @@ message PutTaskReq {
   optional bool parent_run_parallel = 26[(api.query)="parent_run_parallel",(api.go_tag)="json:\"parent_run_parallel,omitempty\""];
   google.protobuf.ListValue child_task_ids = 27[(api.query)="child_task_ids,omitempty",(api.body)="child_task_ids,omitempty",(api.go_tag)="to_str:\"yes\""];
   optional bool child_run_parallel = 28[(api.query)="child_run_parallel",(api.go_tag)="json:\"child_run_parallel,omitempty\""];
+  google.protobuf.ListValue routing_keys = 29[(api.query)="routing_keys,omitempty",(api.body)="routing_keys,omitempty",(api.go_tag)="to_str:\"yes\""];
   optional int64 count = 9[(api.query)="count",(api.go_tag)="json:\"count,omitempty\""];
   optional string expr = 10[(api.query)="expr",(api.body)="expr,omitempty"];
   optional int64 timeout = 11[(api.query)="timeout",(api.go_tag)="json:\"timeout,omitempty\""];
