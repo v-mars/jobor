@@ -160,3 +160,20 @@ func DeleteWorker(ctx context.Context, c *app.RequestContext) {
 		response.SendDataResp(ctx, c, response.Succeed, objs)
 	}
 }
+
+// GetWorkerRoutingKey .
+//
+//	@Summary		jobor worker routing key summary
+//	@Description	jobor worker  routing key
+//	@Tags			jobor worker
+//
+// @router /api/v1/jobor/worker-routing-key [GET]
+func GetWorkerRoutingKey(ctx context.Context, c *app.RequestContext) {
+	rList, err := model.GetRoutingKeyList()
+	if err != nil {
+		response.SendBaseResp(ctx, c, err)
+		return
+	}
+
+	response.SendDataResp(ctx, c, response.Succeed, rList)
+}

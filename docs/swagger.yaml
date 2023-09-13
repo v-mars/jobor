@@ -271,6 +271,8 @@ definitions:
         type: string
       auth_mode:
         type: string
+      description:
+        type: string
       hostname:
         type: string
       ip:
@@ -303,6 +305,8 @@ definitions:
       addr:
         type: string
       auth_mode:
+        type: string
+      description:
         type: string
       hostname:
         type: string
@@ -556,6 +560,13 @@ paths:
           $ref: '#/definitions/worker.PostWorkerReq'
       responses: {}
       summary: jobor worker post summary
+      tags:
+      - jobor worker
+  /api/v1/jobor/worker-routing-key:
+    get:
+      description: jobor worker  routing key
+      responses: {}
+      summary: jobor worker routing key summary
       tags:
       - jobor worker
   /api/v1/jobor/worker/{id}:

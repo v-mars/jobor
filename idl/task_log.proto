@@ -42,6 +42,8 @@ message LogResp {
   string addr = 13[(api.query)="addr",(api.body)="addr"];
   string start_time = 14[(api.query)="start_time",(api.body)="start_time"];
   string end_time = 15[(api.query)="end_time",(api.body)="end_time"];
+  string expect_content = 16[(api.query)="expect_content",(api.body)="expect_content"];
+  int32 expect_code = 17[(api.query)="expect_code",(api.body)="expect_code"];
   string created_at = 110[(api.query)="created_at",(api.body)="created_at"];
   string updated_at = 120[(api.query)="updated_at",(api.body)="updated_at"];
 }
@@ -65,6 +67,8 @@ message LogGetByIdResp {
   int32 err_code = 11[(api.query)="err_code",(api.body)="err_code"];
   string err_msg = 12[(api.query)="err_msg",(api.body)="err_msg"];
   string addr = 13[(api.query)="addr",(api.body)="addr"];
+  string expect_content = 16[(api.query)="expect_content",(api.body)="expect_content"];
+  int32 expect_code = 17[(api.query)="expect_code",(api.body)="expect_code"];
   string start_time = 14[(api.query)="start_time",(api.body)="start_time"];
   string end_time = 15[(api.query)="end_time",(api.body)="end_time"];
   string created_at = 110[(api.query)="created_at",(api.body)="created_at"];
@@ -85,6 +89,8 @@ message PostLogReq {
   int32 err_code = 11[(api.query)="err_code",(api.body)="err_code"];
   string err_msg = 12[(api.query)="err_msg",(api.body)="err_msg"];
   string addr = 13[(api.query)="addr",(api.body)="addr"];
+  string expect_content = 16[(api.query)="expect_content",(api.body)="expect_content"];
+  int32 expect_code = 17[(api.query)="expect_code",(api.body)="expect_code"];
   string start_time = 14[(api.query)="start_time",(api.body)="start_time"];
   string end_time = 15[(api.query)="end_time",(api.body)="end_time"];
 }
@@ -104,6 +110,8 @@ message PutLogReq {
   optional string addr = 13[(api.query)="addr",(api.body)="addr,omitempty"];
   optional string start_time = 14[(api.query)="start_time",(api.body)="start_time,omitempty"];
   optional string end_time = 15[(api.query)="end_time",(api.body)="end_time,omitempty"];
+  optional string expect_content = 16[(api.query)="expect_content",(api.body)="expect_content,omitempty"];
+  optional int32 expect_code = 17[(api.query)="expect_code",(api.go_tag)="json:\"expect_code,omitempty\""];
 }
 
 

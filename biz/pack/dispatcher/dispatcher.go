@@ -13,6 +13,7 @@ import (
 	"io"
 	"jobor/biz/dal/db"
 	"jobor/biz/model"
+	"jobor/biz/pack/task_ssh"
 	"jobor/biz/response"
 	"jobor/conf"
 	"jobor/kitex_gen/pbapi"
@@ -250,10 +251,11 @@ func RunTasksWithRPC(ctx context.Context, evt, trigger string, t model.JoborTask
 	var s = taskSession{TaskCtx: context.Background()}
 	var tx = db.DB
 	jsonTime := db.JSONTime{Time: time.Now()}
-	workers := GetWorkerByRoutePolicy(t.RoutingKey, t.RoutePolicy)
+	workers := GetWorkerByRoutePolicy(t.RoutingKey, t.RoutePolicy, t.Lang)
 	var taskLog = model.JoborLog{Name: t.Name, Lang: t.Lang, TaskId: t.Id, TriggerMethod: trigger, Expr: t.Expr,
-		Data: t.Data, StartTime: jsonTime, Result: model.TaskLogStatusWait,
-		Idempotent: fmt.Sprintf("%d", RegistryDispatcher.cron[t.Id].Entry.Prev.Unix()),
+		Data: t.Data, StartTime: jsonTime, Result: model.TaskLogStatusWait, ExpectCode: t.ExpectCode,
+		ExpectContent: t.ExpectContent,
+		Idempotent:    fmt.Sprintf("%d", RegistryDispatcher.cron[t.Id].Entry.Prev.Unix()),
 	}
 	if runbyid != nil {
 		taskLog.ByTaskLogId = *runbyid
@@ -268,7 +270,7 @@ func RunTasksWithRPC(ctx context.Context, evt, trigger string, t model.JoborTask
 			if errPanic := recover(); errPanic != any(nil) {
 				stack := response.Stack(3)
 				s.Err = fmt.Errorf("defer panic, 错误信息: %s\n堆栈信息：%s", errPanic, stack)
-				hlog.Errorf("%s", s.Err)
+				hlog.Errorf(s.Err.Error())
 			}
 		}()
 		if errPanic := recover(); errPanic != any(nil) {
@@ -296,6 +298,7 @@ func RunTasksWithRPC(ctx context.Context, evt, trigger string, t model.JoborTask
 		}
 		//totalTime := time.Since(startTimeTotal)
 		//value, _ := strconv.ParseFloat(fmt.Sprintf("%.3f", totalTime.Seconds()), 64)
+		DealTaskResp(&t, &taskLog, &s)
 		var totalTime = time.Now().UnixMilli() - startTimeTotal.UnixMilli()
 		//taskLog.CostTime = db.MillisTime((time.Second * time.Duration(totalTime)).String())
 		taskLog.CostTime = db.MillisTime((time.Millisecond * time.Duration(totalTime)).String())
@@ -349,12 +352,18 @@ func RunTasksWithRPC(ctx context.Context, evt, trigger string, t model.JoborTask
 	}
 	defer func() {
 		// 执行子任务
-		s.Err = runMultiTasks(ctx, trigger, t.ChildRunParallel, &taskLog.Id, "Childs", t.ChildTaskIds...)
-		if s.Err != nil {
-			s.Err = fmt.Errorf("执行子任务[%v]失败，%s", t.ParentTaskIds, s.Err)
+		e := runMultiTasks(ctx, trigger, t.ChildRunParallel, &taskLog.Id, "Childs", t.ChildTaskIds...)
+		if e != nil {
+			s.Err = fmt.Errorf("执行子任务[%v]失败，%s", t.ParentTaskIds, e)
 			return
 		}
 	}()
+
+	w := workers()
+	if w == nil {
+		s.Err = fmt.Errorf("can't get valid worker")
+		return
+	}
 
 	//var executor = DataCode{Lang: Lang(t.Lang),ScriptCode: t.Data.Code}
 	var marshal []byte
@@ -374,16 +383,31 @@ func RunTasksWithRPC(ctx context.Context, evt, trigger string, t model.JoborTask
 	//}
 	//defer func(conn *grpc.ClientConn) { _ = conn.Close() }(conn)
 	//s.Conn = conn
-	w := workers()
-	if w == nil {
-		s.Err = fmt.Errorf("can't get valid worker")
-		return
-	}
 	taskLog.Addr = w.Addr
 	taskLog.Result = model.TaskLogStatusRunning
 	if s.Err = tx.Model(&taskLog).Omit([]string{"CreatedAt", "UpdatedAt"}...).Updates(taskLog).Error; s.Err != nil {
 		s.Err = fmt.Errorf("update tasklog addr/status err: %s", s.Err)
 		hlog.Error(s.Err)
+		return
+	}
+
+	if w.Mode == model.WorkerModeSsh {
+		ts := task_ssh.SshServer{Cmd: *t.Data.Content, Username: w.Username, Password: string(w.Password),
+			Host: w.Ip, Port: w.Port,
+			AuthMode: w.AuthMode, PrivateKey: string(w.Rsa), PrivateSecret: string(w.Private)}
+		sshOut, e := ts.ExecRemoteSsh()
+		if e != nil {
+			s.Err = fmt.Errorf("task worker mode ssh run task err: %s", e)
+			hlog.Errorf(s.Err.Error())
+			taskLog.Result = model.TaskLogStatusFailed
+			return
+		}
+		taskLog.Resp = sshOut
+		//if len(taskLog.Resp) > 3000 {
+		//	taskLog.Resp = fmt.Sprintf("%s\n……省略过多内容……\n%s", taskLog.Resp[0:1499], taskLog.Resp[len(taskLog.Resp)-1499:])
+		//}
+		DealTaskResp(&t, &taskLog, &s)
+		hlog.Infof("model.WorkerModeSsh")
 		return
 	}
 	tc, err := taskservice.NewClient(conf.AppWorkerName, client.WithHostPorts(w.Addr))
@@ -430,7 +454,9 @@ func RunTasksWithRPC(ctx context.Context, evt, trigger string, t model.JoborTask
 		case e := <-errChan:
 			if e == io.EOF {
 				hlog.Infof("Task %s[%d] stream recv finish", t.Name, t.Id)
-				goto Next
+				//goto Next
+				//DealTaskResp(&t, &taskLog, &s)
+				return
 			}
 			if e != nil {
 				hlog.Errorf("Task %s[%d] resStream.Recv err: %s", t.Name, t.Id, e.Error())
@@ -440,13 +466,16 @@ func RunTasksWithRPC(ctx context.Context, evt, trigger string, t model.JoborTask
 			}
 		}
 	}
-Next:
+}
+func DealTaskResp(t *model.JoborTask, taskLog *model.JoborLog, s *taskSession) {
 	if len(taskLog.Resp) > 3000 {
 		taskLog.Resp = fmt.Sprintf("%s\n……省略过多内容……\n%s", taskLog.Resp[0:1499], taskLog.Resp[len(taskLog.Resp)-1499:])
 	}
 	var taskRespCode int
 	judges := func() error {
 		if s.Err != nil {
+			taskLog.Result = model.TaskLogStatusFailed
+			taskLog.ErrMsg = s.Err.Error()
 			return s.Err
 		}
 		taskRespCode, s.Err = s.GetRespCode()
@@ -470,7 +499,6 @@ Next:
 	if s.Err != nil {
 		return
 	}
-
 }
 
 func RunTasksWithBroker(evt, trigger string, t model.JoborTask) {

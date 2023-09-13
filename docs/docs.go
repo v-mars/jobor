@@ -340,6 +340,16 @@ const docTemplate = `{
                 "responses": {}
             }
         },
+        "/api/v1/jobor/worker-routing-key": {
+            "get": {
+                "description": "jobor worker  routing key",
+                "tags": [
+                    "jobor worker"
+                ],
+                "summary": "jobor worker routing key summary",
+                "responses": {}
+            }
+        },
         "/api/v1/jobor/worker/{id}": {
             "get": {
                 "description": "jobor worker get by id",
@@ -908,6 +918,9 @@ const docTemplate = `{
                 "auth_mode": {
                     "type": "string"
                 },
+                "description": {
+                    "type": "string"
+                },
                 "hostname": {
                     "type": "string"
                 },
@@ -956,6 +969,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "auth_mode": {
+                    "type": "string"
+                },
+                "description": {
                     "type": "string"
                 },
                 "hostname": {

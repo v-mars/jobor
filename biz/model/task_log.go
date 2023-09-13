@@ -33,6 +33,8 @@ type JoborLog struct {
 	ErrMsg        string        `gorm:"type:mediumtext;comment:错误信息" json:"err_msg" form:"err_msg"`
 	Addr          string        `gorm:"type:varchar(64);not null;comment:任务运行的log节点" json:"addr" form:"addr"`
 	Idempotent    string        `gorm:"type:varchar(156);comment:幂等标志" json:"idempotent" form:"idempotent"`
+	ExpectContent string        `gorm:"type:varchar(500);default:null;comment:期望任务返回结果" json:"expect_content" form:"expect_content"`
+	ExpectCode    int           `gorm:"default:0;comment:期望任务状态码" json:"expect_code" form:"expect_code"`
 	StartTime     db.JSONTime   `gorm:"default: null;type:datetime;comment:开始时间" json:"start_time" form:"start_time"`
 	EndTime       db.JSONTime   `gorm:"default: null;type:datetime;comment:结束时间" json:"end_time" form:"end_time"`
 	CostTime      db.MillisTime `gorm:"type:float;default:0;comment:执行耗时(毫秒)" json:"cost_time" form:"cost_time"`                                                          // 单位：毫秒

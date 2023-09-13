@@ -28,6 +28,7 @@ func Register(r *server.Hertz) {
 				_worker.PUT("/:id", append(_putworkerMw(), worker.PutWorker)...)
 				_worker.DELETE("/:id", append(_deleteworkerMw(), worker.DeleteWorker)...)
 				_jobor.POST("/worker", append(_postworkerMw(), worker.PostWorker)...)
+				_jobor.GET("/worker-routing-key", append(_getworkerroutingkeyMw(), worker.GetWorkerRoutingKey)...)
 				_jobor.GET("/workers", append(_getworkerallMw(), worker.GetWorkerAll)...)
 				{
 					_worker0 := _jobor.Group("/worker", _worker0Mw()...)

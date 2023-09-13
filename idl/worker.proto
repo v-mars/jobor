@@ -122,6 +122,9 @@ service WorkerService {
   rpc GetWorker(WorkerQuery) returns(WorkerResp) {
     option (api.get) = "/api/v1/jobor/worker";
   }
+  rpc GetWorkerRoutingKey(WorkerQuery) returns(WorkerResp) {
+    option (api.get) = "/api/v1/jobor/worker-routing-key";
+  }
   rpc PostWorker(PostWorkerReq) returns(WorkerResp) {
     option (api.post) = "/api/v1/jobor/worker";
   }

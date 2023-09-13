@@ -262,11 +262,24 @@ func GetWorkerInfoByName(name string, isPanic bool) (worker.WorkerResp, error) {
 	return u, nil
 }
 
-func GetWorkers(routingKey string) ([]JoborWorker, error) {
+func GetRoutingKeyList() ([]*string, error) {
+	var types []*string
+	if err := db.DB.Model(&JoborWorker{}).Select("DISTINCT routing_key").Pluck("routing_key", &types).Error; err != nil {
+		return types, err
+	}
+	return types, nil
+}
+
+func GetWorkers(routingKey, lang string) ([]JoborWorker, error) {
 	var workers []JoborWorker
 	leaseUpdate := time.Now().Unix() - int64(rpc_biz.DefaultHeartbeatInterval.Seconds())
-	var whereSql = "status=? and lease_update>=?"
 	var whereArgs = []interface{}{WorkerStatusRunning, leaseUpdate}
+	var whereSql = "status=? and lease_update>=?"
+	if lang == "shell" {
+		whereSql = "status=? and (lease_update>=? or mode=?)"
+		whereArgs = append(whereArgs, WorkerModeSsh)
+	}
+
 	if len(routingKey) > 0 {
 		whereSql = whereSql + " and routing_key=?"
 		whereArgs = append(whereArgs, routingKey)

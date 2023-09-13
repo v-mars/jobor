@@ -28,15 +28,15 @@ type WorkerQuery struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Id          int64  `protobuf:"varint,1,opt,name=id,proto3" form:"id" json:"id" query:"id"`
+	Id          int64  `protobuf:"varint,1,opt,name=id,proto3" query:"id" form:"id" json:"id"`
 	Hostname    string `protobuf:"bytes,2,opt,name=hostname,proto3" query:"hostname" form:"hostname" json:"hostname"`
 	Ip          string `protobuf:"bytes,3,opt,name=ip,proto3" query:"ip" form:"ip" json:"ip"`
-	Addr        string `protobuf:"bytes,4,opt,name=addr,proto3" form:"addr" json:"addr" query:"addr"`
+	Addr        string `protobuf:"bytes,4,opt,name=addr,proto3" query:"addr" form:"addr" json:"addr"`
 	Version     string `protobuf:"bytes,5,opt,name=version,proto3" query:"version" form:"version" json:"version"`
 	RoutingKey  string `protobuf:"bytes,6,opt,name=routing_key,json=routingKey,proto3" query:"routing_key" form:"routing_key" json:"routing_key"`
 	Weight      int32  `protobuf:"varint,7,opt,name=weight,proto3" form:"weight" json:"weight" query:"weight"`
 	LeaseUpdate int64  `protobuf:"varint,8,opt,name=lease_update,json=leaseUpdate,proto3" query:"lease_update" form:"lease_update" json:"lease_update"`
-	Status      string `protobuf:"bytes,9,opt,name=status,proto3" query:"status" form:"status" json:"status"`
+	Status      string `protobuf:"bytes,9,opt,name=status,proto3" form:"status" json:"status" query:"status"`
 	Page        uint64 `protobuf:"varint,111,opt,name=page,proto3" json:"page" form:"page" query:"page"`
 	PageSize    uint64 `protobuf:"varint,112,opt,name=pageSize,proto3" json:"pageSize" form:"pageSize" query:"pageSize"`
 }
@@ -160,19 +160,19 @@ type WorkerResp struct {
 	Description string `protobuf:"bytes,17,opt,name=description,proto3" query:"description" form:"description" json:"description"`
 	Ip          string `protobuf:"bytes,3,opt,name=ip,proto3" query:"ip" form:"ip" json:"ip"`
 	Addr        string `protobuf:"bytes,4,opt,name=addr,proto3" form:"addr" json:"addr" query:"addr"`
-	Version     string `protobuf:"bytes,5,opt,name=version,proto3" query:"version" form:"version" json:"version"`
-	RoutingKey  string `protobuf:"bytes,6,opt,name=routing_key,json=routingKey,proto3" query:"routing_key" form:"routing_key" json:"routing_key"`
-	Weight      int32  `protobuf:"varint,7,opt,name=weight,proto3" form:"weight" json:"weight" query:"weight"`
-	LeaseUpdate int64  `protobuf:"varint,8,opt,name=lease_update,json=leaseUpdate,proto3" form:"lease_update" json:"lease_update" query:"lease_update"`
+	Version     string `protobuf:"bytes,5,opt,name=version,proto3" form:"version" json:"version" query:"version"`
+	RoutingKey  string `protobuf:"bytes,6,opt,name=routing_key,json=routingKey,proto3" form:"routing_key" json:"routing_key" query:"routing_key"`
+	Weight      int32  `protobuf:"varint,7,opt,name=weight,proto3" query:"weight" form:"weight" json:"weight"`
+	LeaseUpdate int64  `protobuf:"varint,8,opt,name=lease_update,json=leaseUpdate,proto3" query:"lease_update" form:"lease_update" json:"lease_update"`
 	Status      string `protobuf:"bytes,9,opt,name=status,proto3" query:"status" form:"status" json:"status"`
-	Port        int32  `protobuf:"varint,10,opt,name=port,proto3" form:"port" json:"port" query:"port"`
-	Mode        string `protobuf:"bytes,11,opt,name=mode,proto3" form:"mode" json:"mode" query:"mode"`
-	AuthMode    string `protobuf:"bytes,12,opt,name=auth_mode,json=authMode,proto3" form:"auth_mode" json:"auth_mode" query:"auth_mode"`
-	Username    string `protobuf:"bytes,13,opt,name=username,proto3" form:"username" json:"username" query:"username"`
-	Password    string `protobuf:"bytes,14,opt,name=password,proto3" query:"password" form:"password" json:"password"`
-	Rsa         string `protobuf:"bytes,15,opt,name=rsa,proto3" query:"rsa" form:"rsa" json:"rsa"`
+	Port        int32  `protobuf:"varint,10,opt,name=port,proto3" query:"port" form:"port" json:"port"`
+	Mode        string `protobuf:"bytes,11,opt,name=mode,proto3" query:"mode" form:"mode" json:"mode"`
+	AuthMode    string `protobuf:"bytes,12,opt,name=auth_mode,json=authMode,proto3" query:"auth_mode" form:"auth_mode" json:"auth_mode"`
+	Username    string `protobuf:"bytes,13,opt,name=username,proto3" query:"username" form:"username" json:"username"`
+	Password    string `protobuf:"bytes,14,opt,name=password,proto3" form:"password" json:"password" query:"password"`
+	Rsa         string `protobuf:"bytes,15,opt,name=rsa,proto3" form:"rsa" json:"rsa" query:"rsa"`
 	Private     string `protobuf:"bytes,16,opt,name=private,proto3" form:"private" json:"private" query:"private"`
-	CreatedAt   string `protobuf:"bytes,110,opt,name=created_at,json=createdAt,proto3" form:"created_at" json:"created_at" query:"created_at"`
+	CreatedAt   string `protobuf:"bytes,110,opt,name=created_at,json=createdAt,proto3" query:"created_at" form:"created_at" json:"created_at"`
 	UpdatedAt   string `protobuf:"bytes,120,opt,name=updated_at,json=updatedAt,proto3" query:"updated_at" form:"updated_at" json:"updated_at"`
 }
 
@@ -402,24 +402,24 @@ type WorkerGetByIdResp struct {
 	unknownFields protoimpl.UnknownFields
 
 	Id          int64  `protobuf:"varint,1,opt,name=id,proto3" json:"id" query:"id"`
-	Hostname    string `protobuf:"bytes,2,opt,name=hostname,proto3" form:"hostname" json:"hostname" query:"hostname"`
+	Hostname    string `protobuf:"bytes,2,opt,name=hostname,proto3" query:"hostname" form:"hostname" json:"hostname"`
 	Description string `protobuf:"bytes,17,opt,name=description,proto3" query:"description" form:"description" json:"description"`
-	Ip          string `protobuf:"bytes,3,opt,name=ip,proto3" query:"ip" form:"ip" json:"ip"`
-	Addr        string `protobuf:"bytes,4,opt,name=addr,proto3" form:"addr" json:"addr" query:"addr"`
+	Ip          string `protobuf:"bytes,3,opt,name=ip,proto3" form:"ip" json:"ip" query:"ip"`
+	Addr        string `protobuf:"bytes,4,opt,name=addr,proto3" query:"addr" form:"addr" json:"addr"`
 	Version     string `protobuf:"bytes,5,opt,name=version,proto3" query:"version" form:"version" json:"version"`
 	RoutingKey  string `protobuf:"bytes,6,opt,name=routing_key,json=routingKey,proto3" query:"routing_key" form:"routing_key" json:"routing_key"`
 	Weight      int32  `protobuf:"varint,7,opt,name=weight,proto3" form:"weight" json:"weight" query:"weight"`
 	LeaseUpdate int64  `protobuf:"varint,8,opt,name=lease_update,json=leaseUpdate,proto3" form:"lease_update" json:"lease_update" query:"lease_update"`
-	Status      string `protobuf:"bytes,9,opt,name=status,proto3" query:"status" form:"status" json:"status"`
-	Port        int32  `protobuf:"varint,10,opt,name=port,proto3" form:"port" json:"port" query:"port"`
+	Status      string `protobuf:"bytes,9,opt,name=status,proto3" form:"status" json:"status" query:"status"`
+	Port        int32  `protobuf:"varint,10,opt,name=port,proto3" query:"port" form:"port" json:"port"`
 	Mode        string `protobuf:"bytes,11,opt,name=mode,proto3" query:"mode" form:"mode" json:"mode"`
-	AuthMode    string `protobuf:"bytes,12,opt,name=auth_mode,json=authMode,proto3" query:"auth_mode" form:"auth_mode" json:"auth_mode"`
-	Username    string `protobuf:"bytes,13,opt,name=username,proto3" form:"username" json:"username" query:"username"`
-	Password    string `protobuf:"bytes,14,opt,name=password,proto3" form:"password" json:"password" query:"password"`
+	AuthMode    string `protobuf:"bytes,12,opt,name=auth_mode,json=authMode,proto3" form:"auth_mode" json:"auth_mode" query:"auth_mode"`
+	Username    string `protobuf:"bytes,13,opt,name=username,proto3" query:"username" form:"username" json:"username"`
+	Password    string `protobuf:"bytes,14,opt,name=password,proto3" query:"password" form:"password" json:"password"`
 	Rsa         string `protobuf:"bytes,15,opt,name=rsa,proto3" query:"rsa" form:"rsa" json:"rsa"`
 	Private     string `protobuf:"bytes,16,opt,name=private,proto3" query:"private" form:"private" json:"private"`
-	CreatedAt   string `protobuf:"bytes,110,opt,name=created_at,json=createdAt,proto3" query:"created_at" form:"created_at" json:"created_at"`
-	UpdatedAt   string `protobuf:"bytes,120,opt,name=updated_at,json=updatedAt,proto3" form:"updated_at" json:"updated_at" query:"updated_at"`
+	CreatedAt   string `protobuf:"bytes,110,opt,name=created_at,json=createdAt,proto3" form:"created_at" json:"created_at" query:"created_at"`
+	UpdatedAt   string `protobuf:"bytes,120,opt,name=updated_at,json=updatedAt,proto3" query:"updated_at" form:"updated_at" json:"updated_at"`
 }
 
 func (x *WorkerGetByIdResp) Reset() {
@@ -592,21 +592,21 @@ type PostWorkerReq struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Description string `protobuf:"bytes,17,opt,name=description,proto3" form:"description" json:"description" query:"description"`
+	Description string `protobuf:"bytes,17,opt,name=description,proto3" query:"description" form:"description" json:"description"`
 	Hostname    string `protobuf:"bytes,2,opt,name=hostname,proto3" query:"hostname" form:"hostname" json:"hostname"`
 	Ip          string `protobuf:"bytes,3,opt,name=ip,proto3" query:"ip" form:"ip" json:"ip"`
 	Addr        string `protobuf:"bytes,4,opt,name=addr,proto3" query:"addr" form:"addr" json:"addr"`
 	Version     string `protobuf:"bytes,5,opt,name=version,proto3" query:"version" form:"version" json:"version"`
-	RoutingKey  string `protobuf:"bytes,6,opt,name=routing_key,json=routingKey,proto3" form:"routing_key" json:"routing_key" query:"routing_key"`
-	Weight      int32  `protobuf:"varint,7,opt,name=weight,proto3" form:"weight" json:"weight" query:"weight"`
-	LeaseUpdate int64  `protobuf:"varint,8,opt,name=lease_update,json=leaseUpdate,proto3" form:"lease_update" json:"lease_update" query:"lease_update"`
-	Status      string `protobuf:"bytes,9,opt,name=status,proto3" query:"status" form:"status" json:"status"`
+	RoutingKey  string `protobuf:"bytes,6,opt,name=routing_key,json=routingKey,proto3" query:"routing_key" form:"routing_key" json:"routing_key"`
+	Weight      int32  `protobuf:"varint,7,opt,name=weight,proto3" query:"weight" form:"weight" json:"weight"`
+	LeaseUpdate int64  `protobuf:"varint,8,opt,name=lease_update,json=leaseUpdate,proto3" query:"lease_update" form:"lease_update" json:"lease_update"`
+	Status      string `protobuf:"bytes,9,opt,name=status,proto3" form:"status" json:"status" query:"status"`
 	Port        int32  `protobuf:"varint,10,opt,name=port,proto3" query:"port" form:"port" json:"port"`
-	Mode        string `protobuf:"bytes,11,opt,name=mode,proto3" query:"mode" form:"mode" json:"mode"`
+	Mode        string `protobuf:"bytes,11,opt,name=mode,proto3" form:"mode" json:"mode" query:"mode"`
 	AuthMode    string `protobuf:"bytes,12,opt,name=auth_mode,json=authMode,proto3" form:"auth_mode" json:"auth_mode" query:"auth_mode"`
 	Username    string `protobuf:"bytes,13,opt,name=username,proto3" query:"username" form:"username" json:"username"`
-	Password    string `protobuf:"bytes,14,opt,name=password,proto3" query:"password" form:"password" json:"password"`
-	Rsa         string `protobuf:"bytes,15,opt,name=rsa,proto3" query:"rsa" form:"rsa" json:"rsa"`
+	Password    string `protobuf:"bytes,14,opt,name=password,proto3" form:"password" json:"password" query:"password"`
+	Rsa         string `protobuf:"bytes,15,opt,name=rsa,proto3" form:"rsa" json:"rsa" query:"rsa"`
 	Private     string `protobuf:"bytes,16,opt,name=private,proto3" query:"private" form:"private" json:"private"`
 }
 
@@ -761,13 +761,13 @@ type PutWorkerReq struct {
 
 	Description *string `protobuf:"bytes,17,opt,name=description,proto3,oneof" query:"description" form:"description,omitempty" json:"description,omitempty"`
 	Hostname    *string `protobuf:"bytes,2,opt,name=hostname,proto3,oneof" form:"hostname,omitempty" json:"hostname,omitempty" query:"hostname"`
-	Ip          *string `protobuf:"bytes,3,opt,name=ip,proto3,oneof" form:"ip,omitempty" json:"ip,omitempty" query:"ip"`
+	Ip          *string `protobuf:"bytes,3,opt,name=ip,proto3,oneof" query:"ip" form:"ip,omitempty" json:"ip,omitempty"`
 	Addr        *string `protobuf:"bytes,4,opt,name=addr,proto3,oneof" form:"addr,omitempty" json:"addr,omitempty" query:"addr"`
-	Version     *string `protobuf:"bytes,5,opt,name=version,proto3,oneof" query:"version" form:"version,omitempty" json:"version,omitempty"`
+	Version     *string `protobuf:"bytes,5,opt,name=version,proto3,oneof" form:"version,omitempty" json:"version,omitempty" query:"version"`
 	RoutingKey  *string `protobuf:"bytes,6,opt,name=routing_key,json=routingKey,proto3,oneof" query:"routing_key" form:"routing_key,omitempty" json:"routing_key,omitempty"`
 	Weight      *int32  `protobuf:"varint,7,opt,name=weight,proto3,oneof" query:"weight" json:"weight,omitempty"`
 	LeaseUpdate *int64  `protobuf:"varint,8,opt,name=lease_update,json=leaseUpdate,proto3,oneof" query:"lease_update" json:"lease_update,omitempty"`
-	Status      *string `protobuf:"bytes,9,opt,name=status,proto3,oneof" form:"status,omitempty" json:"status,omitempty" query:"status"`
+	Status      *string `protobuf:"bytes,9,opt,name=status,proto3,oneof" query:"status" form:"status,omitempty" json:"status,omitempty"`
 	Port        *int32  `protobuf:"varint,10,opt,name=port,proto3,oneof" query:"port" json:"port,omitempty"`
 	Mode        *string `protobuf:"bytes,11,opt,name=mode,proto3,oneof" query:"mode" form:"mode,omitempty" json:"mode,omitempty"`
 	AuthMode    *string `protobuf:"bytes,12,opt,name=auth_mode,json=authMode,proto3,oneof" query:"auth_mode" form:"auth_mode,omitempty" json:"auth_mode,omitempty"`
@@ -1214,7 +1214,7 @@ var file_worker_proto_rawDesc = []byte{
 	0x68, 0x5f, 0x6d, 0x6f, 0x64, 0x65, 0x42, 0x0b, 0x0a, 0x09, 0x5f, 0x75, 0x73, 0x65, 0x72, 0x6e,
 	0x61, 0x6d, 0x65, 0x42, 0x0b, 0x0a, 0x09, 0x5f, 0x70, 0x61, 0x73, 0x73, 0x77, 0x6f, 0x72, 0x64,
 	0x42, 0x06, 0x0a, 0x04, 0x5f, 0x72, 0x73, 0x61, 0x42, 0x0a, 0x0a, 0x08, 0x5f, 0x70, 0x72, 0x69,
-	0x76, 0x61, 0x74, 0x65, 0x32, 0x8d, 0x04, 0x0a, 0x0d, 0x57, 0x6f, 0x72, 0x6b, 0x65, 0x72, 0x53,
+	0x76, 0x61, 0x74, 0x65, 0x32, 0xf3, 0x04, 0x0a, 0x0d, 0x57, 0x6f, 0x72, 0x6b, 0x65, 0x72, 0x53,
 	0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x12, 0x55, 0x0a, 0x0c, 0x47, 0x65, 0x74, 0x57, 0x6f, 0x72,
 	0x6b, 0x65, 0x72, 0x41, 0x6c, 0x6c, 0x12, 0x13, 0x2e, 0x77, 0x6f, 0x72, 0x6b, 0x65, 0x72, 0x2e,
 	0x57, 0x6f, 0x72, 0x6b, 0x65, 0x72, 0x51, 0x75, 0x65, 0x72, 0x79, 0x1a, 0x15, 0x2e, 0x77, 0x6f,
@@ -1231,25 +1231,31 @@ var file_worker_proto_rawDesc = []byte{
 	0x65, 0x72, 0x51, 0x75, 0x65, 0x72, 0x79, 0x1a, 0x12, 0x2e, 0x77, 0x6f, 0x72, 0x6b, 0x65, 0x72,
 	0x2e, 0x57, 0x6f, 0x72, 0x6b, 0x65, 0x72, 0x52, 0x65, 0x73, 0x70, 0x22, 0x18, 0xca, 0xc1, 0x18,
 	0x14, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x6a, 0x6f, 0x62, 0x6f, 0x72, 0x2f, 0x77,
-	0x6f, 0x72, 0x6b, 0x65, 0x72, 0x12, 0x51, 0x0a, 0x0a, 0x50, 0x6f, 0x73, 0x74, 0x57, 0x6f, 0x72,
-	0x6b, 0x65, 0x72, 0x12, 0x15, 0x2e, 0x77, 0x6f, 0x72, 0x6b, 0x65, 0x72, 0x2e, 0x50, 0x6f, 0x73,
-	0x74, 0x57, 0x6f, 0x72, 0x6b, 0x65, 0x72, 0x52, 0x65, 0x71, 0x1a, 0x12, 0x2e, 0x77, 0x6f, 0x72,
-	0x6b, 0x65, 0x72, 0x2e, 0x57, 0x6f, 0x72, 0x6b, 0x65, 0x72, 0x52, 0x65, 0x73, 0x70, 0x22, 0x18,
-	0xd2, 0xc1, 0x18, 0x14, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x6a, 0x6f, 0x62, 0x6f,
-	0x72, 0x2f, 0x77, 0x6f, 0x72, 0x6b, 0x65, 0x72, 0x12, 0x53, 0x0a, 0x09, 0x50, 0x75, 0x74, 0x57,
-	0x6f, 0x72, 0x6b, 0x65, 0x72, 0x12, 0x14, 0x2e, 0x77, 0x6f, 0x72, 0x6b, 0x65, 0x72, 0x2e, 0x50,
-	0x75, 0x74, 0x57, 0x6f, 0x72, 0x6b, 0x65, 0x72, 0x52, 0x65, 0x71, 0x1a, 0x12, 0x2e, 0x77, 0x6f,
-	0x72, 0x6b, 0x65, 0x72, 0x2e, 0x57, 0x6f, 0x72, 0x6b, 0x65, 0x72, 0x52, 0x65, 0x73, 0x70, 0x22,
-	0x1c, 0xda, 0xc1, 0x18, 0x18, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x6a, 0x6f, 0x62,
-	0x6f, 0x72, 0x2f, 0x77, 0x6f, 0x72, 0x6b, 0x65, 0x72, 0x2f, 0x3a, 0x69, 0x64, 0x12, 0x55, 0x0a,
-	0x0c, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x57, 0x6f, 0x72, 0x6b, 0x65, 0x72, 0x12, 0x13, 0x2e,
-	0x77, 0x6f, 0x72, 0x6b, 0x65, 0x72, 0x2e, 0x57, 0x6f, 0x72, 0x6b, 0x65, 0x72, 0x51, 0x75, 0x65,
-	0x72, 0x79, 0x1a, 0x12, 0x2e, 0x77, 0x6f, 0x72, 0x6b, 0x65, 0x72, 0x2e, 0x57, 0x6f, 0x72, 0x6b,
-	0x65, 0x72, 0x52, 0x65, 0x73, 0x70, 0x22, 0x1c, 0xe2, 0xc1, 0x18, 0x18, 0x2f, 0x61, 0x70, 0x69,
-	0x2f, 0x76, 0x31, 0x2f, 0x6a, 0x6f, 0x62, 0x6f, 0x72, 0x2f, 0x77, 0x6f, 0x72, 0x6b, 0x65, 0x72,
-	0x2f, 0x3a, 0x69, 0x64, 0x42, 0x18, 0x5a, 0x16, 0x6a, 0x6f, 0x62, 0x6f, 0x72, 0x2f, 0x6b, 0x69,
-	0x74, 0x65, 0x78, 0x5f, 0x67, 0x65, 0x6e, 0x2f, 0x77, 0x6f, 0x72, 0x6b, 0x65, 0x72, 0x62, 0x06,
-	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x6f, 0x72, 0x6b, 0x65, 0x72, 0x12, 0x64, 0x0a, 0x13, 0x47, 0x65, 0x74, 0x57, 0x6f, 0x72, 0x6b,
+	0x65, 0x72, 0x52, 0x6f, 0x75, 0x74, 0x69, 0x6e, 0x67, 0x4b, 0x65, 0x79, 0x12, 0x13, 0x2e, 0x77,
+	0x6f, 0x72, 0x6b, 0x65, 0x72, 0x2e, 0x57, 0x6f, 0x72, 0x6b, 0x65, 0x72, 0x51, 0x75, 0x65, 0x72,
+	0x79, 0x1a, 0x12, 0x2e, 0x77, 0x6f, 0x72, 0x6b, 0x65, 0x72, 0x2e, 0x57, 0x6f, 0x72, 0x6b, 0x65,
+	0x72, 0x52, 0x65, 0x73, 0x70, 0x22, 0x24, 0xca, 0xc1, 0x18, 0x20, 0x2f, 0x61, 0x70, 0x69, 0x2f,
+	0x76, 0x31, 0x2f, 0x6a, 0x6f, 0x62, 0x6f, 0x72, 0x2f, 0x77, 0x6f, 0x72, 0x6b, 0x65, 0x72, 0x2d,
+	0x72, 0x6f, 0x75, 0x74, 0x69, 0x6e, 0x67, 0x2d, 0x6b, 0x65, 0x79, 0x12, 0x51, 0x0a, 0x0a, 0x50,
+	0x6f, 0x73, 0x74, 0x57, 0x6f, 0x72, 0x6b, 0x65, 0x72, 0x12, 0x15, 0x2e, 0x77, 0x6f, 0x72, 0x6b,
+	0x65, 0x72, 0x2e, 0x50, 0x6f, 0x73, 0x74, 0x57, 0x6f, 0x72, 0x6b, 0x65, 0x72, 0x52, 0x65, 0x71,
+	0x1a, 0x12, 0x2e, 0x77, 0x6f, 0x72, 0x6b, 0x65, 0x72, 0x2e, 0x57, 0x6f, 0x72, 0x6b, 0x65, 0x72,
+	0x52, 0x65, 0x73, 0x70, 0x22, 0x18, 0xd2, 0xc1, 0x18, 0x14, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76,
+	0x31, 0x2f, 0x6a, 0x6f, 0x62, 0x6f, 0x72, 0x2f, 0x77, 0x6f, 0x72, 0x6b, 0x65, 0x72, 0x12, 0x53,
+	0x0a, 0x09, 0x50, 0x75, 0x74, 0x57, 0x6f, 0x72, 0x6b, 0x65, 0x72, 0x12, 0x14, 0x2e, 0x77, 0x6f,
+	0x72, 0x6b, 0x65, 0x72, 0x2e, 0x50, 0x75, 0x74, 0x57, 0x6f, 0x72, 0x6b, 0x65, 0x72, 0x52, 0x65,
+	0x71, 0x1a, 0x12, 0x2e, 0x77, 0x6f, 0x72, 0x6b, 0x65, 0x72, 0x2e, 0x57, 0x6f, 0x72, 0x6b, 0x65,
+	0x72, 0x52, 0x65, 0x73, 0x70, 0x22, 0x1c, 0xda, 0xc1, 0x18, 0x18, 0x2f, 0x61, 0x70, 0x69, 0x2f,
+	0x76, 0x31, 0x2f, 0x6a, 0x6f, 0x62, 0x6f, 0x72, 0x2f, 0x77, 0x6f, 0x72, 0x6b, 0x65, 0x72, 0x2f,
+	0x3a, 0x69, 0x64, 0x12, 0x55, 0x0a, 0x0c, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x57, 0x6f, 0x72,
+	0x6b, 0x65, 0x72, 0x12, 0x13, 0x2e, 0x77, 0x6f, 0x72, 0x6b, 0x65, 0x72, 0x2e, 0x57, 0x6f, 0x72,
+	0x6b, 0x65, 0x72, 0x51, 0x75, 0x65, 0x72, 0x79, 0x1a, 0x12, 0x2e, 0x77, 0x6f, 0x72, 0x6b, 0x65,
+	0x72, 0x2e, 0x57, 0x6f, 0x72, 0x6b, 0x65, 0x72, 0x52, 0x65, 0x73, 0x70, 0x22, 0x1c, 0xe2, 0xc1,
+	0x18, 0x18, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x6a, 0x6f, 0x62, 0x6f, 0x72, 0x2f,
+	0x77, 0x6f, 0x72, 0x6b, 0x65, 0x72, 0x2f, 0x3a, 0x69, 0x64, 0x42, 0x18, 0x5a, 0x16, 0x6a, 0x6f,
+	0x62, 0x6f, 0x72, 0x2f, 0x6b, 0x69, 0x74, 0x65, 0x78, 0x5f, 0x67, 0x65, 0x6e, 0x2f, 0x77, 0x6f,
+	0x72, 0x6b, 0x65, 0x72, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -1277,17 +1283,19 @@ var file_worker_proto_depIdxs = []int32{
 	0, // 0: worker.WorkerService.GetWorkerAll:input_type -> worker.WorkerQuery
 	0, // 1: worker.WorkerService.GetWorkerById:input_type -> worker.WorkerQuery
 	0, // 2: worker.WorkerService.GetWorker:input_type -> worker.WorkerQuery
-	4, // 3: worker.WorkerService.PostWorker:input_type -> worker.PostWorkerReq
-	5, // 4: worker.WorkerService.PutWorker:input_type -> worker.PutWorkerReq
-	0, // 5: worker.WorkerService.DeleteWorker:input_type -> worker.WorkerQuery
-	2, // 6: worker.WorkerService.GetWorkerAll:output_type -> worker.WorkerAllResp
-	1, // 7: worker.WorkerService.GetWorkerById:output_type -> worker.WorkerResp
-	1, // 8: worker.WorkerService.GetWorker:output_type -> worker.WorkerResp
-	1, // 9: worker.WorkerService.PostWorker:output_type -> worker.WorkerResp
-	1, // 10: worker.WorkerService.PutWorker:output_type -> worker.WorkerResp
-	1, // 11: worker.WorkerService.DeleteWorker:output_type -> worker.WorkerResp
-	6, // [6:12] is the sub-list for method output_type
-	0, // [0:6] is the sub-list for method input_type
+	0, // 3: worker.WorkerService.GetWorkerRoutingKey:input_type -> worker.WorkerQuery
+	4, // 4: worker.WorkerService.PostWorker:input_type -> worker.PostWorkerReq
+	5, // 5: worker.WorkerService.PutWorker:input_type -> worker.PutWorkerReq
+	0, // 6: worker.WorkerService.DeleteWorker:input_type -> worker.WorkerQuery
+	2, // 7: worker.WorkerService.GetWorkerAll:output_type -> worker.WorkerAllResp
+	1, // 8: worker.WorkerService.GetWorkerById:output_type -> worker.WorkerResp
+	1, // 9: worker.WorkerService.GetWorker:output_type -> worker.WorkerResp
+	1, // 10: worker.WorkerService.GetWorkerRoutingKey:output_type -> worker.WorkerResp
+	1, // 11: worker.WorkerService.PostWorker:output_type -> worker.WorkerResp
+	1, // 12: worker.WorkerService.PutWorker:output_type -> worker.WorkerResp
+	1, // 13: worker.WorkerService.DeleteWorker:output_type -> worker.WorkerResp
+	7, // [7:14] is the sub-list for method output_type
+	0, // [0:7] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
 	0, // [0:0] is the sub-list for extension extendee
 	0, // [0:0] is the sub-list for field type_name

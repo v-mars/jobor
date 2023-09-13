@@ -65,3 +65,8 @@ func _getworkerbyidMw() []app.HandlerFunc {
 	// your code...
 	return nil
 }
+
+func _getworkerroutingkeyMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
