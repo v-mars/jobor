@@ -5,7 +5,7 @@ RUN go env -w GO111MODULE="on" && go mod tidy && go env -w GOPROXY="https://gopr
     CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./app ./cmd/worker/main.go
 
 
-FROM go:1.20
+FROM golang:1.20
 WORKDIR /data
 COPY --from=builder /data/app ./
 RUN go env -w GO111MODULE="on" && go mod tidy && go env -w GOPROXY="https://goproxy.cn"

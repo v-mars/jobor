@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/cloudwego/hertz/pkg/common/hlog"
+	"github.com/tidwall/gjson"
 	"io"
 	"jobor/kitex_gen/pbapi"
 	task2 "jobor/kitex_gen/task"
@@ -16,29 +17,22 @@ func TaskWorker(ctx context.Context, data string, taskId int64, lang string, str
 		hlog.CtxDebugf(ctx, "Task=[%d] lang=%s worker run Task finish, cost time: %s.",
 			taskId, lang, time.Since(startTime).String())
 	}()
-	//taskCtx, taskCancel := context.WithCancel(ctx)
-	//timeoutCtx, timeoutCac := context.WithCancel(taskCtx)
-	//if t.Timeout > 0 {
-	//	timeoutCtx, timeoutCac = context.WithTimeout(timeoutCtx, time.Second*time.Duration(t.Timeout))
-	//}
-	//defer taskCancel()
-	//defer timeoutCac()
-	//_ = timeoutCtx
 	request := task2.TaskRequest{TaskId: taskId, TaskLang: lang, TaskData: []byte(data)}
 	runner, err := GetDataRun(&request)
 	if err != nil {
 		hlog.CtxErrorf(ctx, "dispatcher getDataRun err: %s", err.Error())
 		return err
 	}
-	preRes, exitCode, err := runner.RunPreCmd(ctx)
-	if err != nil {
-		err = fmt.Errorf("\n%s, Return exitCode:%5d", err, exitCode) // write exitCode,total 5 byte
-		resp := pbapi.StreamResponse{Resp: []byte(fmt.Sprintf("预执行结果：\n%s\n预执行错误：%s", preRes,
-			err.Error()))}
-		err = stream.Send(&resp)
-		return err
-	}
-	if preRes != "" {
+	gd := gjson.Parse(data)
+	if gd.Get("pre_cmd").String() != "" {
+		preRes, exitCode, err := runner.RunPreCmd(ctx)
+		if err != nil {
+			err = fmt.Errorf("\n%s, Return exitCode:%5d", err, exitCode) // write exitCode,total 5 byte
+			resp := pbapi.StreamResponse{Resp: []byte(fmt.Sprintf("预执行结果：\n%s\n预执行错误：%s\n", preRes,
+				err.Error()))}
+			err = stream.Send(&resp)
+			return err
+		}
 		preResp := pbapi.StreamResponse{Resp: []byte(fmt.Sprintf("预执行结果：\n%s\n预执行成功\n", preRes))}
 		err = stream.Send(&preResp)
 		if err != nil {

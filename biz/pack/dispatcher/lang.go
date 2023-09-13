@@ -284,7 +284,10 @@ func runPreCmd(ctx context.Context, Cmd string) (string, int, error) {
 		exitCode = 0
 	}
 	now := time.Now().Local().Format("2006-01-02 15:04:05")
-	result = result + fmt.Sprintf("\n%s\n%s Task Run Pre Cmd Finished, Return exitCode:%5d", "", now, exitCode) // write exitCode,total 5 byte
+	result = result + fmt.Sprintf("\n%s Task Run Pre Cmd Finished, Return exitCode:%5d", now, exitCode) // write exitCode,total 5 byte
+	if len(result) > 3000 {
+		result = fmt.Sprintf("%s\n……省略过多内容……\n%s", result[0:1499], result[len(result)-1499:])
+	}
 	return result, exitCode, nil
 }
 
