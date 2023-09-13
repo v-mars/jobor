@@ -8,7 +8,7 @@ RUN go env -w GO111MODULE="on" && go mod tidy && go env -w GOPROXY="https://gopr
 FROM golang:1.20
 WORKDIR /data
 COPY --from=builder /data/app ./
-RUN go env -w GO111MODULE="on" && go mod tidy && go env -w GOPROXY="https://goproxy.cn"
+RUN go env -w GO111MODULE="on" && go env -w GOPROXY="https://goproxy.cn"
 #COPY --from=builder /data/godemo/docs/ ./docs/
 #RUN apt update && apt install tzdata inetutils-ping telnet traceroute -y
 #RUN yum install inetutils-ping vim telnet traceroute -y && mkdir -pv /data/log
