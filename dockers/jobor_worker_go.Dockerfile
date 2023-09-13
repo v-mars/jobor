@@ -4,7 +4,6 @@ COPY ./ ./
 RUN go env -w GO111MODULE="on" && go mod tidy && go env -w GOPROXY="https://goproxy.cn" &&  \
     CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./app ./cmd/worker/main.go
 
-
 FROM golang:1.20
 WORKDIR /data
 COPY --from=builder /data/app ./
@@ -22,3 +21,5 @@ CMD exec ./app -c conf/worker.yaml
 
 # docker build -f dockers/jobor_worker.Dockerfile -t iocean/jobor:worker-v1.0.1 .
 # docker push iocean/jobor:worker-v1.0.1
+# 阿里云：https://mirrors.aliyun.com/goproxy
+# 微软：https://goproxy.io 七牛云：https://goproxy.cn GoCenter：https://gocenter.io

@@ -66,10 +66,13 @@ sql_mode=STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_
 - [x] api/restful [GET, POST, PUT, DELETE] task
 - [x] shell task
 - [x] python3 task
-- [ ] golang task
+- [x] golang task
 - [x] server task
 - [x] father task
 - [x] children task
+- [x] worker 预执行（如：执行python 前先执行 pip install xx）
+- [x] worker 节点支持：agent和ssh两种模式
+- [x] 路由标识多选
 - [ ] 任务缓存执行
 
 ## 🤝 特别感谢
