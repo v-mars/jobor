@@ -755,6 +755,12 @@ const docTemplate = `{
                 "routing_key": {
                     "type": "string"
                 },
+                "routing_keys": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
                 "status": {
                     "type": "string"
                 },
@@ -835,6 +841,9 @@ const docTemplate = `{
                 "routing_key": {
                     "type": "string"
                 },
+                "routing_keys": {
+                    "$ref": "#/definitions/google_golang_org_protobuf_types_known_structpb.ListValue"
+                },
                 "status": {
                     "type": "string"
                 },
@@ -859,6 +868,9 @@ const docTemplate = `{
                     "$ref": "#/definitions/task.Api"
                 },
                 "content": {
+                    "type": "string"
+                },
+                "pre_cmd": {
                     "type": "string"
                 }
             }

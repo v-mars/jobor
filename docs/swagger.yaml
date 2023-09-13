@@ -164,6 +164,10 @@ definitions:
         type: integer
       routing_key:
         type: string
+      routing_keys:
+        items:
+          type: string
+        type: array
       status:
         type: string
       timeout:
@@ -217,6 +221,8 @@ definitions:
         type: integer
       routing_key:
         type: string
+      routing_keys:
+        $ref: '#/definitions/google_golang_org_protobuf_types_known_structpb.ListValue'
       status:
         type: string
       timeout:
@@ -233,6 +239,8 @@ definitions:
       api:
         $ref: '#/definitions/task.Api'
       content:
+        type: string
+      pre_cmd:
         type: string
     type: object
   task.WeChat:

@@ -273,6 +273,7 @@ func RunTasksWithRPC(ctx context.Context, evt, trigger string, t model.JoborTask
 				hlog.Errorf(s.Err.Error())
 			}
 		}()
+		DealTaskResp(&t, &taskLog, &s)
 		if errPanic := recover(); errPanic != any(nil) {
 			stack := response.Stack(3)
 			s.Err = fmt.Errorf("RunTasks panic, 错误信息: %s\n堆栈信息：%s", errPanic, stack)
@@ -296,11 +297,7 @@ func RunTasksWithRPC(ctx context.Context, evt, trigger string, t model.JoborTask
 			taskLog.Result = model.TaskLogStatusSuccess
 			hlog.Infof("任务 %s[%d] 类型=%s 执行成功", t.Name, t.Id, t.Lang)
 		}
-		//totalTime := time.Since(startTimeTotal)
-		//value, _ := strconv.ParseFloat(fmt.Sprintf("%.3f", totalTime.Seconds()), 64)
-		DealTaskResp(&t, &taskLog, &s)
 		var totalTime = time.Now().UnixMilli() - startTimeTotal.UnixMilli()
-		//taskLog.CostTime = db.MillisTime((time.Second * time.Duration(totalTime)).String())
 		taskLog.CostTime = db.MillisTime((time.Millisecond * time.Duration(totalTime)).String())
 		taskLog.EndTime = db.JSONTime{Time: time.Now()}
 		if s.Err = tx.Model(&taskLog).Omit([]string{"CreatedAt", "UpdatedAt"}...).Save(&taskLog).Error; s.Err != nil {
@@ -374,15 +371,6 @@ func RunTasksWithRPC(ctx context.Context, evt, trigger string, t model.JoborTask
 	}
 
 	//time.Sleep(1 * time.Second)
-
-	//conn, w, errConn := TryGetGrpcClientConn(s.TaskCtx, workers)
-	//if errConn != nil {
-	//	s.Err = errConn
-	//	hlog.Errorf("TryGetGrpcClientConn err: %s", errConn)
-	//	return
-	//}
-	//defer func(conn *grpc.ClientConn) { _ = conn.Close() }(conn)
-	//s.Conn = conn
 	taskLog.Addr = w.Addr
 	taskLog.Result = model.TaskLogStatusRunning
 	if s.Err = tx.Model(&taskLog).Omit([]string{"CreatedAt", "UpdatedAt"}...).Updates(taskLog).Error; s.Err != nil {
@@ -395,7 +383,25 @@ func RunTasksWithRPC(ctx context.Context, evt, trigger string, t model.JoborTask
 		ts := task_ssh.SshServer{Cmd: *t.Data.Content, Username: w.Username, Password: string(w.Password),
 			Host: w.Ip, Port: w.Port,
 			AuthMode: w.AuthMode, PrivateKey: string(w.Rsa), PrivateSecret: string(w.Private)}
-		sshOut, e := ts.ExecRemoteSsh()
+		s.Err = ts.ExecRemoteSshInit()
+		if s.Err != nil {
+			s.Err = fmt.Errorf("task worker mode remote ssh init err: %s", s.Err)
+			hlog.Errorf(s.Err.Error())
+			taskLog.Result = model.TaskLogStatusFailed
+			return
+		}
+		if t.Data.PreCmd != nil {
+			_, e := ts.ExecRemoteSshCmd(*t.Data.PreCmd)
+			if e != nil {
+				s.Err = fmt.Errorf("task worker mode ssh run pre cmd err: %s", e)
+				hlog.Errorf(s.Err.Error())
+				taskLog.Result = model.TaskLogStatusFailed
+				return
+			}
+			hlog.CtxInfof(ctx, "task=[%d] lang=%s worker mode ssh run pre cmd is success", t.Id, t.Lang)
+		}
+
+		sshOut, e := ts.ExecRemoteSshCmd(*t.Data.Content)
 		if e != nil {
 			s.Err = fmt.Errorf("task worker mode ssh run task err: %s", e)
 			hlog.Errorf(s.Err.Error())
@@ -403,11 +409,8 @@ func RunTasksWithRPC(ctx context.Context, evt, trigger string, t model.JoborTask
 			return
 		}
 		taskLog.Resp = sshOut
-		//if len(taskLog.Resp) > 3000 {
-		//	taskLog.Resp = fmt.Sprintf("%s\n……省略过多内容……\n%s", taskLog.Resp[0:1499], taskLog.Resp[len(taskLog.Resp)-1499:])
-		//}
-		DealTaskResp(&t, &taskLog, &s)
-		hlog.Infof("model.WorkerModeSsh")
+		ts.Close()
+		hlog.Infof("exec WorkerModeSsh finish")
 		return
 	}
 	tc, err := taskservice.NewClient(conf.AppWorkerName, client.WithHostPorts(w.Addr))
@@ -428,7 +431,7 @@ func RunTasksWithRPC(ctx context.Context, evt, trigger string, t model.JoborTask
 		errChan := make(chan error, 1)
 		Message := make(chan *pbapi.StreamResponse, 1)
 		go func() {
-			defer func() { hlog.Debugf("Task %s[%d] res stream.recv finish", t.Name, t.Id) }()
+			//defer func() { hlog.Debugf("Task %s[%d] res stream.recv finish", t.Name, t.Id) }()
 			rec, errRecv := s.Stream.Recv()
 			Message <- rec
 			errChan <- errRecv
@@ -437,7 +440,7 @@ func RunTasksWithRPC(ctx context.Context, evt, trigger string, t model.JoborTask
 	}
 	for {
 		msg, errChan := streamChan()
-		hlog.Debugf("Task %s[%d] res stream.recv start", t.Name, t.Id)
+		//hlog.Debugf("Task %s[%d] res stream.recv start", t.Name, t.Id)
 		select {
 		//case <-s.Abort:
 		case <-s.TaskCtx.Done():
@@ -449,7 +452,7 @@ func RunTasksWithRPC(ctx context.Context, evt, trigger string, t model.JoborTask
 			taskLog.Result = model.TaskLogStatusTimeout
 			return
 		case d := <-msg:
-			hlog.Debugf("Task %s[%d] stream recv data: %s", t.Name, t.Id, d.GetResp())
+			//hlog.Debugf("Task %s[%d] stream recv data: %s", t.Name, t.Id, d.GetResp())
 			taskLog.Resp += string(d.GetResp())
 		case e := <-errChan:
 			if e == io.EOF {
@@ -484,13 +487,16 @@ func DealTaskResp(t *model.JoborTask, taskLog *model.JoborLog, s *taskSession) {
 			hlog.Error(s.Err)
 			return s.Err
 		}
+		fmt.Println("GetRespCode:", t.ExpectCode, taskRespCode)
 		s.TaskLog.ErrCode = taskRespCode
 		if t.ExpectCode != taskRespCode {
-			return fmt.Errorf("任务 %s[%d] 返回码： %d, 期望返回码：%d", t.Name, taskLog.Id, taskRespCode, t.ExpectCode)
+			s.Err = fmt.Errorf("任务 %s[%d] 返回码： %d, 期望返回码：%d", t.Name, taskLog.Id, taskRespCode, t.ExpectCode)
+			return s.Err
 		}
 		if t.ExpectContent != "" {
 			if !strings.Contains(taskLog.Resp, t.ExpectContent) {
-				return fmt.Errorf("%s Task %s[%d] resp context not contains expect content: %s", "server", t.Name, taskLog.Id, t.ExpectContent)
+				s.Err = fmt.Errorf("%s Task %s[%d] resp context not contains expect content: %s", "server", t.Name, taskLog.Id, t.ExpectContent)
+				return s.Err
 			}
 		}
 		return nil

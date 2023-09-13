@@ -36,6 +36,7 @@ const (
 type Runner interface {
 	Run(ctx context.Context) (out io.ReadCloser)
 	Type() string
+	RunPreCmd(ctx context.Context) (string, int, error)
 }
 
 // GetDataRun get Task Runner
@@ -48,11 +49,11 @@ func GetDataRun(t *task2.TaskRequest) (Runner, error) {
 	}
 	switch t.TaskLang {
 	case LangShell, LangPython, LangPython3, LangGolang, LangWindowsBat:
-		var code = DataCode{Lang: Lang(t.TaskLang), ScriptCode: *data.Content}
+		var code = DataCode{Lang: Lang(t.TaskLang), ScriptCode: *data.Content, PreCmd: *data.PreCmd}
 		code.LangDesc = code.Lang.String()
 		return code, err
 	case LangApi:
-		var api = DataAPI{URL: data.Api.Url, Method: data.Api.Method, PayLoad: data.Api.Body}
+		var api = DataAPI{URL: data.Api.Url, Method: data.Api.Method, PayLoad: data.Api.Body, PreCmd: *data.PreCmd}
 		if api.Header == nil {
 			api.Header = make(map[string]string)
 		}
@@ -95,6 +96,7 @@ type DataAPI struct {
 	URL     string
 	PayLoad string
 	Header  map[string]string
+	PreCmd  string `json:"pre_cmd" comment:"PreCmd"`
 }
 
 func (d DataAPI) Run(ctx context.Context) (out io.ReadCloser) {
@@ -160,6 +162,9 @@ func (d DataAPI) Run(ctx context.Context) (out io.ReadCloser) {
 func (d DataAPI) Type() string {
 	return "api"
 }
+func (d DataAPI) RunPreCmd(ctx context.Context) (string, int, error) {
+	return runPreCmd(ctx, d.PreCmd)
+}
 
 type Lang string
 
@@ -168,6 +173,7 @@ type DataCode struct {
 	Lang       Lang   `json:"kind"`
 	LangDesc   string `json:"langDesc" comment:"Lang"`
 	ScriptCode string `json:"script_code" comment:"ScriptCode"`
+	PreCmd     string `json:"pre_cmd" comment:"PreCmd"`
 }
 
 // Run run shell
@@ -183,8 +189,8 @@ func (d DataCode) Run(ctx context.Context) (out io.ReadCloser) {
 		defer func(pw *io.PipeWriter) { _ = pw.Close() }(pw)
 		defer func() {
 			now := time.Now().Local().Format("2006-01-02 15:04:05")
-			finishTxt := fmt.Sprintf("#################### Bash Shell Finish ####################")
-			_, _ = pw.Write([]byte(fmt.Sprintf("\n%s\n%s Task Run Finished, Return exitCode:%5d", finishTxt, now, exitCode))) // write exitCode,total 5 byte
+			//finishTxt := fmt.Sprintf("#################### Bash Shell Finish ####################")
+			_, _ = pw.Write([]byte(fmt.Sprintf("\n%s\n%s Task Run Finished, Return exitCode:%5d", "", now, exitCode))) // write exitCode,total 5 byte
 			if codePath != "" {
 				_ = os.Remove(codePath)
 			}
@@ -196,8 +202,8 @@ func (d DataCode) Run(ctx context.Context) (out io.ReadCloser) {
 		}
 		cmd.Stdout = pw
 		cmd.Stderr = pw
-		startTxt := fmt.Sprintf("#################### Bash Shell Start ####################\n\n")
-		_, _ = pw.Write([]byte(startTxt))
+		//startTxt := fmt.Sprintf("#################### Bash Shell Start ####################\n\n")
+		//_, _ = pw.Write([]byte(startTxt))
 		err = cmd.Start()
 		if err != nil {
 			_, _ = pw.Write([]byte(err.Error()))
@@ -206,6 +212,10 @@ func (d DataCode) Run(ctx context.Context) (out io.ReadCloser) {
 
 		err = cmd.Wait()
 		if err != nil {
+			// try to get the exit code
+			if exitError, ok := err.(*exec.ExitError); ok {
+				exitCode = exitError.ExitCode()
+			}
 			// deal err
 			// if context err,will change err to custom msg
 			switch ctx.Err() {
@@ -222,10 +232,6 @@ func (d DataCode) Run(ctx context.Context) (out io.ReadCloser) {
 					return
 				}
 			}
-			// try to get the exit code
-			if exitError, ok := err.(*exec.ExitError); ok {
-				exitCode = exitError.ExitCode()
-			}
 		} else {
 			exitCode = 0
 		}
@@ -236,6 +242,50 @@ func (d DataCode) Run(ctx context.Context) (out io.ReadCloser) {
 
 func (d DataCode) Type() string {
 	return string(d.Lang)
+}
+
+func (d DataCode) RunPreCmd(ctx context.Context) (string, int, error) {
+	return runPreCmd(ctx, d.PreCmd)
+}
+
+func runPreCmd(ctx context.Context, Cmd string) (string, int, error) {
+	var result = ""
+	var exitCode = DefaultExitCode
+	if Cmd != "" {
+		cmd, _, err := runShell(ctx, Cmd)
+		if err != nil {
+			return "", exitCode, err
+		}
+		output, err := cmd.Output()
+		if err != nil {
+			// try to get the exit code
+			if exitError, ok := err.(*exec.ExitError); ok {
+				exitCode = exitError.ExitCode()
+			}
+			// deal err
+			// if context err,will change err to custom msg
+			switch ctx.Err() {
+			case context.DeadlineExceeded:
+				if err != nil {
+					return string(output), exitCode, fmt.Errorf("ErrCtxDeadlineExceeded")
+				}
+			case context.Canceled:
+				return string(output), exitCode, fmt.Errorf("ErrCtxCanceled")
+			default:
+				if err != nil {
+					return string(output), exitCode, err
+				}
+			}
+		} else {
+			exitCode = 0
+		}
+		result = string(output)
+	} else {
+		exitCode = 0
+	}
+	now := time.Now().Local().Format("2006-01-02 15:04:05")
+	result = result + fmt.Sprintf("\n%s\n%s Task Run Pre Cmd Finished, Return exitCode:%5d", "", now, exitCode) // write exitCode,total 5 byte
+	return result, exitCode, nil
 }
 
 func getCmd(ctx context.Context, Lang string, code string) (*exec.Cmd, string, error) {

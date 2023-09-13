@@ -30,7 +30,23 @@ func TaskWorker(ctx context.Context, data string, taskId int64, lang string, str
 		hlog.CtxErrorf(ctx, "dispatcher getDataRun err: %s", err.Error())
 		return err
 	}
-	out := runner.Run(context.Background())
+	preRes, exitCode, err := runner.RunPreCmd(ctx)
+	if err != nil {
+		err = fmt.Errorf("\n%s, Return exitCode:%5d", err, exitCode) // write exitCode,total 5 byte
+		resp := pbapi.StreamResponse{Resp: []byte(fmt.Sprintf("预执行结果：\n%s\n预执行错误：%s", preRes,
+			err.Error()))}
+		err = stream.Send(&resp)
+		return err
+	}
+	if preRes != "" {
+		preResp := pbapi.StreamResponse{Resp: []byte(fmt.Sprintf("预执行结果：\n%s\n预执行成功\n", preRes))}
+		err = stream.Send(&preResp)
+		if err != nil {
+			return err
+		}
+	}
+	hlog.CtxDebugf(ctx, "Task=[%d] lang=%s runner run pre cmd is success", taskId, lang)
+	out := runner.Run(ctx)
 	hlog.CtxDebugf(ctx, "Task=[%d] lang=%s runner run start", taskId, lang)
 	defer func(out io.ReadCloser) {
 		err := out.Close()
@@ -46,7 +62,6 @@ func TaskWorker(ctx context.Context, data string, taskId int64, lang string, str
 
 		if err != nil {
 			if err == io.EOF {
-				fmt.Println(resp)
 				hlog.CtxDebugf(ctx, "Task=[%d] lang=%s runner run is finish", taskId, lang)
 				return nil
 			}
