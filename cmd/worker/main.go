@@ -26,10 +26,11 @@ var (
 			// 加载配置
 			conf.GetWorkerConf()
 
-			go func() {
-				hlog.Fatal(worker.StartWorkerRpc())
-			}()
-			worker.MQWorker()
+			//go func() {
+			//	hlog.Fatal(worker.StartWorkerRpc())
+			//}()
+			//worker.MQWorker()
+			hlog.Fatal(worker.StartWorkerRpc())
 		},
 	}
 )

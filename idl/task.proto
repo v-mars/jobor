@@ -51,8 +51,8 @@ message Api {
   map<string,string>  forms = 30[(api.query)="forms",(api.body)="forms"];
 }
 message TaskData {
-  optional string pre_cmd = 33[(api.query)="pre_cmd",(api.body)="pre_cmd,omitempty"];
-  optional string content = 32[(api.query)="content",(api.body)="content,omitempty"];
+  string pre_cmd = 33[(api.query)="pre_cmd",(api.body)="pre_cmd,omitempty"];
+  string content = 32[(api.query)="content",(api.body)="content,omitempty"];
   Api api= 31[(api.query)="api",(api.body)="api,omitempty"];
 }
 

@@ -33,12 +33,13 @@ func TaskWorker(ctx context.Context, data string, taskId int64, lang string, str
 			err = stream.Send(&resp)
 			return err
 		}
-		preResp := pbapi.StreamResponse{Resp: []byte(fmt.Sprintf("预执行结果：\n%s\n预执行成功\n", preRes))}
+		preResp := pbapi.StreamResponse{Resp: []byte(fmt.Sprintf("预执行结果：\n%s\n预执行成功\n\n", preRes))}
 		err = stream.Send(&preResp)
 		if err != nil {
 			return err
 		}
 	}
+	_ = stream.Send(&pbapi.StreamResponse{Resp: []byte(fmt.Sprintf("任务执行返回：\n"))})
 	hlog.CtxDebugf(ctx, "Task=[%d] lang=%s runner run pre cmd is success", taskId, lang)
 	out := runner.Run(ctx)
 	hlog.CtxDebugf(ctx, "Task=[%d] lang=%s runner run start", taskId, lang)

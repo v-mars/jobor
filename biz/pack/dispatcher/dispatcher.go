@@ -380,7 +380,7 @@ func RunTasksWithRPC(ctx context.Context, evt, trigger string, t model.JoborTask
 	}
 
 	if w.Mode == model.WorkerModeSsh {
-		ts := task_ssh.SshServer{Cmd: *t.Data.Content, Username: w.Username, Password: string(w.Password),
+		ts := task_ssh.SshServer{Cmd: t.Data.Content, Username: w.Username, Password: string(w.Password),
 			Host: w.Ip, Port: w.Port,
 			AuthMode: w.AuthMode, PrivateKey: string(w.Rsa), PrivateSecret: string(w.Private)}
 		s.Err = ts.ExecRemoteSshInit()
@@ -390,8 +390,8 @@ func RunTasksWithRPC(ctx context.Context, evt, trigger string, t model.JoborTask
 			taskLog.Result = model.TaskLogStatusFailed
 			return
 		}
-		if t.Data.PreCmd != nil {
-			_, e := ts.ExecRemoteSshCmd(*t.Data.PreCmd)
+		if t.Data.PreCmd != "" {
+			_, e := ts.ExecRemoteSshCmd(t.Data.PreCmd)
 			if e != nil {
 				s.Err = fmt.Errorf("task worker mode ssh run pre cmd err: %s", e)
 				hlog.Errorf(s.Err.Error())
@@ -401,7 +401,7 @@ func RunTasksWithRPC(ctx context.Context, evt, trigger string, t model.JoborTask
 			hlog.CtxInfof(ctx, "task=[%d] lang=%s worker mode ssh run pre cmd is success", t.Id, t.Lang)
 		}
 
-		sshOut, e := ts.ExecRemoteSshCmd(*t.Data.Content)
+		sshOut, e := ts.ExecRemoteSshCmd(t.Data.Content)
 		if e != nil {
 			s.Err = fmt.Errorf("task worker mode ssh run task err: %s", e)
 			hlog.Errorf(s.Err.Error())

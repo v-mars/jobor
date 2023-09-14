@@ -49,11 +49,11 @@ func GetDataRun(t *task2.TaskRequest) (Runner, error) {
 	}
 	switch t.TaskLang {
 	case LangShell, LangPython, LangPython3, LangGolang, LangWindowsBat:
-		var code = DataCode{Lang: Lang(t.TaskLang), ScriptCode: *data.Content, PreCmd: *data.PreCmd}
+		var code = DataCode{Lang: Lang(t.TaskLang), ScriptCode: data.Content, PreCmd: data.PreCmd}
 		code.LangDesc = code.Lang.String()
 		return code, err
 	case LangApi:
-		var api = DataAPI{URL: data.Api.Url, Method: data.Api.Method, PayLoad: data.Api.Body, PreCmd: *data.PreCmd}
+		var api = DataAPI{URL: data.Api.Url, Method: data.Api.Method, PayLoad: data.Api.Body, PreCmd: data.PreCmd}
 		if api.Header == nil {
 			api.Header = make(map[string]string)
 		}
