@@ -2,6 +2,7 @@ package model
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"github.com/cloudwego/hertz/pkg/common/hlog"
 	"gorm.io/gorm"
@@ -360,8 +361,10 @@ func HasTaskPermission(id interface{}, userId interface{}) (bool, error) {
 	var err error
 	var u JoborTask
 	err = db.DB.Table(u.TableName()).Scopes(JoinsTask()).Where("jobor_task.id= ? and user.id=?", id, userId).First(&u).Error
-	if err != nil {
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		return false, err
+	} else if errors.Is(err, gorm.ErrRecordNotFound) {
+		return false, nil
 	}
 	if u.Id > 0 {
 		return true, nil
