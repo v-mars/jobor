@@ -48,6 +48,20 @@ func GetTaskAll(ctx context.Context, c *app.RequestContext) {
 func GetTaskById(ctx context.Context, c *app.RequestContext) {
 	var err error
 	_id := c.Params.ByName("id")
+	userinfo, err := model.GetUserSession(c, false)
+	if err != nil {
+		response.SendBaseResp(ctx, c, err)
+		return
+	}
+	ok, err := model.HasTaskPermission(_id, userinfo.Id)
+	if err != nil {
+		response.SendBaseResp(ctx, c, err)
+		return
+	}
+	if !ok && !userinfo.IsAdmin() {
+		response.SendBaseResp(ctx, c, fmt.Errorf("您没有权限操作此任务"))
+		return
+	}
 
 	hostResp, err := model.GetTaskInfoById(_id, false)
 	if err != nil {
@@ -69,6 +83,11 @@ func GetTaskById(ctx context.Context, c *app.RequestContext) {
 //	@router			/api/v1/jobor/task [GET]
 func GetTask(ctx context.Context, c *app.RequestContext) {
 	var err error
+	userinfo, err := model.GetUserSession(c, false)
+	if err != nil {
+		response.SendBaseResp(ctx, c, err)
+		return
+	}
 	var req task.TaskQuery
 	err = c.BindAndValidate(&req)
 	if err = c.BindAndValidate(&req); err != nil {
@@ -79,8 +98,7 @@ func GetTask(ctx context.Context, c *app.RequestContext) {
 	var objs model.Tasks
 
 	resp := response.InitPageData(ctx, c, &objs, false)
-
-	if _, err = objs.List(&req, &resp); err != nil {
+	if _, err = objs.List(&req, &userinfo, &resp); err != nil {
 		response.SendBaseResp(ctx, c, err)
 		return
 	}
@@ -96,6 +114,15 @@ func GetTask(ctx context.Context, c *app.RequestContext) {
 //	@router			/api/v1/jobor/task [POST]
 func PostTask(ctx context.Context, c *app.RequestContext) {
 	var err error
+	userinfo, err := model.GetUserSession(c, false)
+	if err != nil {
+		response.SendBaseResp(ctx, c, err)
+		return
+	}
+	if !userinfo.IsAdmin() {
+		response.SendBaseResp(ctx, c, fmt.Errorf("您没有权限添加任务"))
+		return
+	}
 	var req task.PostTaskReq
 	if err = c.BindAndValidate(&req); err != nil {
 		response.ParamFailed(ctx, c, err)
@@ -120,6 +147,12 @@ func PostTask(ctx context.Context, c *app.RequestContext) {
 //	@router			/api/v1/jobor/task/{id} [PUT]
 func PutTask(ctx context.Context, c *app.RequestContext) {
 	var err error
+	userinfo, err := model.GetUserSession(c, false)
+	if err != nil {
+		response.SendBaseResp(ctx, c, err)
+		return
+	}
+
 	var req task.PutTaskReq
 	err = c.BindAndValidate(&req)
 	if err != nil {
@@ -128,6 +161,15 @@ func PutTask(ctx context.Context, c *app.RequestContext) {
 	}
 
 	_id := c.Params.ByName("id")
+	ok, err := model.HasTaskPermission(_id, userinfo.Id)
+	if err != nil {
+		response.SendBaseResp(ctx, c, err)
+		return
+	}
+	if !ok && !userinfo.IsAdmin() {
+		response.SendBaseResp(ctx, c, fmt.Errorf("您没有权限操作此任务"))
+		return
+	}
 	//u, _ := task.GetUserValue(c, false)
 	//req.Updater = &u.Nickname
 	obj, err := model.ModTask(ctx, db.DB, _id, &req)
@@ -148,12 +190,26 @@ func PutTask(ctx context.Context, c *app.RequestContext) {
 //	@router			/api/v1/jobor/task/{id} [DELETE]
 func DeleteTask(ctx context.Context, c *app.RequestContext) {
 	var err error
+	userinfo, err := model.GetUserSession(c, false)
+	if err != nil {
+		response.SendBaseResp(ctx, c, err)
+		return
+	}
 	var req task.TaskQuery
 	if err = c.BindAndValidate(&req); err != nil {
 		response.ParamFailed(ctx, c, err)
 		return
 	}
 	_id := c.Params.ByName("id")
+	ok, err := model.HasTaskPermission(_id, userinfo.Id)
+	if err != nil {
+		response.SendBaseResp(ctx, c, err)
+		return
+	}
+	if !ok && !userinfo.IsAdmin() {
+		response.SendBaseResp(ctx, c, fmt.Errorf("您没有权限操作此任务"))
+		return
+	}
 	if objs, err := model.DelTask(ctx, db.DB, []interface{}{_id}); err != nil {
 		response.SendBaseResp(ctx, c, err)
 		return
@@ -172,6 +228,11 @@ func DeleteTask(ctx context.Context, c *app.RequestContext) {
 // @router /api/v1/jobor/task/{id}/run [POST]
 func RunTask(ctx context.Context, c *app.RequestContext) {
 	var err error
+	userinfo, err := model.GetUserSession(c, false)
+	if err != nil {
+		response.SendBaseResp(ctx, c, err)
+		return
+	}
 	var req task.TaskQuery
 	err = c.BindAndValidate(&req)
 	if err = c.BindAndValidate(&req); err != nil {
@@ -188,6 +249,6 @@ func RunTask(ctx context.Context, c *app.RequestContext) {
 		response.SendBaseResp(ctx, c, fmt.Errorf("task %s is delete,task can't execute", t.Name))
 		return
 	}
-	go dispatcher.RunTasks(model.TriggerAuto, model.TriggerManual, *t)
+	go dispatcher.RunTasks(model.TriggerAuto, model.TriggerManual, userinfo.Nickname, *t)
 	response.SendDataResp(ctx, c, response.Succeed, "")
 }

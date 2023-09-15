@@ -30,7 +30,7 @@ const (
 type User struct {
 	db.ModelOld
 	Nickname string `gorm:"type:varchar(128);comment:显示名" json:"nickname" form:"nickname"`
-	Username string `gorm:"type:varchar(128);unique:uni_name;comment:用户名" json:"username" form:"username"` // `unique_index` also works
+	Username string `gorm:"type:varchar(128);comment:用户名" json:"username" form:"username"` // `unique_index` also works
 	Password string `gorm:"type:varchar(256);comment:密码" json:"password" form:"password"`
 	Email    string `gorm:"type:varchar(156);comment:邮箱" json:"email" column:"email"`
 	Phone    string `gorm:"type:varchar(64);comment:电话" json:"phone" column:"phone"`

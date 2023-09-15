@@ -26,6 +26,11 @@ import (
 // @router /api/v1/jobor/log [GET]
 func GetLog(ctx context.Context, c *app.RequestContext) {
 	var err error
+	userinfo, err := model.GetUserSession(c, false)
+	if err != nil {
+		response.SendBaseResp(ctx, c, err)
+		return
+	}
 	var req task_log.LogQuery
 	err = c.BindAndValidate(&req)
 	if err = c.BindAndValidate(&req); err != nil {
@@ -37,7 +42,7 @@ func GetLog(ctx context.Context, c *app.RequestContext) {
 
 	resp := response.InitPageData(ctx, c, &objs, false)
 
-	if _, err = objs.List(&req, &resp); err != nil {
+	if _, err = objs.List(&req, &userinfo, &resp); err != nil {
 		response.SendBaseResp(ctx, c, err)
 		return
 	}

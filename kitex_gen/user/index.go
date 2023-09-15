@@ -6,7 +6,7 @@ import (
 )
 
 func (i *Userinfo) IsAdmin() bool {
-	if utils.InOfStr("admin", i.Roles) {
+	if utils.InOfStr("admin", i.Roles) || i.Username == "root" {
 		return true
 	} else {
 		return false

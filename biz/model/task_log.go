@@ -9,6 +9,7 @@ import (
 	"jobor/biz/response"
 	task "jobor/kitex_gen/task"
 	"jobor/kitex_gen/task_log"
+	"jobor/kitex_gen/user"
 	"jobor/pkg/convert"
 	"jobor/pkg/utils"
 	"time"
@@ -32,6 +33,7 @@ type JoborLog struct {
 	ErrCode       int           `gorm:"comment:'错误码'" json:"err_code" form:"err_code"`
 	ErrMsg        string        `gorm:"type:mediumtext;comment:错误信息" json:"err_msg" form:"err_msg"`
 	Addr          string        `gorm:"type:varchar(64);not null;comment:任务运行的log节点" json:"addr" form:"addr"`
+	Executor      string        `gorm:"type:varchar(152);default:timed;comment:任务执行人" json:"executor" form:"executor"`
 	Idempotent    string        `gorm:"type:varchar(156);comment:幂等标志" json:"idempotent" form:"idempotent"`
 	ExpectContent string        `gorm:"type:varchar(500);default:null;comment:期望任务返回结果" json:"expect_content" form:"expect_content"`
 	ExpectCode    int           `gorm:"default:0;comment:期望任务状态码" json:"expect_code" form:"expect_code"`
@@ -58,11 +60,11 @@ func (u *JoborLog) GetLogRpc() *task_log.LogResp {
 
 type Logs []JoborLog
 
-func (u *Logs) List(req *task_log.LogQuery, resp *response.PageDataList) (Logs, error) {
+func (u *Logs) List(req *task_log.LogQuery, ui *user.Userinfo, resp *response.PageDataList) (Logs, error) {
 	resp.List = u
 	if err := PageDataWithScopes(db.DB.Model(&JoborLog{}), NameLog, Find, resp,
 		GetScopesList(SelectLog()), PreloadLog("Parents"), PreloadLog("Childs"),
-		WhereLog(req),
+		WhereLog(req, ui), JoinsLog(),
 		OrderLog(), GroupLog()); err != nil {
 		return nil, err
 	}
@@ -100,7 +102,7 @@ func SelectAllLog() func(Db *gorm.DB) *gorm.DB {
 	}
 }
 
-func WhereLog(req *task_log.LogQuery) func(Db *gorm.DB) *gorm.DB {
+func WhereLog(req *task_log.LogQuery, u *user.Userinfo) func(Db *gorm.DB) *gorm.DB {
 	return func(Db *gorm.DB) *gorm.DB {
 		var sql = "(by_task_log_id < 1 or by_task_log_id is null) and name like ?"
 		var sqlArgs = []interface{}{"%" + req.Name + "%"}
@@ -120,12 +122,19 @@ func WhereLog(req *task_log.LogQuery) func(Db *gorm.DB) *gorm.DB {
 			sql = sql + " and addr like ?"
 			sqlArgs = append(sqlArgs, req.Addr)
 		}
+		if !u.IsAdmin() && u != nil && u.Id > 0 {
+			sql = sql + " and user.id = ?"
+			sqlArgs = append(sqlArgs, u.Id)
+		}
 		return Db.Where(sql, sqlArgs...)
 	}
 }
 func JoinsLog() func(Db *gorm.DB) *gorm.DB {
 	return func(Db *gorm.DB) *gorm.DB {
-		sql := ``
+		sql := `
+left join jobor_task_owners jto on jto.task_id=jobor_log.task_id
+left join user on jto.user_id=user.id
+`
 		return Db.Joins(sql)
 	}
 }

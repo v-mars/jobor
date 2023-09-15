@@ -9,6 +9,7 @@ import (
 	"jobor/biz/dal/redis"
 	"jobor/biz/response"
 	task2 "jobor/kitex_gen/task"
+	"jobor/kitex_gen/user"
 	"jobor/pkg/convert"
 	"jobor/pkg/utils"
 )
@@ -30,6 +31,8 @@ const (
 	TaskLogStatusTimeout = "timeout"
 	TaskLogStatusWait    = "wait"
 	TaskLogStatusCancel  = "cancel"
+
+	TaskLogExecutorTimed = "定时执行"
 )
 
 type AlarmPolicy int
@@ -97,7 +100,6 @@ type JoborTask struct {
 	Timeout           int            `gorm:"default:-1;comment:超时时间" json:"timeout" form:"timeout"`
 	RoutePolicy       int            `gorm:"default:1;comment:路由策略 1:Random 2:RoundRobin 3:Weight 4:LeastTask" json:"route_policy" form:"route_policy"`
 	RoutingKeys       db.StringArray `gorm:"type:varchar(255);default:[\"default\"];comment:任务标识，多选" json:"routing_keys"`
-	RoutingKey        string         `gorm:"type:varchar(32);default:'default';comment:执行worker路由标识" json:"routing_key" form:"routing_key"`
 	Status            string         `gorm:"type:varchar(32);default:'running';comment:定时任务状态: running,stop" json:"status" form:"status"`
 	AlarmPolicy       int            `gorm:"default:2;comment:告警策略：{0:never,1:always,2:failed,3:success}" json:"alarm_policy" form:"alarm_policy"`
 	ExpectContent     string         `gorm:"type:varchar(500);default:null;comment:期望任务返回结果" json:"expect_content" form:"expect_content"`
@@ -108,8 +110,8 @@ type JoborTask struct {
 	Updater           string         `gorm:"type:varchar(156);" json:"updater" form:"updater"`
 	Deleted           bool           `gorm:"default:false;comment:逻辑删除" json:"deleted" form:"deleted"`
 	ExprZh            string         `gorm:"-" json:"expr_zh" form:"expr_zh"`
-	//D         TestD    `gorm:"type:text;comment:'任务执行详细，格式：json'" json:"d" form:"d"`
-
+	Owners            []User         `gorm:"many2many:jobor_task_owners;association_autoupdate:false;association_autocreate:false;joinForeignKey:task_id;JoinReferences:UserId;comment:拥有者;constraint:OnDelete:CASCADE;" json:"owners"`
+	//RoutingKey        string         `gorm:"type:varchar(32);default:'default';comment:执行worker路由标识" json:"routing_key" form:"routing_key"`
 }
 
 func (u *JoborTask) TableName() string {
@@ -127,11 +129,11 @@ func (u *JoborTask) GetTaskRpc() *task2.TaskResp {
 
 type Tasks []JoborTask
 
-func (u *Tasks) List(req *task2.TaskQuery, resp *response.PageDataList) (Tasks, error) {
+func (u *Tasks) List(req *task2.TaskQuery, uo *user.Userinfo, resp *response.PageDataList) (Tasks, error) {
 	resp.List = u
-	if err := PageDataWithScopes(db.DB.Model(&JoborTask{}), NameTask, Scan, resp,
-		GetScopesList(SelectTask()),
-		WhereTask(req),
+	if err := PageDataWithScopes(db.DB.Model(&JoborTask{}), NameTask, Find, resp,
+		GetScopesList(SelectTask()), JoinsTask(),
+		WhereTask(req, uo), PreloadTask("Owners"),
 		OrderTask(), GroupTask()); err != nil {
 		return nil, err
 	}
@@ -168,32 +170,39 @@ func SelectAllTask() func(Db *gorm.DB) *gorm.DB {
 	}
 }
 
-func WhereTask(req *task2.TaskQuery) func(Db *gorm.DB) *gorm.DB {
+func WhereTask(req *task2.TaskQuery, u *user.Userinfo) func(Db *gorm.DB) *gorm.DB {
 	return func(Db *gorm.DB) *gorm.DB {
-		var sql = "name like ?"
+		var sql = "jobor_task.name like ?"
 		var sqlArgs = []interface{}{"%" + req.Name + "%"}
 		if len(req.Lang) > 0 {
-			sql = sql + " and lang=?"
+			sql = sql + " and jobor_task.lang=?"
 			sqlArgs = append(sqlArgs, req.Lang)
 		}
-		if len(req.RoutingKey) > 0 {
-			sql = sql + " and routing_key like ?"
-			sqlArgs = append(sqlArgs, req.RoutingKey)
-		}
+		//if len(req.RoutingKey) > 0 {
+		//	sql = sql + " and routing_key like ?"
+		//	sqlArgs = append(sqlArgs, req.RoutingKey)
+		//}
 		if len(req.Status) > 0 {
-			sql = sql + " and status = ?"
+			sql = sql + " and jobor_task.status = ?"
 			sqlArgs = append(sqlArgs, req.Status)
 		}
 		if req.RoutePolicy > 0 {
 			sql = sql + " and route_policy = ?"
 			sqlArgs = append(sqlArgs, req.RoutePolicy)
 		}
+		if !u.IsAdmin() && u != nil && u.Id > 0 {
+			sql = sql + " and user.id = ?"
+			sqlArgs = append(sqlArgs, u.Id)
+		}
 		return Db.Where(sql, sqlArgs...)
 	}
 }
 func JoinsTask() func(Db *gorm.DB) *gorm.DB {
 	return func(Db *gorm.DB) *gorm.DB {
-		sql := ``
+		sql := `
+left join jobor_task_owners jto on jto.task_id=jobor_task.id
+left join user on jto.user_id=user.id
+`
 		return Db.Joins(sql)
 	}
 }
@@ -222,6 +231,11 @@ func AddTask(ctx context.Context, Db *gorm.DB, req *task2.PostTaskReq) (JoborTas
 	}
 	tx := Db.Begin()
 	defer func() { tx.Rollback() }()
+	if len(req.OwnerIds) > 0 {
+		if err := tx.Model(&User{}).Where("id in (?)", req.OwnerIds).Select("id").Scan(&row.Owners).Error; err != nil {
+			return row, err
+		}
+	}
 	if err := Db.Table(row.TableName()).Omit([]string{"Prev", "Next"}...).Create(&row).Error; err != nil {
 		return row, err
 	}
@@ -258,6 +272,18 @@ func ModTask(ctx context.Context, Db *gorm.DB, _id interface{}, req *task2.PutTa
 	}
 	if err = tx.Table(NameTask).Where("id=?", _id).Updates(mapData).Error; err != nil {
 		return taskObj, err
+	}
+	if req.OwnerIds != nil {
+		var users []User
+		if err = tx.Model(&User{}).Where("id in (?)", req.GetOwnerIdsInt()).Select("id,username").Scan(&users).Error; err != nil {
+			return taskObj, err
+		}
+		hlog.Debug("get users list success")
+
+		if err = tx.Model(&taskObj).Association("Owners").Replace(users); err != nil {
+			return taskObj, err
+		}
+		hlog.Infof("project 关联 user 成功")
 	}
 	if err = tx.Commit().Error; err != nil {
 		hlog.Errorf("事务提交失败，%s", err)
@@ -328,6 +354,19 @@ func GetTaskInfoById(id interface{}, isPanic bool) (*JoborTask, error) {
 		return &JoborTask{}, err
 	}
 	return &u, nil
+}
+
+func HasTaskPermission(id interface{}, userId interface{}) (bool, error) {
+	var err error
+	var u JoborTask
+	err = db.DB.Table(u.TableName()).Scopes(JoinsTask()).Where("jobor_task.id= ? and user.id=?", id, userId).First(&u).Error
+	if err != nil {
+		return false, err
+	}
+	if u.Id > 0 {
+		return true, nil
+	}
+	return false, nil
 }
 
 func GetTaskInfoByName(name string, isPanic bool) (task2.TaskResp, error) {

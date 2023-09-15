@@ -170,7 +170,6 @@ message PostTaskReq {
   string expr = 10[(api.query)="expr",(api.body)="expr"];
   int64 timeout = 11[(api.query)="timeout",(api.body)="timeout"];
   int32 route_policy = 12[(api.query)="route_policy",(api.body)="route_policy"];
-  string routing_key = 13[(api.query)="routing_key",(api.body)="routing_key"];
   string status = 14[(api.query)="status",(api.body)="status"];
   int32 alarm_policy = 15[(api.query)="alarm_policy",(api.body)="alarm_policy"];
   string expect_content = 16[(api.query)="expect_content",(api.body)="expect_content"];
@@ -180,6 +179,7 @@ message PostTaskReq {
   optional string next = 20[(api.query)="next",(api.body)="next,omitempty"];
   string updater = 21[(api.query)="updater",(api.body)="updater,omitempty"];
   bool deleted = 22[(api.query)="deleted",(api.go_tag)="json:\"deleted\""];
+  repeated int64 owner_ids = 23[(api.query)="owner_ids,omitempty",(api.body)="owner_ids,omitempty",(api.go_tag)="gorm:\"-\" ignore:\"yes\""];
 }
 
 message PutTaskReq {
@@ -199,7 +199,6 @@ message PutTaskReq {
   optional string expr = 10[(api.query)="expr",(api.body)="expr,omitempty"];
   optional int64 timeout = 11[(api.query)="timeout",(api.go_tag)="json:\"timeout,omitempty\""];
   optional int32 route_policy = 12[(api.query)="route_policy",(api.go_tag)="json:\"route_policy,omitempty\""];
-  optional string routing_key = 13[(api.query)="routing_key",(api.body)="routing_key,omitempty"];
   optional string status = 14[(api.query)="status",(api.body)="status,omitempty"];
   optional int32 alarm_policy = 15[(api.query)="alarm_policy",(api.go_tag)="json:\"alarm_policy,omitempty\""];
   optional string expect_content = 16[(api.query)="expect_content",(api.body)="expect_content,omitempty"];
@@ -209,6 +208,7 @@ message PutTaskReq {
   optional string next = 20[(api.query)="next",(api.body)="next,omitempty"];
   optional string updater = 21[(api.query)="updater",(api.body)="updater,omitempty"];
   optional bool deleted = 22[(api.query)="deleted",(api.go_tag)="json:\"deleted,omitempty\""];
+  google.protobuf.ListValue owner_ids = 23[(api.query)="owner_ids,omitempty",(api.body)="owner_ids,omitempty",(api.go_tag)="gorm:\"-\" ignore:\"yes\""];
 }
 
 // The request message containing the user's name.

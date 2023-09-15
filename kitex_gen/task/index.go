@@ -28,6 +28,17 @@ func (u *PutTaskReq) GetChildIdsInt() []int {
 	return arrayInt
 }
 
+func (u *PutTaskReq) GetOwnerIdsInt() []int {
+	var arrayInt = make([]int, 0)
+	if u.OwnerIds != nil {
+		for _, v := range u.OwnerIds.GetValues() {
+			v := v
+			arrayInt = append(arrayInt, int(v.GetNumberValue()))
+		}
+	}
+	return arrayInt
+}
+
 //type TaskData struct {
 //	Code string `json:"data"`
 //	Api  struct {
