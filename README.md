@@ -48,15 +48,6 @@ sql_mode=STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_
 
 ## Jobor预览
 ![avatar](./img/jobor-dash.jpeg)
-![avatar](./img/jobor-task-list.png)
-![avatar](./img/jobor-edit-1.png)
-![avatar](./img/jobor-edit-2.png)
-![avatar](./img/jobor-log-list.png)
-![avatar](./img/jobor-log-detail.png)
-![avatar](./img/jobor-log-detail2.png)
-![avatar](./img/jobor-log-detail3.png)
-![avatar](./img/jobor-worker-list.png)
-![avatar](./img/notify-email.png)
 
 ## TODO 
 ### task
