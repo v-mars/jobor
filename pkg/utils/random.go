@@ -5,7 +5,6 @@ import (
 	"time"
 )
 
-
 func RandString(len int) string {
 	r := rand.New(rand.NewSource(time.Now().Unix()))
 	bytes := make([]byte, len)
@@ -16,8 +15,7 @@ func RandString(len int) string {
 	return string(bytes)
 }
 
-
-func  GetRandomString(length int) string {
+func GetRandomString(length int) string {
 	str := "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ" // abcdefghijklmnopqrstuvwxyz
 	bytes := []byte(str)
 	var result []byte

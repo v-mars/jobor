@@ -19,8 +19,9 @@ type Sender interface {
 // slack
 // telegram
 // server jiang
+// lark
 
-//JSONPost Post req json data to url
+// JSONPost Post req json data to url
 func JSONPost(method, url string, data interface{}, client *http.Client) ([]byte, error) {
 	jsonBody, err := json.Marshal(data)
 	if err != nil {

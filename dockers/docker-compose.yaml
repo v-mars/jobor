@@ -1,0 +1,13 @@
+version: '3'
+services:
+  go_infra:
+    image: xxxx:8.6.2         # 镜像
+    container_name: go_infra             # 定义容器名称
+    restart: always                    # 开机启动，失败也会一直重启
+    environment:
+      - "RUN_ENV=dev"   # 设置集群名称为elasticsearch
+    volumes:
+      - /etc/localtime=/etc/localtime
+      - ./go_infra/log:/data/log
+    ports:
+      - "5620:5620"

@@ -1,0 +1,84 @@
+// idl/hello/hello.proto
+syntax = "proto3";
+
+package kv;
+
+option go_package = "kv";
+
+import "api.proto";
+//import "base.proto";
+//import "google/protobuf/struct.proto";
+
+message KvQuery {
+  int64 id = 1[(api.query)="id",(api.body)="id"];
+  string title = 2[(api.query)="title",(api.body)="title"];
+  string name = 3[(api.query)="name",(api.body)="name"];
+  string k = 4[(api.query)="k",(api.body)="k"];
+  string v = 5[(api.query)="v",(api.body)="v"];
+  uint64 page = 11;
+  uint64 pageSize = 12;
+}
+
+message KvResp {
+  int64 id = 1[(api.query)="id",(api.body)="id"];
+  string title = 2[(api.query)="title",(api.body)="title"];
+  string name = 3[(api.query)="name",(api.body)="name"];
+  string k = 4[(api.query)="k",(api.body)="k"];
+  string v = 5[(api.query)="v",(api.body)="v"];
+  string value = 6[(api.query)="value",(api.body)="value"];
+}
+
+message KvAllResp {
+  int64 id = 1[(api.query)="id",(api.body)="id"];
+  string title = 2[(api.query)="title",(api.body)="title"];
+  string name = 3[(api.query)="name",(api.body)="name"];
+  string k = 4[(api.query)="k",(api.body)="k"];
+}
+
+message KvGetByIdResp {
+  int64 id = 1[(api.query)="id"];
+  string title = 2[(api.query)="title",(api.body)="title"];
+  string name = 3[(api.query)="name",(api.body)="name"];
+  string k = 4[(api.query)="k",(api.body)="k"];
+  string v = 5[(api.query)="v",(api.body)="v"];
+  string value = 6[(api.query)="value",(api.body)="value"];
+}
+
+
+message PostKvReq {
+  string title = 2[(api.query)="title",(api.body)="title"];
+  string name = 3[(api.query)="name",(api.body)="name"];
+  string k = 4[(api.query)="k",(api.body)="k"];
+  string v = 5[(api.query)="v",(api.body)="v"];
+  string value = 6[(api.query)="value",(api.body)="value"];
+}
+
+message PutKvReq {
+  optional string title = 2[(api.query)="title",(api.body)="title,omitempty"];
+  optional string name = 3[(api.query)="name",(api.body)="name,omitempty"];
+  optional string k = 4[(api.query)="k",(api.body)="k,omitempty"];
+  optional string v = 5[(api.query)="v",(api.body)="v,omitempty"];
+  optional string value = 6[(api.query)="value",(api.body)="value,omitempty"];
+}
+
+
+service KvService {
+  rpc GetKvAll(KvQuery) returns(KvAllResp) {
+    option (api.get) = "/api/v1/jobor/kvs";
+  }
+  rpc GetKvById(KvQuery) returns(KvResp) {
+    option (api.get) = "/api/v1/jobor/kv/:id";
+  }
+  rpc GetKv(KvQuery) returns(KvResp) {
+    option (api.get) = "/api/v1/jobor/kv";
+  }
+  rpc PostKv(PostKvReq) returns(KvResp) {
+    option (api.post) = "/api/v1/jobor/kv";
+  }
+  rpc PutKv(PutKvReq) returns(KvResp) {
+    option (api.put) = "/api/v1/jobor/kv/:id";
+  }
+  rpc DeleteKv(KvQuery) returns(KvResp) {
+    option (api.delete) = "/api/v1/jobor/kv/:id";
+  }
+}

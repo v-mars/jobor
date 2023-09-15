@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package sys;
+
+option go_package = "audit";
+
+import "api.proto";
+
+message AuditReq {
+  string User = 1[(api.query)="user",(api.body)="user"];
+  string Action = 2[(api.query)="action",(api.body)="action"];
+  string Method = 3[(api.query)="method",(api.body)="method"];
+  string UserIp = 4[(api.query)="user_ip",(api.body)="user_ip"];
+  optional int64 ObjId = 5[(api.query)="obj_id",(api.body)="obj_id"];
+  optional int64 HttpCode = 6[(api.query)="http_code",(api.body)="http_code"];
+  optional int64 UserId = 7[(api.query)="user_id",(api.body)="user_id"];
+}
+
+message AuditResp {
+
+}
+
+// 登录历史记录和操作审计记录
+service AuditLog {
+  rpc GetLoginHistory(AuditReq) returns(AuditResp) {
+    option (api.get) = "/api/v1/jobor/audit-log";
+  }
+}

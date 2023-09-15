@@ -1,0 +1,159 @@
+// idl/hello/hello.proto
+syntax = "proto3";
+
+package user;
+
+option go_package = "user";
+
+import "api.proto";
+import "base.proto";
+import "google/protobuf/struct.proto";
+
+message UserQuery {
+  string id = 1[(api.query)="id",(api.body)="username"];
+  string name = 20[(api.query)="name",(api.body)="name"];
+  string username = 2[(api.query)="username",(api.body)="username"];
+  string nickname = 3[(api.query)="nickname",(api.body)="nickname"];
+  string user_type = 4[(api.query)="user_type",(api.body)="user_type"];
+  bool status = 5[(api.query)="status",(api.body)="status"];
+  uint64 page = 11;
+  uint64 pageSize = 12;
+}
+enum UserType {
+  local = 0;
+  ldap = 1;
+  sso = 2;
+}
+
+message Userinfo {
+  int64 id = 2[(api.query)="id",(api.body)="id"];
+  string username = 3[(api.query)="username",(api.body)="username"];
+  string nickname = 4[(api.query)="nickname",(api.body)="nickname"];
+  string email = 5[(api.query)="email",(api.body)="email"];
+  string avatar = 7[(api.query)="avatar",(api.body)="avatar"];
+  string empno = 8[(api.query)="empno",(api.body)="empno"];
+  string user_type = 9[(api.query)="user_type",(api.body)="user_type"];
+  string userid = 10[(api.query)="userid",(api.body)="userid"];
+  repeated string roles = 20[(api.query)="roles",(api.body)="roles",(api.go_tag)="gorm:\"-\""];
+  bool status = 15[(api.query)="status",(api.body)="status"];
+  //  string Token = 6[(api.query)="token",(api.body)="token"];
+}
+
+message UserAllResp {
+  int64 id = 2[(api.query)="id"];
+  string username = 3[(api.query)="username",(api.body)="username"];
+  string nickname = 4[(api.query)="nickname",(api.body)="nickname"];
+  bool status = 5[(api.query)="status",(api.body)="status"];
+}
+
+message UserGetByIdResp {
+  int64 id = 2[(api.query)="id"];
+  string username = 3[(api.query)="username",(api.body)="username"];
+  string nickname = 4[(api.query)="nickname",(api.body)="nickname"];
+  repeated string roles = 6[(api.query)="roles",(api.body)="roles"];
+}
+
+message UserPostResp {
+  int64 id = 2;
+  string username = 3;
+  string nickname = 4;
+  string token = 5;
+  repeated string roles = 6;
+  //  repeated role.RoleAll roles = 6;
+}
+
+
+message PostUserReq {
+  string password = 2[(api.query)="password",(api.body)="password,required"];
+  string username = 3[(api.query)="username",(api.body)="username,required"];
+  string nickname = 4[(api.query)="nickname",(api.body)="nickname,required"];
+  string avatar = 5[(api.query)="avatar",(api.body)="avatar"];
+  string user_type = 6[(api.query)="user_type",(api.body)="user_type"];
+  string phone = 7[(api.query)="phone",(api.body)="phone"];
+  string email = 8[(api.query)="email",(api.body)="email"];
+  string userid = 9[(api.query)="userid",(api.body)="userid"];
+  repeated int64 role_ids = 10[(api.query)="role_ids,omitempty",(api.body)="role_ids,omitempty",(api.go_tag)="gorm:\"-\" ignore:\"yes\""];
+  bool status = 13[(api.query)="status",(api.go_tag)="json:\"status\""];
+}
+
+message PutUserReq {
+  optional string nickname = 4[(api.query)="nickname",(api.body)="nickname,omitempty"];
+  optional string avatar = 5[(api.query)="avatar",(api.body)="avatar,omitempty"];
+  optional string user_type = 6[(api.query)="user_type",(api.body)="user_type,omitempty"];
+  optional string phone = 7[(api.query)="phone",(api.body)="phone,omitempty"];
+  optional string email = 8[(api.query)="email",(api.body)="email,omitempty"];
+  optional string userid = 9[(api.query)="userid",(api.body)="userid,omitempty"];
+  optional bool status = 13[(api.query)="status",(api.go_tag)="json:\"status,omitempty\""];
+  google.protobuf.ListValue role_ids = 10[(api.query)="role_ids,omitempty",(api.body)="role_ids,omitempty",(api.go_tag)="gorm:\"-\" ignore:\"yes\""];
+  optional string updater = 60[(api.query)="-",(api.body)="updater,omitempty",(api.go_tag)="gorm:\"-\" ignore:\"yes\""];
+}
+message UserPutResp {
+  int64 id = 2;
+  string username = 3;
+  string nickname = 4;
+  string token = 5;
+  repeated string roles = 6;
+}
+
+message UserPutPasswordResp {
+  int64 id = 2;
+  string username = 3;
+  string nickname = 4;
+  string token = 5;
+  repeated string roles = 6;
+}
+
+message UserPutPassResetResp {
+  int64 id = 2;
+  string username = 3;
+  string nickname = 4;
+  string token = 5;
+  repeated string roles = 6;
+}
+
+message UserPutProfileResp {
+  int64 id = 2;
+  string username = 3;
+  string nickname = 4;
+  string token = 5;
+  repeated string roles = 6;
+}
+
+message UserDeleteResp {
+  int64 id = 2;
+  string username = 3;
+  string nickname = 4;
+  string token = 5;
+  repeated string roles = 6;
+}
+
+
+service UserService {
+  rpc SwitchUser(UserQuery) returns(base.Empty) {
+    option (api.get) = "/api/v1/jobor/user-switch/:user_id";
+  }
+  rpc GetUserSelf(UserQuery) returns(base.Empty) {
+    option (api.get) = "/api/v1/jobor/user-self";
+  }
+  rpc SyncUser(UserQuery) returns(base.Empty) {
+    option (api.get) = "/api/v1/sys/user-sync";
+  }
+  rpc GetUserAll(UserQuery) returns(base.Empty) {
+    option (api.get) = "/api/v1/sys/users";
+  }
+  rpc GetUser(UserQuery) returns(base.Empty) {
+    option (api.get) = "/api/v1/sys/user";
+  }
+  rpc GetUserById(UserQuery) returns(base.Empty) {
+    option (api.get) = "/api/v1/sys/user/:id";
+  }
+  rpc PostUser(PostUserReq) returns(base.Empty) {
+    option (api.post) = "/api/v1/sys/user";
+  }
+  rpc PutUser(PutUserReq) returns(base.Empty) {
+    option (api.put) = "/api/v1/sys/user/:id";
+  }
+  rpc DeleteUser(UserQuery) returns(base.Empty) {
+    option (api.delete) = "/api/v1/sys/user/:id";
+  }
+}

@@ -12,93 +12,22 @@
 
 ## 构建
 ```
-make Makefile build
-make Makefile build-linux
-make Makefile build-mac
-or
-go build
-```
-
-## 二进制部署
-```
-下载链接：https://github.com/v-mars/jobor/releases
-tar -zxvf jobor-2.0.2.tar.gz
-cd jobor-2.0.1
-server:
-./bin/jobor server -c configs/config.toml
-worker:
-./bin/jobor worker -c configs/worker.toml
-```
-
-## 命令
-```
-./app -h
-Usage:
-   [command]
-
-Available Commands:
-  worker      Start Run jobor worker
-  help        Help about any command
-  server      Start Run Jobor Server
-  version     Print the version of Jobor
-
-Flags:
-  -h, --help   help for this command
-
-Use " [command] --help" for more information about a command.
-
+go build -o ./app ./main.go
+go build -o ./app ./cmd/worker/main.go
 ```
 
 ## 启动Server
 ```
- 
-./app server -h
-Welcome User Jobor Server
+go build -o ./app ./main.go
 
-Usage:
-   server [flags]
-
-Examples:
-## 启动命令 ./app server -p 5000 -c ./configs/config.toml -f ./logs
-
-Flags:
-  -c, --config string   config file, example: ./configs/config.toml
-  -h, --help            help for server
-  -i, --ip string       服务IP (default "0.0.0.0")
-  -l, --level string    日志级别(DEBUG, INFO, WARNING e.g)
-  -f, --log string      日志目录(/data/logs e.g) (default "./logs")
-  -m, --mode string     启动模式(release, debug, test e.g)
-  -p, --port string     服务启动的端口: 5000 (default "5000")
-
-./app server -p 5000 -c ./configs/config.toml -f ./logs
+./app -c ./conf/config.yaml
 ```
 
-## Server端raft配置
-```
-# 一个Raft集群通常包含2*N+1个服务器，允许系统有N个故障服务器。
-[Raft]
-bootstrap = true    # 如果是第一台设置为true，否则为：false
-httpAddress = "127.0.0.1:2869"
-tcpAddress = "127.0.0.1:2889"   # 不能设置成: 0.0.0.0:2869, 必须是ip:port.
-dataDir = "./raft_data"
-joinAddress = ""    # 如果是第一台设置为空，否则设置第一台的httpAddress
-```
-
-## raft 相关管理API
-```
-curl "http://localhost:2869/set?key=ping&value=pong"
-curl "http://localhost:2869/get?key=ping"
-curl "http://localhost:2869/delete?key=ping"
-curl "http://localhost:2869/join"
-curl "http://localhost:2869/remove"
-curl "http://localhost:2869/stats"
-curl "http://localhost:2869/member"
-[{"serverID":"127.0.0.1:2869","serverAddress":"127.0.0.1:2889","isLeader":true}]%  
-```
 
 ## 启动Worker
 ```
-./app worker -c ./configs/worker.toml
+go build -o ./app ./cmd/worker/main.go
+./app -c ./conf/worker.yaml
 ```
 
 ## 默认
@@ -119,9 +48,14 @@ sql_mode=STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_
 
 ## Jobor预览
 ![avatar](./img/jobor-dash.jpeg)
-![avatar](./img/jobor-task.jpeg)
-![avatar](./img/jobor-run.jpeg)
-![avatar](./img/jobor-worker.jpeg)
+![avatar](./img/jobor-task-list.png)
+![avatar](./img/jobor-edit-1.png)
+![avatar](./img/jobor-edit-2.png)
+![avatar](./img/jobor-log-list.png)
+![avatar](./img/jobor-log-detail.png)
+![avatar](./img/jobor-log-detail2.png)
+![avatar](./img/jobor-log-detail3.png)
+![avatar](./img/jobor-worker-list.png)
 ![avatar](./img/notify-email.png)
 
 ## TODO 
@@ -134,21 +68,23 @@ sql_mode=STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_
 - [x] api/restful [GET, POST, PUT, DELETE] task
 - [x] shell task
 - [x] python3 task
-- [ ] golang task
+- [x] golang task
 - [x] server task
-- [ ] father task
-- [ ] children task
+- [x] father task
+- [x] children task
+- [x] worker 预执行（如：执行python 前先执行 pip install xx）
+- [x] worker 节点支持：agent和ssh两种模式
+- [x] 路由标识多选
 - [ ] 任务缓存执行
 
 ## 🤝 特别感谢
-- golang 1.16.4
-- gin
-- gin-swagger
-- jwt
+- golang 1.20
+- hertz
+- hertz-swagger
+- kitex
 - gorm
-- raft
 - casbin
-- mysql 5.7
+- mysql 8.0
 - redis 5
 - 等
 

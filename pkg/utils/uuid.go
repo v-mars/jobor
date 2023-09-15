@@ -56,11 +56,11 @@ func Must(uuid UUID, err error) UUID {
 //
 // A note about uniqueness derived from the UUID Wikipedia entry:
 //
-//  Randomly generated UUIDs have 122 random bits.  One's annual risk of being
-//  hit by a meteorite is estimated to be one chance in 17 billion, that
-//  means the probability is about 0.00000000006 (6 × 10−11),
-//  equivalent to the odds of creating a few tens of trillions of UUIDs in a
-//  year and having one duplicate.
+//	Randomly generated UUIDs have 122 random bits.  One's annual risk of being
+//	hit by a meteorite is estimated to be one chance in 17 billion, that
+//	means the probability is about 0.00000000006 (6 × 10−11),
+//	equivalent to the odds of creating a few tens of trillions of UUIDs in a
+//	year and having one duplicate.
 func NewRandom() (UUID, error) {
 	var uuid UUID
 	_, err := io.ReadFull(rand.Reader, uuid[:])
@@ -91,7 +91,7 @@ func NewHash(h hash.Hash, space UUID, data []byte, version int) UUID {
 // NewMD5 returns a new MD5 (Version 3) UUID based on the
 // supplied name space and data.  It is the same as calling:
 //
-//  NewHash(md5.New(), space, data, 3)
+//	NewHash(md5.New(), space, data, 3)
 func NewMD5(space UUID, data []byte) UUID {
 	return NewHash(md5.New(), space, data, 3)
 }
@@ -99,7 +99,7 @@ func NewMD5(space UUID, data []byte) UUID {
 // NewSHA1 returns a new SHA1 (Version 5) UUID based on the
 // supplied name space and data.  It is the same as calling:
 //
-//  NewHash(sha1.New(), space, data, 5)
+//	NewHash(sha1.New(), space, data, 5)
 func NewSHA1(space UUID, data []byte) UUID {
 	return NewHash(sha1.New(), space, data, 5)
 }

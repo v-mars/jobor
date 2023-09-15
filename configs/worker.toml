@@ -1,9 +1,0 @@
-[Worker]
-mode = "release"
-ip = "0.0.0.0"
-port = 30052
-routing_key = "default"
-weight = 100
-servers = ["localhost:50052"]
-#LogPath = "./logs"
-log_level = "info"

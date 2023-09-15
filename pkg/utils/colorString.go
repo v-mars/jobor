@@ -8,82 +8,82 @@ import (
 	_ "strings"
 )
 
-//绿色字体，modifier里，第一个控制闪烁，第二个控制下划线
+// 绿色字体，modifier里，第一个控制闪烁，第二个控制下划线
 func Green(str string, modifier ...interface{}) string {
 	return cliColorRender(str, 32, 0, modifier...)
 }
 
-//淡绿
+// 淡绿
 func LightGreen(str string, modifier ...interface{}) string {
 	return cliColorRender(str, 32, 1, modifier...)
 }
 
-//青色/蓝绿色
+// 青色/蓝绿色
 func Cyan(str string, modifier ...interface{}) string {
 	return cliColorRender(str, 36, 0, modifier...)
 }
 
-//淡青色
+// 淡青色
 func LightCyan(str string, modifier ...interface{}) string {
 	return cliColorRender(str, 36, 1, modifier...)
 }
 
-//红字体
+// 红字体
 func Red(str string, modifier ...interface{}) string {
 	return cliColorRender(str, 31, 0, modifier...)
 }
 
-//淡红色
+// 淡红色
 func LightRed(str string, modifier ...interface{}) string {
 	return cliColorRender(str, 31, 1, modifier...)
 }
 
-//黄色字体
+// 黄色字体
 func Yellow(str string, modifier ...interface{}) string {
 	return cliColorRender(str, 33, 0, modifier...)
 }
 
-//黑色
+// 黑色
 func Black(str string, modifier ...interface{}) string {
 	return cliColorRender(str, 30, 0, modifier...)
 }
 
-//深灰色
+// 深灰色
 func DarkGray(str string, modifier ...interface{}) string {
 	return cliColorRender(str, 30, 1, modifier...)
 }
 
-//浅灰色
+// 浅灰色
 func LightGray(str string, modifier ...interface{}) string {
 	return cliColorRender(str, 37, 0, modifier...)
 }
 
-//白色
+// 白色
 func White(str string, modifier ...interface{}) string {
 	return cliColorRender(str, 37, 1, modifier...)
 }
 
-//蓝色
+// 蓝色
 func Blue(str string, modifier ...interface{}) string {
 	return cliColorRender(str, 34, 0, modifier...)
 }
 
-//淡蓝
+// 淡蓝
 func LightBlue(str string, modifier ...interface{}) string {
 	return cliColorRender(str, 34, 1, modifier...)
 }
 
-//紫色
+// 紫色
 func Purple(str string, modifier ...interface{}) string {
 	return cliColorRender(str, 35, 0, modifier...)
 }
 
-//淡紫色
+// 淡紫色
 func LightPurple(str string, modifier ...interface{}) string {
 	return cliColorRender(str, 35, 1, modifier...)
 }
 
-//棕色
+// 棕色
 func Brown(str string, modifier ...interface{}) string {
 	return cliColorRender(str, 33, 0, modifier...)
 }

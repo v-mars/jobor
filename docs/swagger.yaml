@@ -1,0 +1,686 @@
+definitions:
+  google_golang_org_protobuf_types_known_structpb.ListValue:
+    properties:
+      values:
+        description: Repeated field of dynamically typed values.
+        items:
+          $ref: '#/definitions/google_golang_org_protobuf_types_known_structpb.Value'
+        type: array
+    type: object
+  google_golang_org_protobuf_types_known_structpb.Value:
+    properties:
+      kind:
+        description: "The kind of value.\n\nTypes that are assignable to Kind:\n\n\t*Value_NullValue\n\t*Value_NumberValue\n\t*Value_StringValue\n\t*Value_BoolValue\n\t*Value_StructValue\n\t*Value_ListValue"
+    type: object
+  mw.LoginReq:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+  mw.LogoutReq:
+    properties:
+      id_token_hint:
+        type: string
+      post_logout_redirect_uri:
+        type: string
+    type: object
+  task.Api:
+    properties:
+      auth_data:
+        $ref: '#/definitions/task.AuthData'
+      auth_method:
+        type: string
+      body:
+        type: string
+      content_type:
+        type: string
+      form_data_list:
+        items:
+          $ref: '#/definitions/task.KvFiled'
+        type: array
+      forms:
+        additionalProperties:
+          type: string
+        type: object
+      header:
+        additionalProperties:
+          type: string
+        type: object
+      header_list:
+        items:
+          $ref: '#/definitions/task.KvFiled'
+        type: array
+      method:
+        type: string
+      payload:
+        type: string
+      url:
+        type: string
+      www_form_list:
+        items:
+          $ref: '#/definitions/task.KvFiled'
+        type: array
+    type: object
+  task.AuthData:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+  task.Dingding:
+    properties:
+      enable:
+        type: boolean
+      webhooks:
+        items:
+          $ref: '#/definitions/task.Webhooks'
+        type: array
+    type: object
+  task.Email:
+    properties:
+      enable:
+        type: boolean
+      receivers:
+        description: 多个邮箱地址以逗号分割
+        items:
+          type: string
+        type: array
+    type: object
+  task.KvFiled:
+    properties:
+      key:
+        type: string
+      value:
+        type: string
+    type: object
+  task.Lark:
+    properties:
+      enable:
+        type: boolean
+      webhooks:
+        items:
+          $ref: '#/definitions/task.Webhooks'
+        type: array
+    type: object
+  task.Notify:
+    properties:
+      dingding:
+        $ref: '#/definitions/task.Dingding'
+      email:
+        $ref: '#/definitions/task.Email'
+      lark:
+        $ref: '#/definitions/task.Lark'
+      webhook:
+        $ref: '#/definitions/task.Webhook'
+      wechat:
+        $ref: '#/definitions/task.WeChat'
+    type: object
+  task.PostTaskReq:
+    properties:
+      alarm_policy:
+        type: integer
+      child_run_parallel:
+        type: boolean
+      child_task_ids:
+        items:
+          type: string
+        type: array
+      count:
+        type: integer
+      data:
+        $ref: '#/definitions/task.TaskData'
+      deleted:
+        type: boolean
+      description:
+        type: string
+      expect_code:
+        type: integer
+      expect_content:
+        type: string
+      expr:
+        type: string
+      lang:
+        type: string
+      name:
+        type: string
+      next:
+        type: string
+      notify:
+        $ref: '#/definitions/task.Notify'
+      parent_run_parallel:
+        type: boolean
+      parent_task_ids:
+        items:
+          type: string
+        type: array
+      prev:
+        type: string
+      retry:
+        type: integer
+      route_policy:
+        type: integer
+      routing_key:
+        type: string
+      routing_keys:
+        items:
+          type: string
+        type: array
+      status:
+        type: string
+      timeout:
+        type: integer
+      updater:
+        type: string
+      user:
+        type: string
+      user_id:
+        type: integer
+    type: object
+  task.PutTaskReq:
+    properties:
+      alarm_policy:
+        type: integer
+      child_run_parallel:
+        type: boolean
+      child_task_ids:
+        $ref: '#/definitions/google_golang_org_protobuf_types_known_structpb.ListValue'
+      count:
+        type: integer
+      data:
+        $ref: '#/definitions/task.TaskData'
+      deleted:
+        type: boolean
+      description:
+        type: string
+      expect_code:
+        type: integer
+      expect_content:
+        type: string
+      expr:
+        type: string
+      lang:
+        type: string
+      name:
+        type: string
+      next:
+        type: string
+      notify:
+        $ref: '#/definitions/task.Notify'
+      parent_run_parallel:
+        type: boolean
+      parent_task_ids:
+        $ref: '#/definitions/google_golang_org_protobuf_types_known_structpb.ListValue'
+      prev:
+        type: string
+      retry:
+        type: integer
+      route_policy:
+        type: integer
+      routing_key:
+        type: string
+      routing_keys:
+        $ref: '#/definitions/google_golang_org_protobuf_types_known_structpb.ListValue'
+      status:
+        type: string
+      timeout:
+        type: integer
+      updater:
+        type: string
+      user:
+        type: string
+      user_id:
+        type: integer
+    type: object
+  task.TaskData:
+    properties:
+      api:
+        $ref: '#/definitions/task.Api'
+      content:
+        type: string
+      pre_cmd:
+        type: string
+    type: object
+  task.WeChat:
+    properties:
+      enable:
+        type: boolean
+      groups:
+        items:
+          type: string
+        type: array
+      receivers:
+        items:
+          type: string
+        type: array
+    type: object
+  task.Webhook:
+    properties:
+      enable:
+        type: boolean
+      urls:
+        description: 多个api url以逗号分割
+        items:
+          type: string
+        type: array
+    type: object
+  task.Webhooks:
+    properties:
+      secret:
+        type: string
+      webhook_url:
+        type: string
+    type: object
+  worker.PostWorkerReq:
+    properties:
+      addr:
+        type: string
+      auth_mode:
+        type: string
+      description:
+        type: string
+      hostname:
+        type: string
+      ip:
+        type: string
+      lease_update:
+        type: integer
+      mode:
+        type: string
+      password:
+        type: string
+      port:
+        type: integer
+      private:
+        type: string
+      routing_key:
+        type: string
+      rsa:
+        type: string
+      status:
+        type: string
+      username:
+        type: string
+      version:
+        type: string
+      weight:
+        type: integer
+    type: object
+  worker.PutWorkerReq:
+    properties:
+      addr:
+        type: string
+      auth_mode:
+        type: string
+      description:
+        type: string
+      hostname:
+        type: string
+      ip:
+        type: string
+      lease_update:
+        type: integer
+      mode:
+        type: string
+      password:
+        type: string
+      port:
+        type: integer
+      private:
+        type: string
+      routing_key:
+        type: string
+      rsa:
+        type: string
+      status:
+        type: string
+      username:
+        type: string
+      version:
+        type: string
+      weight:
+        type: integer
+    type: object
+info:
+  contact:
+    name: jobor
+    url: https://github.com/v-mars/jobor
+  description: |-
+    支持host,server,network等
+    Authorization Bearer token
+    header:  x-enc-data = yes
+  title: Jobor 定时任务 API
+  version: "3.0"
+paths:
+  /api/v1/jobor/audit-log:
+    get:
+      responses: {}
+  /api/v1/jobor/gen-token:
+    post:
+      responses: {}
+  /api/v1/jobor/log:
+    get:
+      description: jobor log get
+      parameters:
+      - description: name
+        in: query
+        name: name
+        type: string
+      - description: page
+        in: query
+        name: page
+        type: integer
+      - description: pageSize
+        in: query
+        name: pageSize
+        type: integer
+      responses: {}
+      summary: jobor log get summary
+      tags:
+      - jobor log
+  /api/v1/jobor/log/:id/abort:
+    post:
+      description: jobor task abort
+      responses: {}
+      summary: jobor task abort summary
+      tags:
+      - jobor log
+  /api/v1/jobor/log/{id}:
+    get:
+      description: jobor task log get
+      parameters:
+      - description: int valid
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses: {}
+      summary: jobor task log get summary
+      tags:
+      - jobor log
+  /api/v1/jobor/migrate:
+    get:
+      responses: {}
+  /api/v1/jobor/oidc/callback:
+    get:
+      description: oidc callback
+      parameters:
+      - description: code
+        in: query
+        name: code
+        required: true
+        type: string
+      - description: state
+        in: query
+        name: state
+        type: string
+      responses: {}
+      summary: oidc callback summary
+      tags:
+      - login
+  /api/v1/jobor/oidc/redirect:
+    get:
+      description: oidc redirect login
+      parameters:
+      - description: next
+        in: query
+        name: next
+        type: string
+      responses: {}
+      summary: oidc redirect login summary
+      tags:
+      - login
+  /api/v1/jobor/state-code:
+    get:
+      responses: {}
+  /api/v1/jobor/task:
+    get:
+      description: jobor task get
+      parameters:
+      - description: name
+        in: query
+        name: name
+        type: string
+      - description: page
+        in: query
+        name: page
+        type: integer
+      - description: pageSize
+        in: query
+        name: pageSize
+        type: integer
+      responses: {}
+      summary: jobor task get summary
+      tags:
+      - jobor task
+    post:
+      description: jobor task post
+      parameters:
+      - description: 参数
+        in: body
+        name: json
+        required: true
+        schema:
+          $ref: '#/definitions/task.PostTaskReq'
+      responses: {}
+      summary: jobor task post summary
+      tags:
+      - jobor task
+  /api/v1/jobor/task/{id}:
+    delete:
+      description: jobor task delete
+      parameters:
+      - description: int valid
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses: {}
+      summary: jobor task delete summary
+      tags:
+      - jobor task
+    get:
+      description: jobor task get by id
+      parameters:
+      - description: int valid
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses: {}
+      summary: jobor task get by id summary
+      tags:
+      - jobor task
+    put:
+      description: jobor task put
+      parameters:
+      - description: int valid
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 参数
+        in: body
+        name: json
+        required: true
+        schema:
+          $ref: '#/definitions/task.PutTaskReq'
+      responses: {}
+      summary: jobor task put summary
+      tags:
+      - jobor task
+  /api/v1/jobor/task/{id}/run:
+    post:
+      description: jobor task run
+      parameters:
+      - description: int valid
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses: {}
+      summary: jobor task run summary
+      tags:
+      - jobor task
+  /api/v1/jobor/tasks:
+    get:
+      description: jobor task all get
+      responses: {}
+      summary: jobor task all get summary
+      tags:
+      - jobor task
+  /api/v1/jobor/user-self:
+    get:
+      responses: {}
+  /api/v1/jobor/user-switch/:user_id:
+    get:
+      responses: {}
+  /api/v1/jobor/worker:
+    get:
+      description: jobor worker get
+      parameters:
+      - description: name
+        in: query
+        name: name
+        type: string
+      - description: page
+        in: query
+        name: page
+        type: integer
+      - description: pageSize
+        in: query
+        name: pageSize
+        type: integer
+      responses: {}
+      summary: jobor worker get summary
+      tags:
+      - jobor worker
+    post:
+      description: jobor worker post
+      parameters:
+      - description: 参数
+        in: body
+        name: json
+        required: true
+        schema:
+          $ref: '#/definitions/worker.PostWorkerReq'
+      responses: {}
+      summary: jobor worker post summary
+      tags:
+      - jobor worker
+  /api/v1/jobor/worker-routing-key:
+    get:
+      description: jobor worker  routing key
+      responses: {}
+      summary: jobor worker routing key summary
+      tags:
+      - jobor worker
+  /api/v1/jobor/worker/{id}:
+    delete:
+      description: jobor worker delete
+      parameters:
+      - description: int valid
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses: {}
+      summary: jobor worker delete summary
+      tags:
+      - jobor worker
+    get:
+      description: jobor worker get by id
+      responses: {}
+      summary: jobor worker get by id summary
+      tags:
+      - jobor worker
+    put:
+      description: jobor worker put
+      parameters:
+      - description: int valid
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 参数
+        in: body
+        name: json
+        required: true
+        schema:
+          $ref: '#/definitions/worker.PutWorkerReq'
+      responses: {}
+      summary: jobor worker put summary
+      tags:
+      - jobor worker
+  /api/v1/jobor/workers:
+    get:
+      description: jobor worker all get
+      responses: {}
+      summary: jobor worker all get summary
+      tags:
+      - jobor worker
+  /api/v1/login:
+    post:
+      consumes:
+      - application/json
+      description: user login
+      parameters:
+      - description: 参数
+        in: body
+        name: json
+        required: true
+        schema:
+          $ref: '#/definitions/mw.LoginReq'
+      produces:
+      - application/json
+      responses: {}
+      summary: user login summary
+      tags:
+      - login
+  /api/v1/logout:
+    post:
+      consumes:
+      - application/json
+      description: user logout
+      parameters:
+      - description: 参数
+        in: body
+        name: json
+        required: true
+        schema:
+          $ref: '#/definitions/mw.LogoutReq'
+      produces:
+      - application/json
+      responses: {}
+      summary: user logout summary
+      tags:
+      - login
+  /api/v1/sys/user:
+    get:
+      responses: {}
+    post:
+      responses: {}
+  /api/v1/sys/user-sync:
+    get:
+      responses: {}
+  /api/v1/sys/user/:id:
+    delete:
+      responses: {}
+    get:
+      responses: {}
+    put:
+      responses: {}
+  /api/v1/sys/users:
+    get:
+      responses: {}
+  /routes:
+    get:
+      responses: {}
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

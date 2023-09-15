@@ -1,0 +1,137 @@
+// idl/hello/hello.proto
+syntax = "proto3";
+
+package task_log;
+
+option go_package = "task_log";
+
+import "api.proto";
+import "task.proto";
+//import "google/protobuf/struct.proto";
+
+message LogQuery {
+  int64 id = 1[(api.query)="id",(api.body)="id"];
+  string name = 2[(api.query)="name",(api.body)="name"];
+  string lang = 3[(api.query)="lang",(api.body)="lang"];
+  int64 task_id = 4[(api.query)="task_id",(api.body)="task_id"];
+  string trigger_method = 5[(api.query)="trigger_method",(api.body)="trigger_method"];
+  string expr = 6[(api.query)="expr",(api.body)="expr"];
+  string resp = 8[(api.query)="resp",(api.body)="resp"];
+  float cost_time = 9[(api.query)="cost_time",(api.body)="cost_time"];
+  string result = 10[(api.query)="result",(api.body)="result"];
+  int32 err_code = 11[(api.query)="err_code",(api.body)="err_code"];
+  string err_msg = 12[(api.query)="err_msg",(api.body)="err_msg"];
+  string addr = 13[(api.query)="addr",(api.body)="addr"];
+  uint64 page = 111;
+  uint64 pageSize = 112;
+}
+
+message LogResp {
+  int64 id = 1[(api.query)="id",(api.body)="id"];
+  string name = 2[(api.query)="name",(api.body)="name"];
+  string lang = 3[(api.query)="lang",(api.body)="lang"];
+  int64 task_id = 4[(api.query)="task_id",(api.body)="task_id"];
+  string trigger_method = 5[(api.query)="trigger_method",(api.body)="trigger_method"];
+  string expr = 6[(api.query)="expr",(api.body)="expr"];
+  task.TaskData data = 7[(api.query)="data",(api.body)="data"];
+  string resp = 8[(api.query)="resp",(api.body)="resp"];
+  float cost_time = 9[(api.query)="cost_time",(api.body)="cost_time"];
+  string result = 10[(api.query)="result",(api.body)="result"];
+  int32 err_code = 11[(api.query)="err_code",(api.body)="err_code"];
+  string err_msg = 12[(api.query)="err_msg",(api.body)="err_msg"];
+  string addr = 13[(api.query)="addr",(api.body)="addr"];
+  string start_time = 14[(api.query)="start_time",(api.body)="start_time"];
+  string end_time = 15[(api.query)="end_time",(api.body)="end_time"];
+  string expect_content = 16[(api.query)="expect_content",(api.body)="expect_content"];
+  int32 expect_code = 17[(api.query)="expect_code",(api.body)="expect_code"];
+  string created_at = 110[(api.query)="created_at",(api.body)="created_at"];
+  string updated_at = 120[(api.query)="updated_at",(api.body)="updated_at"];
+}
+
+message LogAllResp {
+  int64 id = 1[(api.query)="id",(api.body)="id"];
+  string name = 2[(api.query)="name",(api.body)="name"];
+}
+
+message LogGetByIdResp {
+  int64 id = 1[(api.query)="id"];
+  string name = 2[(api.query)="name",(api.body)="name"];
+  string lang = 3[(api.query)="lang",(api.body)="lang"];
+  int64 task_id = 4[(api.query)="task_id",(api.body)="task_id"];
+  string trigger_method = 5[(api.query)="trigger_method",(api.body)="trigger_method"];
+  string expr = 6[(api.query)="expr",(api.body)="expr"];
+  task.TaskData data = 7[(api.query)="data",(api.body)="data"];
+  string resp = 8[(api.query)="resp",(api.body)="resp"];
+  float cost_time = 9[(api.query)="cost_time",(api.body)="cost_time"];
+  string result = 10[(api.query)="result",(api.body)="result"];
+  int32 err_code = 11[(api.query)="err_code",(api.body)="err_code"];
+  string err_msg = 12[(api.query)="err_msg",(api.body)="err_msg"];
+  string addr = 13[(api.query)="addr",(api.body)="addr"];
+  string expect_content = 16[(api.query)="expect_content",(api.body)="expect_content"];
+  int32 expect_code = 17[(api.query)="expect_code",(api.body)="expect_code"];
+  string start_time = 14[(api.query)="start_time",(api.body)="start_time"];
+  string end_time = 15[(api.query)="end_time",(api.body)="end_time"];
+  string created_at = 110[(api.query)="created_at",(api.body)="created_at"];
+  string updated_at = 120[(api.query)="updated_at",(api.body)="updated_at"];
+}
+
+
+message PostLogReq {
+  string name = 2[(api.query)="name",(api.body)="name"];
+  string lang = 3[(api.query)="lang",(api.body)="lang"];
+  int64 task_id = 4[(api.query)="task_id",(api.body)="task_id"];
+  string trigger_method = 5[(api.query)="trigger_method",(api.body)="trigger_method"];
+  string expr = 6[(api.query)="expr",(api.body)="expr"];
+  task.TaskData data = 7[(api.query)="data",(api.body)="data"];
+  string resp = 8[(api.query)="resp",(api.body)="resp"];
+  float cost_time = 9[(api.query)="cost_time",(api.body)="cost_time"];
+  string result = 10[(api.query)="result",(api.body)="result"];
+  int32 err_code = 11[(api.query)="err_code",(api.body)="err_code"];
+  string err_msg = 12[(api.query)="err_msg",(api.body)="err_msg"];
+  string addr = 13[(api.query)="addr",(api.body)="addr"];
+  string expect_content = 16[(api.query)="expect_content",(api.body)="expect_content"];
+  int32 expect_code = 17[(api.query)="expect_code",(api.body)="expect_code"];
+  string start_time = 14[(api.query)="start_time",(api.body)="start_time"];
+  string end_time = 15[(api.query)="end_time",(api.body)="end_time"];
+}
+
+message PutLogReq {
+  optional string name = 2[(api.query)="name",(api.body)="name,omitempty"];
+  optional string lang = 3[(api.query)="lang",(api.body)="lang,omitempty"];
+  optional int64 task_id = 4[(api.query)="task_id",(api.go_tag)="json:\"task_id,omitempty\""];
+  optional string trigger_method = 5[(api.query)="trigger_method",(api.body)="trigger_method,omitempty"];
+  optional string expr = 6[(api.query)="expr",(api.body)="expr,omitempty"];
+  task.TaskData data = 7[(api.query)="data",(api.body)="data,omitempty"];
+  optional string resp = 8[(api.query)="resp",(api.body)="resp,omitempty"];
+  optional float cost_time = 9[(api.query)="cost_time",(api.go_tag)="json:\"cost_time,omitempty\""];
+  optional string result = 10[(api.query)="result",(api.body)="result,omitempty"];
+  optional int32 err_code = 11[(api.query)="err_code",(api.go_tag)="json:\"err_code,omitempty\""];
+  optional string err_msg = 12[(api.query)="err_msg",(api.body)="err_msg,omitempty"];
+  optional string addr = 13[(api.query)="addr",(api.body)="addr,omitempty"];
+  optional string start_time = 14[(api.query)="start_time",(api.body)="start_time,omitempty"];
+  optional string end_time = 15[(api.query)="end_time",(api.body)="end_time,omitempty"];
+  optional string expect_content = 16[(api.query)="expect_content",(api.body)="expect_content,omitempty"];
+  optional int32 expect_code = 17[(api.query)="expect_code",(api.go_tag)="json:\"expect_code,omitempty\""];
+}
+
+
+service LogService {
+//  rpc GetLogAll(LogQuery) returns(LogAllResp) {
+//    option (api.get) = "/api/v1/jobor/logs";
+//  }
+  rpc GetLogById(LogQuery) returns(LogResp) {
+    option (api.get) = "/api/v1/jobor/log/:id";
+  }
+  rpc GetLog(LogQuery) returns(LogResp) {
+    option (api.get) = "/api/v1/jobor/log";
+  }
+  rpc AbortTask(PostLogReq) returns(LogResp) {
+    option (api.post) = "/api/v1/jobor/log/:id/abort";
+  }
+//  rpc PutLog(PutLogReq) returns(LogResp) {
+//    option (api.put) = "/api/v1/jobor/log/:id";
+//  }
+//  rpc DeleteLog(LogQuery) returns(LogResp) {
+//    option (api.delete) = "/api/v1/jobor/log/:id";
+//  }
+}

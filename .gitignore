@@ -59,6 +59,8 @@ _testmain.go
 #cmd/*
 cmd/apibox
 *.toml
+*.yaml
+config.yaml
 
 internal/tmp
 logs
@@ -67,3 +69,4 @@ go.sum
 jobor-frontend/mock
 jobor-frontend/node_modules
 /jobor-frontend/
+jobor_frontend/

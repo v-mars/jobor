@@ -1,0 +1,75 @@
+syntax = "proto3";
+
+package srv_rpc;
+// kitex -module jobor -service jobor_rpc  -no-fast-api -I idl -record  idl/worker_rpc.proto
+// The greeting service definition.
+option go_package = "pbapi";
+//option go_package = "kitex_gen/pbapi";
+
+//import "base.proto";
+import "task.proto";
+
+
+message Request {
+  string message = 1;
+}
+
+message GetUserReq {
+  string username = 1;
+}
+message GetUserByIdReq {
+  string id = 2;
+}
+message UserListResp {
+  int64 page = 1;
+  int64 pageSize = 2;
+  int64 total = 3;
+// repeated user.UserInfo list =4;
+}
+
+//stream请求结构
+message StreamReqData {
+  string data = 1;
+}
+//stream返回结构
+message StreamResData {
+  string data = 1;
+}
+
+// The response message
+message Reply {
+  string message = 1;
+}
+
+message Response {
+  enum StatusCode {
+    UNDEFINED = 0;
+    SUCCESS = 200;
+    FAILURE = 500;
+  }
+  StatusCode code = 1;
+  Reply      msg  = 2;
+  Reply      data = 3;
+}
+
+message StreamResponse {
+  bytes resp = 1;
+}
+//// The request message containing the user's name.
+//message TaskRequest {
+//  int64  task_id = 1;
+//  int32 task_type = 2;
+//  string task_lang = 3;
+//  bytes task_data = 4;
+//  string name = 5;
+//}
+
+service TaskService {
+  rpc RunTask (task.TaskRequest) returns (stream StreamResponse) {};
+//  rpc Demo(base.Empty) returns(base.Empty){}
+//  rpc GetStream (StreamReqData) returns (stream StreamResData){} //客户端推送 服务端
+//  rpc PutStream (stream StreamReqData) returns (StreamResData){} //服务端推送 客户端
+//  rpc AllStream (stream StreamReqData) returns (stream StreamResData){} //客户端与 服务端 互相 推送
+}
+
+

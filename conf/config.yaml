@@ -1,0 +1,67 @@
+server:
+  service: "xxx"
+  http_address: ":5002"
+  grpc_address: ":2002"
+  enable_pprof: true
+  enable_gzip: true
+  enable_auth: true
+  enable_access_log: true
+  log_level: trace
+  log_file_name: "log/std.log"
+  log_max_size: 20    # A file can be up to 20M.
+  log_max_age: 10     #A file can exist for a maximum of 10 days.
+  log_max_backups: 5  # Save up to 5 files at the same time.
+  enable_registry: false
+  registry_center: "redis"
+
+authentication:
+  max_age : 86400
+  enable_session : true
+  auth_secret : "jobor_auth_key"
+  enable_code : false
+  enable_mfa : false
+  enable_email : false
+  enable_sms : false
+  login_fail_forbid: 10
+  login_fail_captcha: 3
+
+jwt:
+  type: "Bearer"     # Bearer
+  key: "xx"
+  refresh_key: "xxx"
+  age: 360000
+
+mysql:
+  dsn: "xxx:xxx@tcp(xxx:3306)/jobor?charset=utf8mb4&parseTime=True&loc=Local&timeout=30s"
+
+redis:
+  address: "xxx:6379"
+  password: ""
+  db: 1
+
+sso:
+  issuer_url: "http://sso.xxx.local"
+  client_id: "jobor"
+  client_secret: "xx"
+  scope: "openid email role"
+
+consul:
+  address: "xxxx:8500"
+  token: ""
+
+ext:
+  telemetry_ep: ""
+
+
+email:
+  username: "xx@xx.cn"
+  password: "xx"
+  smtpServer: "smtp.xxx.com"
+  smtpPort: 587
+  tls: false
+
+ent_wechat:
+  url: "https://qyapi.weixin.qq.com/cgi-bin"
+  corp_id: "xxx"
+  agent_id: "xxx"
+  secret: "xxxx"
