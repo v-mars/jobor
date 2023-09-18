@@ -9,6 +9,7 @@ import (
 	"jobor/biz/model"
 	"jobor/biz/response"
 	"jobor/conf"
+	"jobor/kitex_gen/audit"
 	"time"
 
 	"github.com/cloudwego/hertz/pkg/common/hlog"
@@ -46,6 +47,10 @@ func GetMigrate(ctx context.Context, c *app.RequestContext) {
 		&model.JoborTask{},
 		&model.JoborWorker{},
 		&model.JoborLog{},
+		&audit.AuditLog{},
+		&model.Api{},
+		&model.Role{},
+		&model.User{},
 	)
 	if err != nil {
 		//hlog.Fatal("auto migrate sys err:", err)

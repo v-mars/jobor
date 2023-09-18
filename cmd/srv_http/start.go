@@ -120,7 +120,7 @@ func Start() {
 	// 认证过滤
 	h.Use(mw.UserAuthMw(mw.AllowPathPrefixSkipper(dal.NoLogin...)))
 	// 权限过滤
-	//h.Use(mw.CasbinMw(mw.AllowPathPrefixSkipper(dal.NoAuthorized...)))
+	h.Use(mw.CasbinMw(mw.AllowPathPrefixSkipper(dal.NoAuthorized...)))
 
 	register(h)
 	print(banner)

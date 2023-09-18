@@ -6,7 +6,7 @@ import (
 )
 
 const (
-	TbName = "audit"
+	NameAuditLog = "audit"
 )
 
 type AuditLog struct {
@@ -30,7 +30,7 @@ type AuditLog struct {
 }
 
 func (al *AuditLog) TableName() string {
-	return TbName
+	return NameAuditLog
 }
 
 func (al *AuditLog) CreateAuditLog() error {
