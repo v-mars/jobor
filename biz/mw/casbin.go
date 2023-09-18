@@ -31,13 +31,15 @@ func CasbinMw(skipper ...SkipperFunc) app.HandlerFunc {
 			return
 		} else {
 			//c.Next(ctx)
-			userValue, err := model.GetUserValue(c, false)
+			userValue, err := model.GetUserSession(c, false)
 			if err != nil {
 				response.SendBaseResp(ctx, c, err)
+				c.Abort()
 				return
 			}
+			//fmt.Println("userValue.Roles:", userValue.Roles)
 			isRoot := utils.Intersect([]string{admin, root}, userValue.Roles)
-			//fmt.Println("intersects:", isRoot)
+
 			if len(isRoot) > 0 {
 				c.Next(ctx)
 				return
@@ -49,6 +51,7 @@ func CasbinMw(skipper ...SkipperFunc) app.HandlerFunc {
 			isPass, err := casbin.Enforcer.Enforce(sub, dom, obj, act)
 			if err != nil {
 				response.SendBaseResp(ctx, c, err)
+				c.Abort()
 				return
 			}
 			//fmt.Println("isPass:", isPass, userValue, sub, obj, act)
@@ -57,6 +60,7 @@ func CasbinMw(skipper ...SkipperFunc) app.HandlerFunc {
 			} else {
 				//c.Next()
 				response.SendBaseResp(ctx, c, fmt.Errorf("没有访问权限"))
+				c.Abort()
 			}
 			return
 		}

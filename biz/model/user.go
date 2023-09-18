@@ -482,18 +482,18 @@ func InitSession(ctx context.Context, session sessions.Session, userInfo user.Us
 }
 
 func GetUserRoles(username string) ([]string, error) {
-	//var roles []string
-	//	var sql = `SELECT DISTINCT role.name FROM role
-	//LEFT JOIN user_roles ON user_roles.role_id = role.id
-	//LEFT JOIN user ON user_roles.user_id = user.id
-	//WHERE (user.username = ?)
-	//`
-	//if err := db.DB.Model(&role.Role{}).Raw(sql, username).Pluck("role.name", &roles).Error; err != nil {
-	//	return roles, err
-	//} else {
-	//	return roles, nil
-	//}
-	return nil, nil
+	var roles []string
+	var sql = `SELECT DISTINCT role.name FROM role
+	LEFT JOIN user_roles ON user_roles.role_id = role.id
+	LEFT JOIN user ON user_roles.user_id = user.id
+	WHERE (user.username = ?)
+	`
+	if err := db.DB.Model(&Role{}).Raw(sql, username).Pluck("role.name", &roles).Error; err != nil {
+		return roles, err
+	} else {
+		return roles, nil
+	}
+	//return nil, nil
 }
 
 var (
