@@ -60,21 +60,21 @@ message ApiResp {
 
 service Api {
   rpc TriggerUpdateApi(ApiQuery) returns(ApiResp) {
-    option (api.get) = "/api/v1/sys/api-auto-update";
+    option (api.get) = "/api/v1/jobor/api-auto-update";
   }
   rpc GetApiAll(ApiQuery) returns(ApiResp) {
-    option (api.get) = "/api/v1/sys/apis";
+    option (api.get) = "/api/v1/jobor/apis";
   }
   rpc GetApi(ApiQuery) returns(ApiResp) {
-    option (api.get) = "/api/v1/sys/api";
+    option (api.get) = "/api/v1/jobor/api";
   }
   rpc PostApi(ApiPost) returns(ApiResp) {
-    option (api.post) = "/api/v1/sys/api";
+    option (api.post) = "/api/v1/jobor/api";
   }
   rpc PutApi(ApiPut) returns(ApiResp) {
-    option (api.put) = "/api/v1/sys/api/:id";
+    option (api.put) = "/api/v1/jobor/api/:id";
   }
   rpc DeleteApi(ApiDel) returns(ApiResp) {
-    option (api.delete) = "/api/v1/sys/api/:id";
+    option (api.delete) = "/api/v1/jobor/api/:id";
   }
 }

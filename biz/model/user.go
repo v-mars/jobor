@@ -13,6 +13,7 @@ import (
 	"jobor/biz/dal/casbin"
 	"jobor/biz/dal/db"
 	"jobor/biz/response"
+	"jobor/conf"
 	"jobor/kitex_gen/user"
 	"jobor/pkg/convert"
 	"jobor/pkg/utils"
@@ -28,7 +29,7 @@ const (
 )
 
 type User struct {
-	db.ModelOld
+	db.Model
 	Nickname string `gorm:"type:varchar(128);comment:显示名" json:"nickname" form:"nickname"`
 	Username string `gorm:"type:varchar(128);comment:用户名" json:"username" form:"username"` // `unique_index` also works
 	Password string `gorm:"type:varchar(256);comment:密码" json:"password" form:"password"`
@@ -39,14 +40,8 @@ type User struct {
 	UserType string `gorm:"type:varchar(16);default:local;comment:用户类型:local,ldap,sso" json:"user_type" form:"user_type"`
 	Avatar   string `gorm:"type:varchar(64);default:default;comment:用户头像" json:"avatar" form:"avatar"`
 	Status   bool   `gorm:"type:varchar(32);default:true;comment:状态" json:"status" form:"status"`
-	//Roles    []role.Role `gorm:"many2many:user_roles;association_autoupdate:false;association_autocreate:false;constraint:OnDelete:CASCADE" json:"roles"` // Many-To-Many
+	Roles    []Role `gorm:"many2many:user_roles;association_autoupdate:false;association_autocreate:false;constraint:OnDelete:CASCADE" json:"roles"` // Many-To-Many
 	////Updater  string `gorm:"type:varchar(64);comment:更新人" json:"updater" form:"updater"`
-	////OtpSecret  string          `gorm:"type:varchar(128);default:null;comment:OTP双因子认证密钥" json:"otp_secret" form:"otp_secret"`
-	////DistinguishedName string `json:"distinguished_name" column:"distinguished_name"`
-	////IsDemission       int8   `json:"is_demission" column:"is_demission"`
-	////StaffType         int8   `json:"staff_type" column:"staff_type"`
-	////DepartmentId      int64  `json:"department_id" column:"department_id"`
-	////ManagerId int64 `json:"manager_id" column:"manager_id"`
 }
 
 func (u *User) TableName() string {
@@ -63,7 +58,7 @@ func (u *User) GetRoles() []string {
 
 func (u *User) GetUserinfo() *user.Userinfo {
 	userinfo := user.Userinfo{
-		Id: int64(u.ID), Username: u.Username, Nickname: u.Nickname, Email: u.Email, Avatar: u.Avatar,
+		Id: int64(u.Id), Username: u.Username, Nickname: u.Nickname, Email: u.Email, Avatar: u.Avatar,
 		Empno: u.Empno, UserType: u.UserType, Roles: u.GetRoles(), Status: u.Status,
 	}
 	return &userinfo
@@ -76,8 +71,8 @@ func (u *Users) List(req *user.UserQuery, resp *response.PageDataList) (Users, e
 	//resp := response.PageDataList{List: &users}
 	if err := PageDataWithScopes(db.DB.Model(&User{}), NameUser, Find, resp,
 		GetScopesList(), //UserSelectScopes(),
-		UserWhereScopes(req), PreloadScopes("Roles"),
-		UserOrderScopes(), UserGroupScopes()); err != nil {
+		WhereScopesUser(req), PreloadScopes("Roles"),
+		OrderScopesUser(), GroupScopesUser()); err != nil {
 		return nil, err
 	}
 	return *u, nil
@@ -92,23 +87,23 @@ func (u *Users) ListUserinfo() (uis []*user.Userinfo) {
 	return uis
 }
 func NewUserModel(Db *gorm.DB) *User {
-	return &User{ModelOld: db.ModelOld{GormDB: db.DB}}
+	return &User{Model: db.Model{GormDB: db.DB}}
 }
 
-func UserSelectScopes() func(Db *gorm.DB) *gorm.DB {
+func UserSelectScopesUser() func(Db *gorm.DB) *gorm.DB {
 	return func(Db *gorm.DB) *gorm.DB {
 		// distinct
 		sql := `user.id,nickname,username,email,phone,userid,empno,user_type,avatar,status,user.ctime,user.*`
 		return Db.Select(sql)
 	}
 }
-func UserSelectAllScopes() func(Db *gorm.DB) *gorm.DB {
+func SelectAllScopesUser() func(Db *gorm.DB) *gorm.DB {
 	return func(Db *gorm.DB) *gorm.DB {
 		return Db.Select("distinct id,username,nickname,status")
 	}
 }
 
-func UserWhereScopes(req *user.UserQuery) func(Db *gorm.DB) *gorm.DB {
+func WhereScopesUser(req *user.UserQuery) func(Db *gorm.DB) *gorm.DB {
 	return func(Db *gorm.DB) *gorm.DB {
 		var sql = "(username like ? or nickname like ?)"
 		var sqlArgs = []interface{}{"%" + req.Name + "%", "%" + req.Name + "%"}
@@ -127,32 +122,32 @@ func UserWhereScopes(req *user.UserQuery) func(Db *gorm.DB) *gorm.DB {
 		return Db.Where(sql, sqlArgs...)
 	}
 }
-func UserJoinsScopes() func(Db *gorm.DB) *gorm.DB {
+func JoinsScopesUser() func(Db *gorm.DB) *gorm.DB {
 	return func(Db *gorm.DB) *gorm.DB {
 		return Db.Joins("")
 	}
 }
-func UserPreloadScopes(query string, args ...interface{}) func(Db *gorm.DB) *gorm.DB {
+func PreloadScopesUser(query string, args ...interface{}) func(Db *gorm.DB) *gorm.DB {
 	return func(Db *gorm.DB) *gorm.DB {
 		return Db.Preload(query, args...)
 	}
 }
 
-func UserOrderScopes() func(db *gorm.DB) *gorm.DB {
+func OrderScopesUser() func(db *gorm.DB) *gorm.DB {
 	return func(Db *gorm.DB) *gorm.DB {
 		return Db.Order("id desc")
 	}
 }
 
-func UserGroupScopes() func(Db *gorm.DB) *gorm.DB {
+func GroupScopesUser() func(Db *gorm.DB) *gorm.DB {
 	return func(Db *gorm.DB) *gorm.DB {
 		return Db.Group("user.id")
 	}
 }
 
-var dom = "sys"
+var dom = conf.Dom
 
-func UserAdd(ctx context.Context, Db *gorm.DB, req *user.PostUserReq) (User, error) {
+func AddUser(ctx context.Context, Db *gorm.DB, req *user.PostUserReq) (User, error) {
 	req.Password = utils.HashAndSalt([]byte(req.Password))
 	var row User
 	if err := utils.AnyToAny(req, &row); err != nil {
@@ -183,7 +178,7 @@ func UserAdd(ctx context.Context, Db *gorm.DB, req *user.PostUserReq) (User, err
 	return row, nil
 }
 
-func UserMod(ctx context.Context, Db *gorm.DB, _id interface{}, req *user.PutUserReq) (User, error) {
+func ModUser(ctx context.Context, Db *gorm.DB, _id interface{}, req *user.PutUserReq) (User, error) {
 	var mapData map[string]interface{}
 	var err error
 	if mapData, err = convert.StructToMap(req); err != nil {
@@ -241,7 +236,7 @@ func UserMod(ctx context.Context, Db *gorm.DB, _id interface{}, req *user.PutUse
 	return userObj, nil
 }
 
-func UserDel(ctx context.Context, Db *gorm.DB, _ids []interface{}) ([]User, error) {
+func DelUser(ctx context.Context, Db *gorm.DB, _ids []interface{}) ([]User, error) {
 	var us []User
 	tx := Db.Begin()
 	defer func() { tx.Rollback() }()
@@ -256,7 +251,7 @@ func UserDel(ctx context.Context, Db *gorm.DB, _ids []interface{}) ([]User, erro
 	}
 	hlog.CtxDebugf(ctx, "用户关联casbin group policy删除成功")
 	for _, _id := range _ids {
-		if err := Db.Model(&User{ModelOld: db.ModelOld{ID: convert.ToInt(_id)}}).Association("Roles").Clear(); err != nil {
+		if err := Db.Model(&User{Model: db.Model{Id: convert.ToInt(_id)}}).Association("Roles").Clear(); err != nil {
 			return us, err
 		}
 		hlog.Debug("用户关联角色删除成功")
@@ -389,7 +384,7 @@ func GetUserinfoOrCreate(ui *user.Userinfo) (user.Userinfo, error) {
 		if err = db.DB.Table(NameUser).Omit("id").Create(&row).Error; err != nil {
 			return u, err
 		}
-		u.Id = int64(row.ID)
+		u.Id = int64(row.Id)
 		u.UserType = row.UserType
 		u.Status = row.Status
 	}
@@ -408,7 +403,7 @@ func GetUserMap(ids []int) (r map[int]User, err error) {
 	}
 	for _, v := range us {
 		v := v
-		r[v.ID] = v
+		r[v.Id] = v
 	}
 	return r, nil
 }
@@ -487,18 +482,18 @@ func InitSession(ctx context.Context, session sessions.Session, userInfo user.Us
 }
 
 func GetUserRoles(username string) ([]string, error) {
-	//var roles []string
-	//	var sql = `SELECT DISTINCT role.name FROM role
-	//LEFT JOIN user_roles ON user_roles.role_id = role.id
-	//LEFT JOIN user ON user_roles.user_id = user.id
-	//WHERE (user.username = ?)
-	//`
-	//if err := db.DB.Model(&role.Role{}).Raw(sql, username).Pluck("role.name", &roles).Error; err != nil {
-	//	return roles, err
-	//} else {
-	//	return roles, nil
-	//}
-	return nil, nil
+	var roles []string
+	var sql = `SELECT DISTINCT role.name FROM role
+	LEFT JOIN user_roles ON user_roles.role_id = role.id
+	LEFT JOIN user ON user_roles.user_id = user.id
+	WHERE (user.username = ?)
+	`
+	if err := db.DB.Model(&Role{}).Raw(sql, username).Pluck("role.name", &roles).Error; err != nil {
+		return roles, err
+	} else {
+		return roles, nil
+	}
+	//return nil, nil
 }
 
 var (

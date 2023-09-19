@@ -2,6 +2,7 @@ package mw
 
 import (
 	"context"
+	"fmt"
 	"github.com/cloudwego/hertz/pkg/common/hlog"
 	"jobor/biz/dal/casbin"
 	"jobor/biz/model"
@@ -30,33 +31,37 @@ func CasbinMw(skipper ...SkipperFunc) app.HandlerFunc {
 			return
 		} else {
 			//c.Next(ctx)
-			//userValue, err := user.GetUserValue(c, false)
-			//if err != nil {
-			//	response.Error(ctx, c, err)
-			//	return
-			//}
-			//isRoot := utils.Intersect([]string{admin, root}, userValue.Roles)
-			////fmt.Println("intersects:", isRoot)
-			//if len(isRoot) > 0 {
-			//	c.Next(ctx)
-			//	return
-			//}
-			//var obj = c.Request.URI().Path() // path
-			////var obj=c.Request.Request.URI().RequestURI() // path
-			//var act = c.Request.Method() // method
-			//var sub = userValue.Username
-			//isPass, err := casbin.Enforcer.Enforce(sub, dom, obj, act)
-			//if err != nil {
-			//	response.NoPermission(ctx, c, err)
-			//	return
-			//}
-			////fmt.Println("isPass:", isPass, userValue, sub, obj, act)
-			//if isPass {
-			//	c.Next(ctx)
-			//} else {
-			//	//c.Next()
-			//	response.NoPermission(ctx, c, fmt.Errorf("没有访问权限"))
-			//}
+			userValue, err := model.GetUserSession(c, false)
+			if err != nil {
+				response.SendBaseResp(ctx, c, err)
+				c.Abort()
+				return
+			}
+			//fmt.Println("userValue.Roles:", userValue.Roles)
+			isRoot := utils.Intersect([]string{admin, root}, userValue.Roles)
+
+			if len(isRoot) > 0 {
+				c.Next(ctx)
+				return
+			}
+			var obj = c.Request.URI().Path() // path
+			//var obj=c.Request.Request.URI().RequestURI() // path
+			var act = c.Request.Method() // method
+			var sub = userValue.Username
+			isPass, err := casbin.Enforcer.Enforce(sub, dom, obj, act)
+			if err != nil {
+				response.SendBaseResp(ctx, c, err)
+				c.Abort()
+				return
+			}
+			//fmt.Println("isPass:", isPass, userValue, sub, obj, act)
+			if isPass {
+				c.Next(ctx)
+			} else {
+				//c.Next()
+				response.SendBaseResp(ctx, c, fmt.Errorf("没有访问权限"))
+				c.Abort()
+			}
 			return
 		}
 	}

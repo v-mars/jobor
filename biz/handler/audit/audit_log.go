@@ -4,24 +4,38 @@ package audit
 
 import (
 	"context"
+	"jobor/biz/dal/db"
+	"jobor/biz/model"
+	"jobor/biz/response"
 
 	"github.com/cloudwego/hertz/pkg/app"
-	"github.com/cloudwego/hertz/pkg/protocol/consts"
 	audit "jobor/kitex_gen/audit"
 )
 
-// GetLoginHistory .
-// @router /api/v1/jobor/audit-log [GET]
-func GetLoginHistory(ctx context.Context, c *app.RequestContext) {
+// GetAuditLog .
+//
+//	@Summary		audit log get summary
+//	@Description	audit log get
+//	@Tags			audit
+//	@Param			status		query	string	false	"status success|failed"
+//	@Param			username	query	string	false	"username"
+//	@router			/api/v1/jobor/audit-log [GET]
+func GetAuditLog(ctx context.Context, c *app.RequestContext) {
 	var err error
 	var req audit.AuditReq
-	err = c.BindAndValidate(&req)
-	if err != nil {
-		c.String(consts.StatusBadRequest, err.Error())
+	if err = c.BindAndValidate(&req); err != nil {
+		response.ParamFailed(ctx, c, err)
 		return
 	}
 
-	resp := new(audit.AuditResp)
+	var objs []audit.AuditLog
 
-	c.JSON(consts.StatusOK, resp)
+	resp := response.InitPageData(ctx, c, &objs, false)
+
+	if err = model.PageDataWithScopes(db.DB.Model(&audit.AuditLog{}), audit.NameAuditLog, model.Find, &resp,
+		model.GetScopesList(audit.SelectScopes()), audit.WhereScopes(&req), audit.OrderScopes()); err != nil {
+		response.SendBaseResp(ctx, c, err)
+		return
+	}
+	response.SendDataResp(ctx, c, response.Succeed, resp)
 }

@@ -23,7 +23,7 @@ func Register(r *server.Hertz) {
 			_v1 := _api.Group("/v1", _v1Mw()...)
 			{
 				_jobor := _v1.Group("/jobor", _joborMw()...)
-				_jobor.GET("/audit-log", append(_getloginhistoryMw(), audit.GetLoginHistory)...)
+				_jobor.GET("/audit-log", append(_getauditlogMw(), audit.GetAuditLog)...)
 			}
 		}
 	}

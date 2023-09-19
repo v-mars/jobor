@@ -24,13 +24,11 @@ message RolePost {
   string name = 2[(api.query)="name",(api.body)="name,required",(api.vd)="len($)>1"];
   string title = 3[(api.query)="title",(api.body)="title,required"];
   string description = 4[(api.query)="description",(api.body)="description"];
-//  repeated Api Apis = 7[(api.query)="apis",(api.body)="apis"];
   repeated int64 api_ids = 7[(api.query)="api_ids,omitempty",(api.body)="api_ids,omitempty"];
   int64 parent_id = 8[(api.query)="parent_id",(api.body)="parent_id"];
 //  string Path = 9[(api.query)="path",(api.body)="path"];
   google.protobuf.ListValue path = 11[(api.query)="path,omitempty",(api.body)="path,omitempty",(api.go_tag)="gorm:\"-\" ignore:\"yes\""];
   int64 sort = 10[(api.query)="sort",(api.body)="sort"];
-//  repeated int64 client_ids = 13[(api.query)="client_ids,omitempty",(api.body)="client_ids,omitempty"];
 }
 
 message RolePut {
@@ -42,7 +40,6 @@ message RolePut {
   optional int64 parent_id = 8[(api.query)="parent_id",(api.body)="parent_id,omitempty"];
   optional int64 sort = 10[(api.query)="sort",(api.body)="sort,omitempty"];
   optional string updater = 60[(api.query)="-",(api.body)="-"];
-//  google.protobuf.ListValue client_ids = 13[(api.query)="client_ids,omitempty",(api.body)="client_ids,omitempty",(api.go_tag)="gorm:\"-\" ignore:\"yes\""];
 //  repeated Api Apis = 7[(api.query)="apis",(api.body)="apis"];
 }
 

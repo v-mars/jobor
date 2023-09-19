@@ -4,153 +4,275 @@ package user
 
 import (
 	"context"
+	"github.com/cloudwego/hertz/pkg/common/hlog"
+	"github.com/hertz-contrib/sessions"
+	"jobor/biz/dal/db"
+	"jobor/biz/model"
+	"jobor/biz/mw"
+	"jobor/biz/response"
+	"jobor/conf"
 
 	"github.com/cloudwego/hertz/pkg/app"
-	"github.com/cloudwego/hertz/pkg/protocol/consts"
-	base "jobor/kitex_gen/base"
 	user "jobor/kitex_gen/user"
 )
 
-// SwitchUser .
-// @router /api/v1/jobor/user-switch/:user_id [GET]
-func SwitchUser(ctx context.Context, c *app.RequestContext) {
-	var err error
-	var req user.UserQuery
-	err = c.BindAndValidate(&req)
-	if err != nil {
-		c.String(consts.StatusBadRequest, err.Error())
-		return
-	}
-
-	resp := new(base.Empty)
-
-	c.JSON(consts.StatusOK, resp)
-}
-
 // GetUserSelf .
-// @router /api/v1/jobor/user-self [GET]
+//
+//	@Summary		user self get summary
+//	@Description	user self get
+//	@Tags			user
+//	@router			/api/v1/jobor/user-self [GET]
 func GetUserSelf(ctx context.Context, c *app.RequestContext) {
 	var err error
 	var req user.UserQuery
 	err = c.BindAndValidate(&req)
 	if err != nil {
-		c.String(consts.StatusBadRequest, err.Error())
+		response.ParamFailed(ctx, c, err)
 		return
 	}
 
-	resp := new(base.Empty)
-
-	c.JSON(consts.StatusOK, resp)
-}
-
-// SyncUser .
-// @router /api/v1/sys/user-sync [GET]
-func SyncUser(ctx context.Context, c *app.RequestContext) {
-	var err error
-	var req user.UserQuery
-	err = c.BindAndValidate(&req)
+	userinfo, err := model.GetUserSession(c, false)
 	if err != nil {
-		c.String(consts.StatusBadRequest, err.Error())
+		response.SendBaseResp(ctx, c, err)
 		return
 	}
-
-	resp := new(base.Empty)
-
-	c.JSON(consts.StatusOK, resp)
+	response.SendDataResp(ctx, c, response.Succeed, userinfo)
 }
 
 // GetUserAll .
-// @router /api/v1/sys/users [GET]
+//
+//	@Summary		user all get summary
+//	@Description	user all get
+//	@Tags			user
+//	@router			/api/v1/jobor/users [GET]
 func GetUserAll(ctx context.Context, c *app.RequestContext) {
 	var err error
 	var req user.UserQuery
 	err = c.BindAndValidate(&req)
 	if err != nil {
-		c.String(consts.StatusBadRequest, err.Error())
+		response.ParamFailed(ctx, c, err)
+		return
+	}
+	var objs []user.UserAllResp
+	resp := response.PageDataList{List: &objs}
+	if resp.Total, err = model.DataWithScopes(db.DB, model.NameUser, model.Scan, resp.List, model.GetScopesList(),
+		model.OrderScopesUser(), model.GroupScopesUser()); err != nil {
+		response.SendBaseResp(ctx, c, err)
 		return
 	}
 
-	resp := new(base.Empty)
+	response.SendDataResp(ctx, c, response.Succeed, resp)
 
-	c.JSON(consts.StatusOK, resp)
 }
 
 // GetUser .
-// @router /api/v1/sys/user [GET]
+//
+//	@Summary		user get summary
+//	@Description	user get
+//	@Tags			user
+//	@Param			user_type	query	string	false	"user_type"
+//	@Param			status		query	string	false	"status"
+//	@Param			nickname	query	string	false	"nickname"
+//	@Param			username	query	string	false	"username"
+//	@Param			id			query	int		false	"method"
+//	@Param			page		query	int		false	"page"
+//	@Param			pageSize	query	int		false	"pageSize"
+//	@router			/api/v1/jobor/user [GET]
 func GetUser(ctx context.Context, c *app.RequestContext) {
 	var err error
 	var req user.UserQuery
 	err = c.BindAndValidate(&req)
-	if err != nil {
-		c.String(consts.StatusBadRequest, err.Error())
+	if err = c.BindAndValidate(&req); err != nil {
+		response.ParamFailed(ctx, c, err)
 		return
 	}
 
-	resp := new(base.Empty)
+	var objs model.Users
 
-	c.JSON(consts.StatusOK, resp)
+	resp := response.InitPageData(ctx, c, &objs, false)
+
+	if _, err = objs.List(&req, &resp); err != nil {
+		response.SendBaseResp(ctx, c, err)
+		return
+	}
+
+	//if err = model.PageDataWithScopes(db.DB.Model(&user.User{}).Debug(), user.NameUser, model.Find, &resp,
+	//	user.SelectScopes(),
+	//	user.WhereScopesUser(&req), user.UserPreloadScopes("Roles"),
+	//	user.OrderScopesUser(), user.GroupScopesUser()); err != nil {
+	//	response.SendBaseResp(ctx, c, err)
+	//	return
+	//}
+	response.SendDataResp(ctx, c, response.Succeed, resp)
 }
 
 // GetUserById .
-// @router /api/v1/sys/user/:id [GET]
+//
+//	@Summary		user get by id summary
+//	@Description	user get by id
+//	@Tags			user
+//	@Param			id	path	int	true	"id valid"
+//	@router			/api/v1/jobor/user/{id} [GET]
 func GetUserById(ctx context.Context, c *app.RequestContext) {
 	var err error
 	var req user.UserQuery
 	err = c.BindAndValidate(&req)
 	if err != nil {
-		c.String(consts.StatusBadRequest, err.Error())
+		response.ParamFailed(ctx, c, err)
+		return
+	}
+	_id := c.Params.ByName("id")
+	var u model.User
+	err = model.GetByIdScopes(db.DB, model.NameUser, _id, &u, true)
+	if err != nil {
+		response.SendBaseResp(ctx, c, err)
 		return
 	}
 
-	resp := new(base.Empty)
-
-	c.JSON(consts.StatusOK, resp)
+	response.SendDataResp(ctx, c, response.Succeed, u)
 }
 
 // PostUser .
-// @router /api/v1/sys/user [POST]
+//
+//	@Summary		user post summary
+//	@Description	user post
+//	@Tags			user
+//	@Param			json	body	user.PostUserReq	true	"参数"
+//	@router			/api/v1/jobor/user [POST]
 func PostUser(ctx context.Context, c *app.RequestContext) {
 	var err error
 	var req user.PostUserReq
-	err = c.BindAndValidate(&req)
+
+	if err = c.BindAndValidate(&req); err != nil {
+		response.ParamFailed(ctx, c, err)
+		return
+	}
+	obj, err := model.AddUser(ctx, db.DB, &req)
 	if err != nil {
-		c.String(consts.StatusBadRequest, err.Error())
+		response.SendBaseResp(ctx, c, err)
 		return
 	}
 
-	resp := new(base.Empty)
-
-	c.JSON(consts.StatusOK, resp)
+	response.SendDataResp(ctx, c, response.Succeed, obj)
 }
 
 // PutUser .
-// @router /api/v1/sys/user/:id [PUT]
+//
+//	@Summary		user put summary
+//	@Description	user put
+//	@Tags			user
+//	@Param			id		path	int				true	"int valid"
+//	@Param			json	body	user.PutUserReq	true	"参数"
+//	@router			/api/v1/jobor/user/{id} [PUT]
 func PutUser(ctx context.Context, c *app.RequestContext) {
 	var err error
 	var req user.PutUserReq
 	err = c.BindAndValidate(&req)
 	if err != nil {
-		c.String(consts.StatusBadRequest, err.Error())
+		response.ParamFailed(ctx, c, err)
 		return
 	}
 
-	resp := new(base.Empty)
+	_id := c.Params.ByName("id")
+	u, _ := model.GetUserValue(c, false)
+	req.Updater = &u.Nickname
+	obj, err := model.ModUser(ctx, db.DB, _id, &req)
+	if err != nil {
+		response.SendBaseResp(ctx, c, err)
+		return
+	}
 
-	c.JSON(consts.StatusOK, resp)
+	response.SendDataResp(ctx, c, response.Succeed, obj)
 }
 
 // DeleteUser .
-// @router /api/v1/sys/user/:id [DELETE]
+//
+//	@Summary		user delete summary
+//	@Description	user delete
+//	@Tags			user
+//	@Param			id		path	int				true	"int valid"
+//	@Param			json	body	user.UserQuery	true	"参数"
+//	@router			/api/v1/jobor/user/{id} [DELETE]
 func DeleteUser(ctx context.Context, c *app.RequestContext) {
 	var err error
-	var req user.UserQuery
-	err = c.BindAndValidate(&req)
-	if err != nil {
-		c.String(consts.StatusBadRequest, err.Error())
+	var req user.UserDeleteResp
+	if err = c.BindAndValidate(&req); err != nil {
+		response.ParamFailed(ctx, c, err)
 		return
 	}
+	_id := c.Params.ByName("id")
+	if objs, err := model.DelUser(ctx, db.DB, []interface{}{_id}); err != nil {
+		response.SendBaseResp(ctx, c, err)
+		return
+	} else {
+		response.SendDataResp(ctx, c, response.Succeed, objs)
+	}
+}
 
-	resp := new(base.Empty)
+// SwitchUser .
+//
+//	@Summary		user switch summary
+//	@Description	user switch session
+//	@Tags			user
+//	@Param			user_id	path	int	true	"switch user_id valid"
+//	@router			/api/v1/jobor/user-switch/{user_id} [GET]
+func SwitchUser(ctx context.Context, c *app.RequestContext) {
+	var err error
+	userId := c.Params.ByName("user_id")
+	u, _ := model.GetUserSession(c, true)
+	if !u.IsAdmin() {
+		response.SendBaseResp(ctx, c, response.UnauthorizedErr)
+		return
+	}
+	var switchUser user.Userinfo
+	err = model.GetByIdScopes(db.DB, model.NameUser, userId, &switchUser, true)
+	if err != nil {
+		response.SendBaseResp(ctx, c, err)
+		return
+	}
+	switchUser.Roles, err = model.GetUserRoles(switchUser.Username)
+	if err != nil {
+		response.SendBaseResp(ctx, c, err)
+		return
+	}
+	//hlog.Errorf("Jwt PayloadFunc 解析失败：%v", switchUser)
+	tokenGenerator, expire, err := mw.AuthWm.TokenGenerator(switchUser)
+	if err != nil {
+		response.SendBaseResp(ctx, c, err)
+		return
+	}
+	lr := mw.LoginResp{Nickname: switchUser.Nickname, Username: switchUser.Username,
+		Id: switchUser.Id, Token: tokenGenerator, Expire: expire.String(), Roles: switchUser.Roles}
+	if conf.GetConf().Authentication.EnableSession {
+		session := sessions.Default(c)
+		session.Clear()
+		session.Flashes()
+		if err = session.Save(); err != nil {
+			response.SendBaseResp(ctx, c, err)
+			return
+		}
+		if err = model.InitSession(ctx, session, switchUser, conf.GetConf().SSO.ClientId, mw.SessionOrg, true); err != nil {
+			hlog.CtxErrorf(ctx, err.Error())
+			response.SendBaseResp(ctx, c, err)
+			return
+		}
+	}
+	hlog.CtxInfof(ctx, "user %s switch to %s is success", u.Username, switchUser.Username)
+	response.SendDataResp(ctx, c, response.Succeed, &lr)
+}
 
-	c.JSON(consts.StatusOK, resp)
+// SyncUser .
+//
+//	@Summary		user sync summary
+//	@Description	user sync
+//	@Tags			user
+//
+//	@router			/api/v1/jobor/user-sync [GET]
+func SyncUser(ctx context.Context, c *app.RequestContext) {
+	//result, err := model.SyncUser(db.DB)
+	//if err != nil {
+	//	response.SendBaseResp(ctx, c, err)
+	//	return
+	//}
+	response.SuccessMsg(ctx, c, "", "user sync is success")
 }

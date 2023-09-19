@@ -27,7 +27,7 @@ import (
 var (
 	noAuditList = []string{
 		"/api/v1.0/user/get_token_by_param",
-		"/api/v1/ams/app-version/hook",
+		"/api/v1/login", "/api/v1/logout",
 	}
 )
 

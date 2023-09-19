@@ -30,3 +30,13 @@ func _getloginhistoryMw() []app.HandlerFunc {
 	// your code...
 	return nil
 }
+
+func _getauditloginMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _getauditlogMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}

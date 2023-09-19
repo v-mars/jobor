@@ -22,7 +22,7 @@ message AuditResp {
 
 // 登录历史记录和操作审计记录
 service AuditLog {
-  rpc GetLoginHistory(AuditReq) returns(AuditResp) {
+  rpc GetAuditLog(AuditReq) returns(AuditResp) {
     option (api.get) = "/api/v1/jobor/audit-log";
   }
 }
