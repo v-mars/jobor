@@ -6,7 +6,7 @@ import (
 )
 
 const (
-	NameAuditLog = "audit"
+	NameAuditLog = "audit_log"
 )
 
 type AuditLog struct {

@@ -8,6 +8,7 @@ RUN go env -w GO111MODULE="on" && go env -w GOPROXY="https://goproxy.cn" && go e
 FROM iocean/ubuntu:22.10
 WORKDIR /data
 COPY --from=builder /data/app ./
+COPY ./fs ./fs
 #COPY --from=builder /data/godemo/docs/ ./docs/
 #RUN apt update && apt install tzdata inetutils-ping telnet traceroute -y
 #RUN yum install inetutils-ping vim telnet traceroute -y && mkdir -pv /data/log

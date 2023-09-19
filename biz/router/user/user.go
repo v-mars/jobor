@@ -23,23 +23,20 @@ func Register(r *server.Hertz) {
 			_v1 := _api.Group("/v1", _v1Mw()...)
 			{
 				_jobor := _v1.Group("/jobor", _joborMw()...)
+				_jobor.POST("/user", append(_postuserMw(), user.PostUser)...)
+				_user := _jobor.Group("/user", _userMw()...)
+				_user.PUT("/:id", append(_putuserMw(), user.PutUser)...)
+				_user.DELETE("/:id", append(_deleteuserMw(), user.DeleteUser)...)
 				_jobor.GET("/user-self", append(_getuserselfMw(), user.GetUserSelf)...)
+				_jobor.GET("/user-sync", append(_syncuserMw(), user.SyncUser)...)
+				_jobor.GET("/users", append(_getuserallMw(), user.GetUserAll)...)
+				_jobor.GET("/user", append(_getuserMw(), user.GetUser)...)
+				_user0 := _jobor.Group("/user", _user0Mw()...)
+				_user0.GET("/:id", append(_getuserbyidMw(), user.GetUserById)...)
 				{
 					_user_switch := _jobor.Group("/user-switch", _user_switchMw()...)
 					_user_switch.GET("/:user_id", append(_switchuserMw(), user.SwitchUser)...)
 				}
-			}
-			{
-				_sys := _v1.Group("/sys", _sysMw()...)
-				_sys.POST("/user", append(_postuserMw(), user.PostUser)...)
-				_user := _sys.Group("/user", _userMw()...)
-				_user.PUT("/:id", append(_putuserMw(), user.PutUser)...)
-				_user.DELETE("/:id", append(_deleteuserMw(), user.DeleteUser)...)
-				_sys.GET("/user-sync", append(_syncuserMw(), user.SyncUser)...)
-				_sys.GET("/users", append(_getuserallMw(), user.GetUserAll)...)
-				_sys.GET("/user", append(_getuserMw(), user.GetUser)...)
-				_user0 := _sys.Group("/user", _user0Mw()...)
-				_user0.GET("/:id", append(_getuserbyidMw(), user.GetUserById)...)
 			}
 		}
 	}

@@ -11,6 +11,8 @@ import (
 	"jobor/biz/response"
 	"jobor/conf"
 	_ "jobor/docs"
+	"net/http"
+	"strings"
 
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/app/server"
@@ -52,7 +54,9 @@ func customizedRegister(r *server.Hertz) {
 	//r.POST("/api/v1/sys/gen-token", tool.GenJwtToken)
 	r.POST("/api/v1/refresh_token", mw.AuthWm.RefreshHandler)
 	r.GET("/api/v1/refresh_token", mw.AuthWm.RefreshHandler)
-	r.StaticFS("/", &app.FS{Root: "./", GenerateIndexPages: true})
+	//r.StaticFS("/", &app.FS{Root: "./fs/dist/", GenerateIndexPages: true})
+	setStaticWeb(r)
+
 	auth := r.Group("/auth")
 	auth.Use(mw.AuthWm.MiddlewareFunc())
 	{
@@ -62,5 +66,64 @@ func customizedRegister(r *server.Hertz) {
 	// 服务api更新
 	if conf.GetConf().Server.AutoUpdateApi {
 		//api.UpdateApiByRoutes(db.DB, r)
+	}
+}
+
+func setStaticWeb(e *server.Hertz) {
+	e.LoadHTMLGlob("./fs/dist/*.html")
+	prefix := "/"
+	root := "./fs/dist/"
+	fss := &app.FS{Root: root, PathRewrite: getPathRewriter(prefix), IndexNames: []string{"index.html"}}
+	e.StaticFS(prefix, fss)
+	//e.Static("/static/", "./fs/dist/static")
+	//e.StaticFile("/favicon.ico", "./fs/dist/favicon.ico")
+	e.GET("/jobor/*any", func(ctx context.Context, c *app.RequestContext) {
+		c.HTML(http.StatusOK, "index.html", "")
+	})
+	e.GET("/login", func(ctx context.Context, c *app.RequestContext) {
+		c.HTML(http.StatusOK, "index.html", "")
+	})
+}
+
+func getPathRewriter(prefix string) app.PathRewriteFunc {
+	// Cannot have an empty prefix
+	if prefix == "" {
+		prefix = "/"
+	}
+	// Prefix always start with a '/' or '*'
+	if prefix[0] != '/' {
+		prefix = "/" + prefix
+	}
+
+	// Is prefix a direct wildcard?
+	isStar := prefix == "/*"
+	// Is prefix a partial wildcard?
+	if strings.Contains(prefix, "*") {
+		isStar = true
+		prefix = strings.Split(prefix, "*")[0]
+		// Fix this later
+	}
+	prefixLen := len(prefix)
+	if prefixLen > 1 && prefix[prefixLen-1:] == "/" {
+		// /john/ -> /john
+		prefixLen--
+		prefix = prefix[:prefixLen]
+	}
+	return func(ctx *app.RequestContext) []byte {
+		path := ctx.Path()
+		if len(path) >= prefixLen {
+			if isStar && string(path[0:prefixLen]) == prefix {
+				path = append(path[0:0], '/')
+			} else {
+				path = path[prefixLen:]
+				if len(path) == 0 || path[len(path)-1] != '/' {
+					path = append(path, '/')
+				}
+			}
+		}
+		if len(path) > 0 && path[0] != '/' {
+			path = append([]byte("/"), path...)
+		}
+		return path
 	}
 }

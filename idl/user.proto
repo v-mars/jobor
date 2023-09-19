@@ -136,24 +136,24 @@ service UserService {
     option (api.get) = "/api/v1/jobor/user-self";
   }
   rpc SyncUser(UserQuery) returns(base.Empty) {
-    option (api.get) = "/api/v1/sys/user-sync";
+    option (api.get) = "/api/v1/jobor/user-sync";
   }
   rpc GetUserAll(UserQuery) returns(base.Empty) {
-    option (api.get) = "/api/v1/sys/users";
+    option (api.get) = "/api/v1/jobor/users";
   }
   rpc GetUser(UserQuery) returns(base.Empty) {
-    option (api.get) = "/api/v1/sys/user";
+    option (api.get) = "/api/v1/jobor/user";
   }
   rpc GetUserById(UserQuery) returns(base.Empty) {
-    option (api.get) = "/api/v1/sys/user/:id";
+    option (api.get) = "/api/v1/jobor/user/:id";
   }
   rpc PostUser(PostUserReq) returns(base.Empty) {
-    option (api.post) = "/api/v1/sys/user";
+    option (api.post) = "/api/v1/jobor/user";
   }
   rpc PutUser(PutUserReq) returns(base.Empty) {
-    option (api.put) = "/api/v1/sys/user/:id";
+    option (api.put) = "/api/v1/jobor/user/:id";
   }
   rpc DeleteUser(UserQuery) returns(base.Empty) {
-    option (api.delete) = "/api/v1/sys/user/:id";
+    option (api.delete) = "/api/v1/jobor/user/:id";
   }
 }
