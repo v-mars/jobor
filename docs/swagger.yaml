@@ -641,6 +641,13 @@ paths:
       summary: audit log get summary
       tags:
       - audit
+  /api/v1/jobor/dashboard:
+    get:
+      description: dashboard
+      responses: {}
+      summary: dashboard summary
+      tags:
+      - dashboard
   /api/v1/jobor/gen-token:
     post:
       responses: {}

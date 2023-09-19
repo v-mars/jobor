@@ -227,6 +227,16 @@ const docTemplate = `{
                 "responses": {}
             }
         },
+        "/api/v1/jobor/dashboard": {
+            "get": {
+                "description": "dashboard",
+                "tags": [
+                    "dashboard"
+                ],
+                "summary": "dashboard summary",
+                "responses": {}
+            }
+        },
         "/api/v1/jobor/gen-token": {
             "post": {
                 "responses": {}

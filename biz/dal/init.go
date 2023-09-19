@@ -29,7 +29,7 @@ var (
 		"/jobor", "/iconfont", "/index.html", "/vite.svg", "/assets",
 		"/favicon.ico", "/ping", "/swagger/", "/api/v1/swagger/*", "/debug/pprof",
 		"/metrics", "/routes", "/reverse", "/air", "/api/v1/login", "/fs/",
-		"/api/v1/captcha",
+		"/api/v1/jobor/dashboard",
 		oidc_callback.CallbackPath,
 		oidc_callback.GotoRedirect,
 	}
