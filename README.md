@@ -1,14 +1,30 @@
 # Jobor分布式定时任务
-## ✨ 功能特性
-- 通过raft一致性算法，实现多server/controller/master的高可用，不同于传统的分布式只实现worker端的高可用，调度端只能是单点来避免同一任务同一时间被重复调度执行，从而达到了整个服务（Server,Worker）的高可用，保证了系统的健壮稳定性。
+## ✨ 功能特性v3.0.1
+- 为简化使用和理解成本，之前v2版本的Master Raft模式已经移除，目前Master节点只支持单节点，如有需要请联系作者购买企业版
 - worker高可用，并且通过路由标识，worker可以部署在不同环境，实现不同环境worker的权限控制，worker的系统环境依赖（Python,Golang,执行依赖的文件）。
 - 调度server与worker通过grpc通信。
 - 支持LDAP（openldap,AD）协议用户认证。
 - 支持多种任务脚本 [ api/restful请求, shell, python3 ] e.g
 - 基于Casbin实现的权限认证
+## 提示
+```text
+Jobor V3已经修复已知所有Bug，并且新增功能：父子任务执行、执行节点组、任务归属负责人、支持国产http,rpc框架（字节跳动）、支持golang任务类型执行。
+```
 
 ## 架构图
-![avatar](./img/struct.png)
+![avatar](./img/structv3.png)
+
+## 部署(推荐使用docker模式运行)
+```text
+docker pull iocean/jobor:server-v3.0.0
+docker pull iocean/jobor:worker-v3.0.0
+docker pull iocean/jobor:worker-go-v3.0.0
+docker pull iocean/jobor:worker-py-v3.0.0
+docker run -itd --name jobor-server --restart=always -v /etc/localtime:/etc/localtime -v ${HOST_DIR}/conf:/data/conf -v ${HOST_DIR}/log:/data/log --net=host iocean/jobor:server-v3.0.0
+docker run -itd --name jobor-worker --restart=always -v /etc/localtime:/etc/localtime -v ${HOST_DIR}/conf:/data/conf -v ${HOST_DIR}/log:/data/log --net=host iocean/jobor:worker-v3.0.0
+docker run -itd --name jobor-worker-py --restart=always -v /etc/localtime:/etc/localtime -v ${HOST_DIR}/conf:/data/conf -v ${HOST_DIR}/log:/data/log --net=host iocean/jobor:worker-py-v3.0.0
+docker run -itd --name jobor-worker-go --restart=always -v /etc/localtime:/etc/localtime -v ${HOST_DIR}/conf:/data/conf -v ${HOST_DIR}/log:/data/log --net=host iocean/jobor:worker-go-v3.0.0
+```
 
 ## 构建
 ```
@@ -16,7 +32,7 @@ go build -o ./app ./main.go
 go build -o ./app ./cmd/worker/main.go
 ```
 
-## 启动Server
+## 启动Server(推荐使用docker模式运行)
 ```
 go build -o ./app ./main.go
 
@@ -24,7 +40,7 @@ go build -o ./app ./main.go
 ```
 
 
-## 启动Worker
+## 启动Worker(推荐使用docker模式运行)
 ```
 go build -o ./app ./cmd/worker/main.go
 ./app -c ./conf/worker.yaml
@@ -36,6 +52,7 @@ password: admin
 
 ## DB
 ```
+数据库推进使用：MySQL8.0
 字符集：utf8mb4
 在配置文件最后一行粘贴以下语句
 /etc/mysql/conf.d/mysql.cnf
@@ -51,7 +68,7 @@ sql_mode=STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_
 
 ## TODO 
 ### task
-- [x] 支持server/controller/master(通过raft一致性算法)的高可用，一个Raft集群通常包含2*N+1个服务器，允许系统有N个故障服务器。
+- [x] 支持server/controller/master(通过raft一致性算法)的高可用，一个Raft集群通常包含2*N+1个服务器，允许系统有N个故障服务器（企业版）。
 - [x] ldap(支持openldap,AD 认证)
 - [x] server <-- gRPC --> worker
 - [x] task abort
@@ -70,9 +87,9 @@ sql_mode=STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_
 
 ## 🤝 特别感谢
 - golang 1.20
-- hertz
+- hertz （字节http框架）
 - hertz-swagger
-- kitex
+- kitex （字节rpc框架）
 - gorm
 - casbin
 - mysql 8.0
@@ -86,6 +103,21 @@ sql_mode=STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_
 
 <img src="./img/wechat.jpeg" width=200 height=200>
 
+## 开源、企业版区别
+| 功能         | 开源 | 企业 |
+|------------| - | - |
+| 前端源码       | 静态产物 | 支持 |
+| Master高可用  | - | 支持 |
+| Worker高可用  | 支持 | 支持 |
+| LDAP认证     | 支持 | 支持 |
+| Shell任务    | 支持 | 支持 |
+| API/HTTP任务 | 支持 | 支持 |
+| Python任务   | 支持 | 支持 |
+| Golang任务   | 支持 | 支持 |
+| 父子任务       | 支持 | 支持 |
+| 定制功能       | Issues | 立刻 |
+| 服务支持       | Issues | 微信群 |
+
 
 ## 交流/商务联系
 ```
@@ -93,5 +125,10 @@ sql_mode=STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_
 如果您是想基于此项目二次开发的话，您可以提出您在开发过程中的任何疑问，我会尽快答复并讲解。
 ```
 <img src="./img/Wechatid.jpeg" width=200 height=200>
+
+## 关联
+* 还可提供SSO（OIDC）统一认证服务
+* 运维CMDB系统服务
+* 持续集成发布系统，支持k8s、docker、虚拟机、静态资源发布，支持当下流程的染发发布、灰度发布、迭代流水线发布
 
 

@@ -27,13 +27,4 @@ service DashboardService {
   rpc GetDashboard(dashboardQuery) returns(dashboardResp) {
     option (api.get) = "/api/v1/jobor/dashboard";
   }
-  rpc GetDashboardDevice(dashboardQuery) returns(dashboardResp) {
-    option (api.get) = "/api/v1/jobor/dashboard/device";
-  }
-  rpc GetDashboardHost(dashboardQuery) returns(dashboardResp) {
-    option (api.get) = "/api/v1/jobor/dashboard/host";
-  }
-  rpc GetDashboardAms(dashboardQuery) returns(dashboardResp) {
-    option (api.get) = "/api/v1/jobor/dashboard/ams";
-  }
 }

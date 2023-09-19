@@ -348,7 +348,7 @@ func UpdateApiByRoutes(db *gorm.DB, e *server.Hertz) {
 			title = fmt.Sprintf("%s%s", ActionTitle[strings.ToLower(v.Method)], pathArray[0])
 			name = fmt.Sprintf("%s:%s", strings.ToLower(v.Method), pathArray[0])
 		}
-		res = append(res, Api{Title: title, Name: name, Method: v.Method, Path: v.Path, Group: group, EnabledAudit: audit})
+		res = append(res, Api{Title: title, Name: name, Method: v.Method, Path: v.Path, Dom: conf.Dom, Group: group, EnabledAudit: audit})
 	}
 	err := perms.UpdateApi(db, res)
 	if err != nil {
