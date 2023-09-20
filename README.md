@@ -16,13 +16,24 @@ Jobor V3已经修复已知所有Bug，并且新增功能：父子任务执行、
 
 ## 部署(推荐使用docker模式运行)
 ```text
+第一步，准备好Master/Server和Worker服务启动配置：
+server: conf/config.yaml
+worker: conf/worker.yaml
+
+第二步，拉取依赖镜像：
 docker pull iocean/jobor:server-v3.0.0
 docker pull iocean/jobor:worker-v3.0.0
 docker pull iocean/jobor:worker-go-v3.0.0
 docker pull iocean/jobor:worker-py-v3.0.0
-docker run -itd --name jobor-server --restart=always -v /etc/localtime:/etc/localtime -v ${HOST_DIR}/conf:/data/conf -v ${HOST_DIR}/log:/data/log --net=host iocean/jobor:server-v3.0.0
+
+第三步，启动Master/Server和Worker服务：
+Server/Master:
+docker run -itd --name jobor-server --restart=always -v /etc/localtime:/etc/localtime -v ${HOST_DIR}/conf:/data/conf -v ${HOST_DIR}/log:/data/log --net=host iocean/jobor:server-v3.0.1
+通用 Worker:
 docker run -itd --name jobor-worker --restart=always -v /etc/localtime:/etc/localtime -v ${HOST_DIR}/conf:/data/conf -v ${HOST_DIR}/log:/data/log --net=host iocean/jobor:worker-v3.0.0
+执行 Python Worker:
 docker run -itd --name jobor-worker-py --restart=always -v /etc/localtime:/etc/localtime -v ${HOST_DIR}/conf:/data/conf -v ${HOST_DIR}/log:/data/log --net=host iocean/jobor:worker-py-v3.0.0
+执行 Golang Worker:
 docker run -itd --name jobor-worker-go --restart=always -v /etc/localtime:/etc/localtime -v ${HOST_DIR}/conf:/data/conf -v ${HOST_DIR}/log:/data/log --net=host iocean/jobor:worker-go-v3.0.0
 ```
 
@@ -52,7 +63,7 @@ password: admin
 
 ## DB
 ```
-数据库推进使用：MySQL8.0
+数据库推荐使用：MySQL8.0
 字符集：utf8mb4
 在配置文件最后一行粘贴以下语句
 /etc/mysql/conf.d/mysql.cnf
@@ -70,6 +81,7 @@ sql_mode=STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_
 ### task
 - [x] 支持server/controller/master(通过raft一致性算法)的高可用，一个Raft集群通常包含2*N+1个服务器，允许系统有N个故障服务器（企业版）。
 - [x] ldap(支持openldap,AD 认证)
+- [x] SSO/OIDC/Oauth(支持SSO/OIDC/Oauth认证)
 - [x] server <-- gRPC --> worker
 - [x] task abort
 - [x] task timeout
@@ -126,9 +138,10 @@ sql_mode=STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_
 ```
 <img src="./img/Wechatid.jpeg" width=200 height=200>
 
-## 关联
+## 还可提供关联其他常用系统服务
 * 还可提供SSO（OIDC）统一认证服务
 * 运维CMDB系统服务
+* 运维工单服务系统
 * 持续集成发布系统，支持k8s、docker、虚拟机、静态资源发布，支持当下流程的染发发布、灰度发布、迭代流水线发布
 
 

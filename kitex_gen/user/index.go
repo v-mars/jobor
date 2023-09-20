@@ -12,6 +12,13 @@ func (i *Userinfo) IsAdmin() bool {
 		return false
 	}
 }
+func (i *Userinfo) IsTaskAdmin() bool {
+	if utils.InOfStr("task_rw", i.Roles) {
+		return true
+	} else {
+		return false
+	}
+}
 
 func (i *Userinfo) IsDevOps() bool {
 	if utils.InOfStr("devops", i.Roles) {

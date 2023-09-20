@@ -378,6 +378,31 @@ definitions:
       username:
         type: string
     type: object
+  user.PutUserPassRestReq:
+    properties:
+      id:
+        type: integer
+      password:
+        type: string
+    type: object
+  user.PutUserPasswordReq:
+    properties:
+      old_password:
+        type: string
+      password:
+        type: string
+    type: object
+  user.PutUserProfileReq:
+    properties:
+      avatar:
+        type: string
+      email:
+        type: string
+      nickname:
+        type: string
+      phone:
+        type: string
+    type: object
   user.PutUserReq:
     properties:
       avatar:
@@ -1029,6 +1054,48 @@ paths:
           $ref: '#/definitions/user.PutUserReq'
       responses: {}
       summary: user put summary
+      tags:
+      - user
+  /api/v1/jobor/user/pass-reset:
+    put:
+      description: user pass reset put
+      parameters:
+      - description: 参数
+        in: body
+        name: json
+        required: true
+        schema:
+          $ref: '#/definitions/user.PutUserPassRestReq'
+      responses: {}
+      summary: user pass reset put summary
+      tags:
+      - user
+  /api/v1/jobor/user/password:
+    put:
+      description: user password put
+      parameters:
+      - description: 参数
+        in: body
+        name: json
+        required: true
+        schema:
+          $ref: '#/definitions/user.PutUserPasswordReq'
+      responses: {}
+      summary: user password put summary
+      tags:
+      - user
+  /api/v1/jobor/user/profile:
+    put:
+      description: user profile put
+      parameters:
+      - description: 参数
+        in: body
+        name: json
+        required: true
+        schema:
+          $ref: '#/definitions/user.PutUserProfileReq'
+      responses: {}
+      summary: user profile put summary
       tags:
       - user
   /api/v1/jobor/users:

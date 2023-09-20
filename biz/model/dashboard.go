@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	TbName = "dashboard"
+	NameDash = "dashboard"
 )
 
 type DashParam struct {

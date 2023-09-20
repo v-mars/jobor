@@ -191,7 +191,7 @@ func WhereTask(req *task2.TaskQuery, u *user.Userinfo) func(Db *gorm.DB) *gorm.D
 			sql = sql + " and route_policy = ?"
 			sqlArgs = append(sqlArgs, req.RoutePolicy)
 		}
-		if !u.IsAdmin() && u != nil && u.Id > 0 {
+		if !u.IsAdmin() && !u.IsTaskAdmin() && u != nil && u.Id > 0 {
 			sql = sql + " and user.id = ?"
 			sqlArgs = append(sqlArgs, u.Id)
 		}

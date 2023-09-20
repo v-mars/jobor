@@ -728,6 +728,69 @@ const docTemplate = `{
                 "responses": {}
             }
         },
+        "/api/v1/jobor/user/pass-reset": {
+            "put": {
+                "description": "user pass reset put",
+                "tags": [
+                    "user"
+                ],
+                "summary": "user pass reset put summary",
+                "parameters": [
+                    {
+                        "description": "参数",
+                        "name": "json",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/user.PutUserPassRestReq"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/api/v1/jobor/user/password": {
+            "put": {
+                "description": "user password put",
+                "tags": [
+                    "user"
+                ],
+                "summary": "user password put summary",
+                "parameters": [
+                    {
+                        "description": "参数",
+                        "name": "json",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/user.PutUserPasswordReq"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/api/v1/jobor/user/profile": {
+            "put": {
+                "description": "user profile put",
+                "tags": [
+                    "user"
+                ],
+                "summary": "user profile put summary",
+                "parameters": [
+                    {
+                        "description": "参数",
+                        "name": "json",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/user.PutUserProfileReq"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
         "/api/v1/jobor/user/{id}": {
             "get": {
                 "description": "user get by id",
@@ -1566,6 +1629,45 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "user.PutUserPassRestReq": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "user.PutUserPasswordReq": {
+            "type": "object",
+            "properties": {
+                "old_password": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "user.PutUserProfileReq": {
+            "type": "object",
+            "properties": {
+                "avatar": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "nickname": {
+                    "type": "string"
+                },
+                "phone": {
                     "type": "string"
                 }
             }

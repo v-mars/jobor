@@ -80,6 +80,7 @@ type Authentication struct {
 	LoginFailForbid  int    `yaml:"login_fail_forbid"`
 	LoginFailCaptcha int    `yaml:"login_fail_captcha"`
 	Timeout          int64  `yaml:"timeout"`
+	LocalAuth        bool   `yaml:"local_auth"`
 }
 
 type MySQL struct {
@@ -99,6 +100,7 @@ type Consul struct {
 
 type SSO struct {
 	Enable       bool   `yaml:"enable"`
+	Banner       string `yaml:"banner"`
 	IssuerURL    string `yaml:"issuer_url"`
 	ClientId     string `yaml:"client_id"`
 	ClientSecret string `yaml:"client_secret"`
@@ -162,13 +164,15 @@ func initConf() {
 	conf.Server.LogLevel = "./log/std.log"
 	conf.Server.LogLevel = "debug"
 	conf.Server.EnableSwagger = true
-	conf.Ext.WebAesKey = "Webkbjobor1qaz*WSP"
+	conf.Ext.WebAesKey = "Webkbjob1qaz*WSP"
 	conf.Ext.DataAesKey = "AY3b5J788065B3Zr"
 	conf.Oauth2Srv.AccessKey = "AirkJobor1qacc*UAC"
 	conf.Oauth2Srv.RefreshKey = "AirkbJoborRefz*Jobor"
+	conf.SSO.Banner = "通过OIDC提供商登录"
 	conf.Authentication.LoginFailCaptcha = 50
 	conf.Authentication.LoginFailForbid = 10
 	conf.Authentication.Timeout = 300
+	conf.Authentication.LocalAuth = true
 	err = yaml.Unmarshal(content, conf)
 	if err != nil {
 		hlog.Error("parse yaml error - %v", err)

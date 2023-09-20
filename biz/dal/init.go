@@ -28,15 +28,14 @@ var (
 		"/login", "/404", "/static", "/favicon.ico", "/air", "/dashboard", "/hostid", "/license",
 		"/jobor", "/iconfont", "/index.html", "/vite.svg", "/assets",
 		"/favicon.ico", "/ping", "/swagger/", "/api/v1/swagger/*", "/debug/pprof",
-		"/metrics", "/routes", "/reverse", "/air", "/api/v1/login", "/fs/",
-		"/api/v1/jobor/dashboard",
+		"/metrics", "/routes", "/reverse", "/air", "/api/v1/login", "/fs/", "/api/v1/login-init ",
 		oidc_callback.CallbackPath,
 		oidc_callback.GotoRedirect,
 	}
 
 	// NoAuthorized 权限验证
 	NoAuthorized = []string{
-		"/api/v1/mfa/", "/api/v1/jobor/enum",
+		"/api/v1/mfa/", "/api/v1/jobor/enum", "/api/v1/jobor/task", "/api/v1/jobor/task-log", "/api/v1/jobor/dashboard",
 		"/api/v1/sys/user-self", "/api/v1/user-info",
 		"/api/v1/sys/user/profile", "/api/v1/sys/user/password",
 		"/api/v1/logout", "/api/v1/sys/login-history",
@@ -70,7 +69,22 @@ func Init() {
 	redisStore.Init()
 
 	// DB连接初始化
-	migrate.Migrate()
+	//migrate.Migrate()
+
+	// DB 数据初始化
+	install, err := migrate.QueryIsInstall(context.TODO(), db.DB)
+	if err != nil {
+		hlog.Fatal(err)
+		return
+	}
+	if !install {
+		hlog.Debugf("jobor db init is start ")
+		err = migrate.StartInstall(context.TODO(), db.DB, "jobor3.sql")
+		if err != nil {
+			hlog.Fatal(err)
+			return
+		}
+	}
 
 	// JWT连接初始化
 	mw.InitJwt()
@@ -86,4 +100,5 @@ func Init() {
 	}
 
 	dispatcher.InitCron()
+
 }

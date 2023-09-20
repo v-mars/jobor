@@ -277,7 +277,7 @@ func ValidateSaltPasswords(hashedPwd string, plainPwd []byte) bool {
 // 16,24,32位字符串的话，分别对应AES-128，AES-192，AES-256 加密方法
 // key不能泄露
 // var PwdKey = []byte("DIS**#KKKDJJSKDI")
-var DefaultTxtKey = "AirkJobor1qaz*xx"
+var DefaultTxtKey = "Webkbjob1qaz*WSP"
 
 // AesEncrypt 实现加密
 func AesEncrypt(origData []byte, key []byte) ([]byte, error) {

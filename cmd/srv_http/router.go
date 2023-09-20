@@ -45,6 +45,7 @@ func customizedRegister(r *server.Hertz) {
 		r.GET("/swagger/*any", swagger.WrapHandler(swaggerFiles.Handler, swagger.DocExpansion("none")))
 	}
 
+	r.GET("/api/v1/login-init", mw.LoginInit)
 	r.POST("/api/v1/login", mw.AuthWm.LoginHandler)
 	r.GET("/api/v1/login", mw.AuthWm.LoginHandler)
 	r.POST("/api/v1/logout", mw.AuthWm.LogoutHandler)
