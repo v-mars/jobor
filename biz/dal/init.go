@@ -37,7 +37,7 @@ var (
 	NoAuthorized = []string{
 		"/api/v1/mfa/", "/api/v1/jobor/enum", "/api/v1/jobor/task", "/api/v1/jobor/task-log", "/api/v1/jobor/dashboard",
 		"/api/v1/sys/user-self", "/api/v1/user-info",
-		"/api/v1/sys/user/profile", "/api/v1/sys/user/password",
+		"/api/v1/jobor/user/profile", "/api/v1/sys/user/password",
 		"/api/v1/logout", "/api/v1/sys/login-history",
 		"/api/v1/sys/user-profile/", "/api/v1/otp"}
 )
