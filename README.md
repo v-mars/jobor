@@ -7,7 +7,7 @@
 - 支持多种任务脚本 [ api/restful请求, shell, python3 ] e.g
 - 基于Casbin实现的权限认证
 ## 提示
-Jobor V3已经修复已知所有Bug，并且新增功能：父子任务执行、执行节点组、任务归属负责人、支持国产http,rpc框架（字节跳动）、支持golang任务类型执行。
+Jobor V3已经修复已知所有Bug，并且新增功能：父子任务执行、执行节点组、worker节点支持agent、ssh两种模式、任务归属负责人、支持国产[**HTTP,RPC框架CloudWeGo（字节跳动）**](https://github.com/cloudwego/)、支持golang任务类型执行。
 
 ## 架构图
 ![avatar](./img/structv3.png)
@@ -102,9 +102,9 @@ sql_mode=STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_
 
 ## 🤝 特别感谢
 - golang 1.20
-- hertz （字节http框架）
+- [**hertz （字节http框架）**](https://github.com/cloudwego/)
 - hertz-swagger
-- kitex （字节rpc框架）
+- [**kitex （字节rpc框架）**](https://github.com/cloudwego/)
 - gorm
 - casbin
 - mysql 8.0
