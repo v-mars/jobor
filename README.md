@@ -93,7 +93,6 @@ sql_mode=STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_
 - [x] shell task
 - [x] python3 task
 - [x] golang task
-- [x] server task
 - [x] father task
 - [x] children task
 - [x] worker 预执行（如：执行python 前先执行 pip install xx）
@@ -126,6 +125,7 @@ sql_mode=STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_
 | Master高可用  | - | 支持 |
 | Worker高可用  | 支持 | 支持 |
 | LDAP认证     | 支持 | 支持 |
+| OIDC认证     | 支持 | 支持 |
 | Shell任务    | 支持 | 支持 |
 | API/HTTP任务 | 支持 | 支持 |
 | Python任务   | 支持 | 支持 |
