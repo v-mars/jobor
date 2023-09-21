@@ -7,9 +7,7 @@
 - 支持多种任务脚本 [ api/restful请求, shell, python3 ] e.g
 - 基于Casbin实现的权限认证
 ## 提示
-```text
 Jobor V3已经修复已知所有Bug，并且新增功能：父子任务执行、执行节点组、任务归属负责人、支持国产http,rpc框架（字节跳动）、支持golang任务类型执行。
-```
 
 ## 架构图
 ![avatar](./img/structv3.png)
@@ -21,7 +19,7 @@ server: conf/config.yaml
 worker: conf/worker.yaml
 
 第二步，拉取依赖镜像：
-docker pull iocean/jobor:server-v3.0.0
+docker pull iocean/jobor:server-v3.0.1
 docker pull iocean/jobor:worker-v3.0.0
 docker pull iocean/jobor:worker-go-v3.0.0
 docker pull iocean/jobor:worker-py-v3.0.0
