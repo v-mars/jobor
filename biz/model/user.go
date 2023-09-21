@@ -148,28 +148,31 @@ func GroupScopesUser() func(Db *gorm.DB) *gorm.DB {
 var dom = conf.Dom
 
 func AddUser(ctx context.Context, Db *gorm.DB, req *user.PostUserReq) (User, error) {
-	req.Password = utils.HashAndSalt([]byte(req.Password))
+	if req.Password != "" {
+		req.Password = utils.HashAndSalt([]byte(req.Password))
+	}
 	var row User
 	if err := utils.AnyToAny(req, &row); err != nil {
 		return row, err
 	}
 	tx := Db.Begin()
 	defer func() { tx.Rollback() }()
-	//if err := tx.Model(&role.Role{}).Where("id in (?)", req.RoleIds).Select(
-	//	"id,name").Scan(&row.Roles).Error; err != nil {
-	//	return row, err
-	//}
-	//hlog.Debugf("获取关联Roles成功, roles count %d", len(row.Roles))
-	//for _, v := range row.Roles {
-	//	_, err := casbin.Enforcer.AddGroupingPolicy(row.Username, v.Name, dom) // user role dom
-	//	if err != nil {
-	//		return row, err
-	//	}
-	//}
-	hlog.CtxDebugf(ctx, "user %s casbin get role is success", row.Nickname)
+	if err := tx.Model(&Role{}).Where("id in (?)", req.RoleIds).Select(
+		"id,name").Scan(&row.Roles).Error; err != nil {
+		return row, err
+	}
+	hlog.Debugf("获取关联Roles成功, roles count %d", len(row.Roles))
+
 	if err := tx.Table(row.TableName()).Create(&row).Error; err != nil {
 		return row, err
 	}
+	for _, v := range row.Roles {
+		_, err := casbin.Enforcer.AddGroupingPolicy(row.Username, v.Name, dom) // user role dom
+		if err != nil {
+			return row, err
+		}
+	}
+	hlog.CtxDebugf(ctx, "user %s casbin get role is success", row.Nickname)
 	if err := tx.Commit().Error; err != nil {
 		hlog.Errorf("事务提交失败，%s", err)
 		return row, err
@@ -190,37 +193,37 @@ func ModUser(ctx context.Context, Db *gorm.DB, _id interface{}, req *user.PutUse
 	if err = tx.First(&userObj, _id).Error; err != nil {
 		return userObj, err
 	}
-	//if req.RoleIds != nil {
-	//	if err = tx.Model(&role.Role{}).Where("id in (?)", req.GetRoleIdsInt()).Scan(&userObj.Roles).Error; err != nil {
-	//		return userObj, err
-	//	}
-	//
-	//	var newStrArray []string
-	//	for _, v := range userObj.Roles {
-	//		newStrArray = append(newStrArray, v.Name)
-	//		_, err = casbin.Enforcer.AddGroupingPolicy(userObj.Username, v.Name, dom) // user role dom
-	//		if err != nil {
-	//			return userObj, err
-	//		}
-	//	}
-	//	hlog.CtxDebugf(ctx, "user %s casbin add  group policy is success", userObj.Nickname)
-	//	existsList, err := casbin.Enforcer.GetRolesForUser(userObj.Username, dom)
-	//	if err != nil {
-	//		return userObj, err
-	//	}
-	//	hlog.CtxDebugf(ctx, "user %s casbin get role is success", userObj.Nickname)
-	//	diff := utils.Difference(existsList, newStrArray)
-	//	for _, v := range diff {
-	//		_, err = casbin.Enforcer.RemoveGroupingPolicy(userObj.Username, v, dom)
-	//		if err != nil {
-	//			return userObj, err
-	//		}
-	//	}
-	//	hlog.CtxDebugf(ctx, "user %s casbin remove  group policy is success", userObj.Nickname)
-	//	if err = tx.Model(&userObj).Association("Roles").Replace(userObj.Roles); err != nil {
-	//		return userObj, err
-	//	}
-	//}
+	if req.RoleIds != nil {
+		if err = tx.Model(&Role{}).Where("id in (?)", req.GetRoleIdsInt()).Scan(&userObj.Roles).Error; err != nil {
+			return userObj, err
+		}
+
+		var newStrArray []string
+		for _, v := range userObj.Roles {
+			newStrArray = append(newStrArray, v.Name)
+			_, err = casbin.Enforcer.AddGroupingPolicy(userObj.Username, v.Name, dom) // user role dom
+			if err != nil {
+				return userObj, err
+			}
+		}
+		hlog.CtxDebugf(ctx, "user %s casbin add  group policy is success", userObj.Nickname)
+		existsList, err := casbin.Enforcer.GetRolesForUser(userObj.Username, dom)
+		if err != nil {
+			return userObj, err
+		}
+		hlog.CtxDebugf(ctx, "user %s casbin get role is success", userObj.Nickname)
+		diff := utils.Difference(existsList, newStrArray)
+		for _, v := range diff {
+			_, err = casbin.Enforcer.RemoveGroupingPolicy(userObj.Username, v, dom)
+			if err != nil {
+				return userObj, err
+			}
+		}
+		hlog.CtxDebugf(ctx, "user %s casbin remove  group policy is success", userObj.Nickname)
+		if err = tx.Model(&userObj).Association("Roles").Replace(userObj.Roles); err != nil {
+			return userObj, err
+		}
+	}
 	if err = tx.Table(NameUser).Where("id=?", _id).Updates(mapData).Error; err != nil {
 		return userObj, err
 	}
@@ -261,6 +264,32 @@ func DelUser(ctx context.Context, Db *gorm.DB, _ids []interface{}) ([]User, erro
 	}
 	hlog.Infof("用户删除成功")
 	return us, nil
+}
+
+func ModPassword(ctx context.Context, Db *gorm.DB, _id interface{}, username string, req user.PutUserPasswordReq) error {
+	_, authOld, err := Auth(db.DB, username, req.OldPassword)
+	if err != nil {
+		return err
+	}
+	if !authOld && err == nil {
+		return fmt.Errorf("旧密码不正确")
+	}
+	req.Password = utils.HashAndSalt([]byte(req.Password))
+	return Db.Table(NameUser).Where("id=?", _id).UpdateColumn("password", req.Password).Error
+}
+
+func ModPassReset(ctx context.Context, Db *gorm.DB, req user.PutUserPassRestReq) error {
+	req.Password = utils.HashAndSalt([]byte(req.Password))
+	return Db.Table(NameUser).Where("id=?", req.Id).UpdateColumn("password", req.Password).Error
+}
+
+func ModProfile(ctx context.Context, Db *gorm.DB, _id interface{}, req user.PutUserProfileReq) error {
+	var mapData map[string]interface{}
+	var err error
+	if mapData, err = convert.StructToMap(req); err != nil {
+		return err
+	}
+	return Db.Table(NameUser).Where("id=?", _id).Updates(mapData).Error
 }
 
 // GetByUserName 根据用户名称获取用户信息

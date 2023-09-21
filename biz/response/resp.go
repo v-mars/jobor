@@ -19,7 +19,7 @@ import (
 	"github.com/cloudwego/hertz/pkg/app/server/render"
 )
 
-var DefaultAesKey = "AirkJobor1qaz*xxx"
+var DefaultAesKey = "Webkbjob1qaz*WSP"
 
 const (
 	username = "username"

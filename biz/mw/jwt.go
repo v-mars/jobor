@@ -4,6 +4,9 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"gorm.io/gorm"
+	"jobor/biz/dal/db"
+	"jobor/biz/dal/ldap"
 	"jobor/biz/dal/redisStore"
 	"jobor/biz/model"
 	"jobor/biz/pack/oidc_callback"
@@ -153,27 +156,14 @@ func Jwt(key string) *jwt.HertzJWTMiddleware {
 }
 
 func Authenticator(ctx context.Context, c *app.RequestContext) (interface{}, error) {
+	hlog.CtxInfof(ctx, "authenticator is start")
 	var err error
 	var req LoginReq
 	if err = c.BindAndValidate(&req); err != nil {
 		return nil, err
 	}
-	no := getOidcProvider(ctx)
-	userInfo, err := no.OidcCallbackWithPassword(ctx, req.Username, req.Password)
+	u, err := MultipleSrcAuth(ctx, db.DB, req.Username, req.Password)
 	if err != nil {
-		return nil, err
-	}
-
-	var body json.RawMessage
-	var u user.Userinfo
-	if err = userInfo.Claims(&body); err != nil {
-		return nil, err
-	}
-	hlog.CtxDebugf(ctx, "get userInfo %s from oidc server", string(body))
-	u = model.GetUserinfoFromOidc(body)
-	u, err = model.GetUserinfoOrCreate(&u)
-	if err != nil {
-		hlog.CtxErrorf(ctx, "claims unmarshals the raw JSON object claims into the provided object err, %s", err)
 		return nil, err
 	}
 	model.SetContentUserinfo(ctx, c, u)
@@ -302,8 +292,116 @@ func PostLogout(ctx context.Context, c *app.RequestContext) {
 	//response.Success(ctx, c, "logout success")
 }
 
+// LoginInit .
+//
+//	@Summary		login init summary
+//	@Description	login init
+//	@Tags			login
+//	@router			/api/v1/login-init [GET]
+func LoginInit(ctx context.Context, c *app.RequestContext) {
+	type Data struct {
+		SsoAuth   bool   `json:"sso_auth"`
+		SsoTip    string `json:"sso_tip"`
+		LocalAuth bool   `json:"local_auth"`
+	}
+	data := Data{SsoAuth: conf.GetConf().SSO.Enable, SsoTip: conf.GetConf().SSO.Banner,
+		LocalAuth: conf.GetConf().Authentication.LocalAuth}
+	response.SendDataResp(ctx, c, response.Succeed, data)
+}
+
 func getOidcProvider(ctx context.Context) *oidc_callback.OIDC {
 	no := oidc_callback.NewOIDC(ctx, conf.GetConf().SSO.IssuerURL, conf.GetConf().SSO.ClientId,
 		conf.GetConf().SSO.ClientSecret, conf.GetConf().SSO.Scope, oidc_callback.CallbackPath)
 	return no
+}
+
+func MultipleSrcAuth(ctx context.Context, DB *gorm.DB, username string, password string) (u user.Userinfo, err error) {
+	if !conf.GetConf().SSO.Enable && !conf.GetConf().Authentication.LocalAuth && !conf.GetConf().Ldap.Enabled {
+		return u, fmt.Errorf("必须开启至少一个认证源【本地、LDAP、SSO】")
+	}
+	if conf.GetConf().Authentication.LocalAuth {
+		ui, localOk, err := model.Auth(DB, username, password)
+		if err != nil {
+			hlog.Errorf("local auth err: %s", err)
+			goto LdapAuth
+			//return u, err
+		}
+		if localOk {
+			if !ui.Status {
+				return u, fmt.Errorf("用户[%s]已经被禁用，请联系管理员", username)
+			}
+			u = *ui.GetUserinfo()
+			hlog.CtxInfof(ctx, "user %s local db auth is success", username)
+			u.Roles, err = model.GetUserRoles(username)
+			if err != nil {
+				hlog.Errorf("local auth err: %s", err)
+				return u, err
+			} else {
+				return u, nil
+			}
+		}
+	}
+LdapAuth:
+	if conf.GetConf().Ldap.Enabled {
+		var ldapOk bool
+		var li = conf.GetConf().Ldap
+		ldapApi, err := ldap.GetLdapApi(li.Enabled, li.Tls, li.Addr, li.BaseDN,
+			li.Username, li.Password, li.AuthFilter, nil)
+		if err != nil {
+			hlog.Debugf("user %s ldap/ad auth err, %s", username, err)
+			goto SSOAuth
+		}
+		r, err := ldapApi.Authentication(username, password)
+		if err == nil {
+			var u = user.Userinfo{Username: r.Username, Nickname: r.DisplayName,
+				UserType: model.Ldap, Phone: r.Phone, Email: r.Email, Status: true}
+			u, err := model.GetUserinfoOrCreate(&u)
+			if err != nil {
+				hlog.Errorf("ldap auth create or get err: %s", err)
+				return u, err
+			} else if u.Username == "" {
+				err = fmt.Errorf("用户[%s]信息不存在", username)
+				hlog.Errorf("ldap auth err: %s", err)
+				return u, err
+			}
+			if !u.Status {
+				err = fmt.Errorf("用户[%s]已经被禁用，请联系管理员", username)
+				hlog.Errorf("ldap auth err: %s", err)
+				return u, err
+			}
+			ldapOk = true
+			hlog.CtxInfof(ctx, "user %s ldap auth is success", username)
+			u.Roles, err = model.GetUserRoles(username)
+			if err != nil {
+				hlog.Errorf("ldap auth get roles err: %s", err)
+				return u, err
+			}
+		} else {
+			hlog.Errorf("ldap auth err: %s", err)
+		}
+		hlog.CtxDebugf(ctx, "user %s ldap/ad auth is %v", username, ldapOk)
+	}
+SSOAuth:
+	if conf.GetConf().SSO.Enable {
+		no := getOidcProvider(ctx)
+		userInfo, err := no.OidcCallbackWithPassword(ctx, username, password)
+		if err != nil {
+			return u, err
+		}
+
+		var body json.RawMessage
+		var u user.Userinfo
+		if err = userInfo.Claims(&body); err != nil {
+			return u, err
+		}
+		hlog.CtxDebugf(ctx, "get userInfo %s from oidc server", string(body))
+		u = model.GetUserinfoFromOidc(body)
+		u, err = model.GetUserinfoOrCreate(&u)
+		if err != nil {
+			hlog.CtxErrorf(ctx, "claims unmarshals the raw JSON object claims into the provided object err, %s", err)
+			return u, err
+		}
+	}
+	err = fmt.Errorf("[%s]认证失败，用户名或密码不对,请重新输入", username)
+	return u, err
 }

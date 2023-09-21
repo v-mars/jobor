@@ -1,8 +1,4 @@
 routing_key: default
 weight: 100
 concurrency: 100
-servers: ["127.0.0.1:2002"]
-redis:
-  address: "xxx:6379"
-  password: "xx"
-  db: 1
+servers: ["127.0.0.1:2002"]     # jobor server rpc addrs

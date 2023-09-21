@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"github.com/cloudwego/hertz/pkg/common/hlog"
-	"google.golang.org/genproto/protobuf/api"
 	"jobor/biz/dal/casbin"
 	"jobor/biz/dal/db"
 	"jobor/biz/response"
@@ -110,7 +109,7 @@ func AddRole(ctx context.Context, Db *gorm.DB, req *role.RolePost) (Role, error)
 	}
 	tx := Db.Begin()
 	defer func() { tx.Rollback() }()
-	if err := tx.Model(&api.Api{}).Where("id in (?)", req.ApiIds).Select(
+	if err := tx.Model(&Api{}).Where("id in (?)", req.ApiIds).Select(
 		"id,name,path,method,dom").Scan(&row.Apis).Error; err != nil {
 		return row, err
 	}

@@ -122,7 +122,7 @@ func WhereLog(req *task_log.LogQuery, u *user.Userinfo) func(Db *gorm.DB) *gorm.
 			sql = sql + " and addr like ?"
 			sqlArgs = append(sqlArgs, req.Addr)
 		}
-		if !u.IsAdmin() && u != nil && u.Id > 0 {
+		if !u.IsAdmin() && !u.IsTaskAdmin() && u != nil && u.Id > 0 {
 			sql = sql + " and user.id = ?"
 			sqlArgs = append(sqlArgs, u.Id)
 		}

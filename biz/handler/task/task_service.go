@@ -58,7 +58,7 @@ func GetTaskById(ctx context.Context, c *app.RequestContext) {
 		response.SendBaseResp(ctx, c, err)
 		return
 	}
-	if !ok && !userinfo.IsAdmin() {
+	if !ok && !userinfo.IsAdmin() && !userinfo.IsTaskAdmin() {
 		response.SendBaseResp(ctx, c, fmt.Errorf("您没有权限操作此任务"))
 		return
 	}
@@ -114,15 +114,15 @@ func GetTask(ctx context.Context, c *app.RequestContext) {
 //	@router			/api/v1/jobor/task [POST]
 func PostTask(ctx context.Context, c *app.RequestContext) {
 	var err error
-	userinfo, err := model.GetUserSession(c, false)
-	if err != nil {
-		response.SendBaseResp(ctx, c, err)
-		return
-	}
-	if !userinfo.IsAdmin() {
-		response.SendBaseResp(ctx, c, fmt.Errorf("您没有权限添加任务"))
-		return
-	}
+	//userinfo, err := model.GetUserSession(c, false)
+	//if err != nil {
+	//	response.SendBaseResp(ctx, c, err)
+	//	return
+	//}
+	//if !userinfo.IsAdmin() && !userinfo.IsTaskAdmin() {
+	//	response.SendBaseResp(ctx, c, fmt.Errorf("您没有权限添加任务"))
+	//	return
+	//}
 	var req task.PostTaskReq
 	if err = c.BindAndValidate(&req); err != nil {
 		response.ParamFailed(ctx, c, err)
@@ -166,7 +166,7 @@ func PutTask(ctx context.Context, c *app.RequestContext) {
 		response.SendBaseResp(ctx, c, err)
 		return
 	}
-	if !ok && !userinfo.IsAdmin() {
+	if !ok && !userinfo.IsAdmin() && !userinfo.IsTaskAdmin() {
 		response.SendBaseResp(ctx, c, fmt.Errorf("您没有权限操作此任务"))
 		return
 	}
@@ -206,7 +206,7 @@ func DeleteTask(ctx context.Context, c *app.RequestContext) {
 		response.SendBaseResp(ctx, c, err)
 		return
 	}
-	if !ok && !userinfo.IsAdmin() {
+	if !ok && !userinfo.IsAdmin() && !userinfo.IsTaskAdmin() {
 		response.SendBaseResp(ctx, c, fmt.Errorf("您没有权限操作此任务"))
 		return
 	}
@@ -240,6 +240,15 @@ func RunTask(ctx context.Context, c *app.RequestContext) {
 		return
 	}
 	_id := c.Params.ByName("id")
+	ok, err := model.HasTaskPermission(_id, userinfo.Id)
+	if err != nil {
+		response.SendBaseResp(ctx, c, err)
+		return
+	}
+	if !ok && !userinfo.IsAdmin() && !userinfo.IsTaskAdmin() {
+		response.SendBaseResp(ctx, c, fmt.Errorf("您没有权限操作此任务"))
+		return
+	}
 	t, err := model.GetTaskInfoById(_id, false)
 	if err != nil {
 		response.SendBaseResp(ctx, c, err)

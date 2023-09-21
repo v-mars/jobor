@@ -276,3 +276,78 @@ func SyncUser(ctx context.Context, c *app.RequestContext) {
 	//}
 	response.SuccessMsg(ctx, c, "", "user sync is success")
 }
+
+// PutUserPassword .
+//
+//	@Summary		user password put summary
+//	@Description	user password put
+//	@Tags			user
+//	@Param			json	body	user.PutUserPasswordReq	true	"参数"
+//	@router			/api/v1/jobor/user/password [PUT]
+func PutUserPassword(ctx context.Context, c *app.RequestContext) {
+	var err error
+	var req user.PutUserPasswordReq
+	err = c.BindAndValidate(&req)
+	if err != nil {
+		response.ParamFailed(ctx, c, err)
+		return
+	}
+	u, _ := model.GetUserSession(c, true)
+	err = model.ModPassword(ctx, db.DB, u.Id, u.Username, req)
+	if err != nil {
+		response.SendBaseResp(ctx, c, err)
+		return
+	}
+
+	response.Success(ctx, c, "")
+}
+
+// PutUserPassRest .
+//
+//	@Summary		user pass reset put summary
+//	@Description	user pass reset put
+//	@Tags			user
+//	@Param			json	body	user.PutUserPassRestReq	true	"参数"
+//	@router			/api/v1/jobor/user/pass-reset [PUT]
+func PutUserPassRest(ctx context.Context, c *app.RequestContext) {
+	var err error
+	var req user.PutUserPassRestReq
+	err = c.BindAndValidate(&req)
+	if err != nil {
+		response.ParamFailed(ctx, c, err)
+		return
+	}
+	u, _ := model.GetUserSession(c, true)
+	req.Updater = &u.Nickname
+	err = model.ModPassReset(ctx, db.DB, req)
+	if err != nil {
+		response.SendBaseResp(ctx, c, err)
+		return
+	}
+	response.Success(ctx, c, "")
+}
+
+// PutUserProfile .
+//
+//	@Summary		user profile put summary
+//	@Description	user profile put
+//	@Tags			user
+//	@Param			json	body	user.PutUserProfileReq	true	"参数"
+//	@router			/api/v1/jobor/user/profile [PUT]
+func PutUserProfile(ctx context.Context, c *app.RequestContext) {
+	var err error
+	var req user.PutUserProfileReq
+	err = c.BindAndValidate(&req)
+	if err != nil {
+		response.ParamFailed(ctx, c, err)
+		return
+	}
+	u, _ := model.GetUserSession(c, true)
+	//req.Updater = &u.Nickname
+	err = model.ModProfile(ctx, db.DB, u.Id, req)
+	if err != nil {
+		response.SendBaseResp(ctx, c, err)
+		return
+	}
+	response.Success(ctx, c, "")
+}

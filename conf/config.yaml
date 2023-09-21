@@ -15,6 +15,7 @@ server:
   registry_center: "redis"
 
 authentication:
+  local_auth: true
   max_age : 86400
   enable_session : true
   auth_secret : "jobor_auth_key"
@@ -39,7 +40,21 @@ redis:
   password: ""
   db: 1
 
+ldap:
+  enabled: false
+  addr: "xxxx:389"
+  username: "CN=xxx,OU=xxx,OU=xxx,DC=example,DC=com"
+  password: "xxx"
+  base_dn: "dc=example,dc=com"
+  bind_dn: "CN=xxx,OU=xx,OU=xxx,DC=example,DC=com"
+  bind_pass: "xxxx"
+  auth_filter: "(&(sAMAccountName=%s))"
+  attributes: ["sAMAccountName", "displayName", "mail", "phone"]
+  timeout: 180 #单位 秒
+  tls: false
+
 sso:
+  enable: true
   issuer_url: "http://sso.xxx.local"
   client_id: "jobor"
   client_secret: "xx"

@@ -34,6 +34,7 @@ message Userinfo {
   string empno = 8[(api.query)="empno",(api.body)="empno"];
   string user_type = 9[(api.query)="user_type",(api.body)="user_type"];
   string userid = 10[(api.query)="userid",(api.body)="userid"];
+  string phone = 11[(api.query)="phone",(api.body)="phone"];
   repeated string roles = 20[(api.query)="roles",(api.body)="roles",(api.go_tag)="gorm:\"-\""];
   bool status = 15[(api.query)="status",(api.body)="status"];
   //  string Token = 6[(api.query)="token",(api.body)="token"];
@@ -119,6 +120,24 @@ message UserPutProfileResp {
   repeated string roles = 6;
 }
 
+message PutUserProfileReq {
+  optional string Nickname = 4[(api.query)="nickname",(api.body)="nickname,omitempty"];
+  optional string Avatar = 5[(api.query)="avatar",(api.body)="avatar,omitempty"];
+  optional string Phone = 7[(api.query)="phone",(api.body)="phone,omitempty"];
+  optional string Email = 8[(api.query)="email",(api.body)="email,omitempty"];
+}
+
+message PutUserPasswordReq {
+  string OldPassword = 1[(api.query)="old_password",(api.body)="old_password,required"];
+  string Password = 2[(api.query)="password",(api.body)="password,required"];
+}
+
+message PutUserPassRestReq {
+  int64 Id = 1[(api.query)="id",(api.body)="id,required"];
+  string Password = 2[(api.query)="password",(api.body)="password,required"];
+  optional string Updater = 60[(api.query)="-",(api.body)="-"];
+}
+
 message UserDeleteResp {
   int64 id = 2;
   string username = 3;
@@ -155,5 +174,14 @@ service UserService {
   }
   rpc DeleteUser(UserQuery) returns(base.Empty) {
     option (api.delete) = "/api/v1/jobor/user/:id";
+  }
+  rpc PutUserPassRest(PutUserPassRestReq) returns(UserPutPassResetResp) {
+    option (api.put) = "/api/v1/jobor/user/pass-reset";
+  }
+  rpc PutUserPassword(PutUserPasswordReq) returns(UserPutPasswordResp) {
+    option (api.put) = "/api/v1/jobor/user/password";
+  }
+  rpc PutUserProfile(PutUserProfileReq) returns(UserPutProfileResp) {
+    option (api.put) = "/api/v1/jobor/user/profile";
   }
 }

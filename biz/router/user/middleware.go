@@ -90,3 +90,23 @@ func _getuserbyidMw() []app.HandlerFunc {
 	// your code...
 	return nil
 }
+
+func _user1Mw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _putuserpassrestMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _putuserpasswordMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _putuserprofileMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
