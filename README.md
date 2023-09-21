@@ -1,9 +1,10 @@
 # Jobor分布式定时任务
 ## ✨ 功能特性v3.0.1
 - 为简化使用和理解成本，之前v2版本的Master Raft模式已经移除，目前Master节点只支持单节点，如有需要请联系作者购买企业版
-- worker高可用，并且通过路由标识，worker可以部署在不同环境，实现不同环境worker的权限控制，worker的系统环境依赖（Python,Golang,执行依赖的文件）。
-- 调度server与worker通过grpc通信。
-- 支持LDAP（openldap,AD）协议用户认证。
+- worker高可用，并且通过路由标识，worker可以部署在不同环境，实现不同环境worker的权限控制，worker的系统环境依赖（Python,Golang,执行依赖的文件）
+- 调度server与worker通过grpc通信
+- 支持LDAP（openldap,AD）协议用户认证
+- 支持SSO/OIDC/Oauth协议用户认证
 - 支持多种任务脚本 [ api/restful请求, shell, python3 ] e.g
 - 基于Casbin实现的权限认证
 ## 提示
@@ -145,6 +146,6 @@ sql_mode=STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_
 * 还可提供SSO（OIDC）统一认证服务
 * 运维CMDB系统服务
 * 运维工单服务系统
-* 持续集成发布系统，支持k8s、docker、虚拟机、静态资源发布，支持当下流程的染发发布、灰度发布、迭代流水线发布
+* 持续集成发布系统，支持k8s、docker、虚拟机、静态资源发布，支持当下流程的染色发布、灰度发布、迭代流水线发布等，代码打包支持原生命令行、Dockerfile、Hook提交等构建方式
 
 
