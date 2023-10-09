@@ -6,6 +6,7 @@ import (
 	"github.com/cloudwego/hertz/pkg/common/hlog"
 	"gorm.io/gorm"
 	"jobor/biz/dal/db"
+	"jobor/biz/dal/redis"
 	"jobor/biz/response"
 	task "jobor/kitex_gen/task"
 	"jobor/kitex_gen/task_log"
@@ -242,6 +243,16 @@ func GetLogInfoById(id interface{}, isPanic bool) (*JoborLog, error) {
 			panic(err)
 		}
 		return &u, err
+	}
+	if u.Result == TaskLogStatusRunning || u.Result == TaskLogStatusWait {
+		var realLogTag = fmt.Sprintf("%s_%d_%d", u.Name, u.Id, u.TaskId)
+		u.Resp, _ = redis.Rdb.Get(context.Background(), realLogTag).Result()
+		//if err != nil {
+		//	if isPanic {
+		//		panic(err)
+		//	}
+		//	return &u, err
+		//}
 	}
 	return &u, nil
 }
