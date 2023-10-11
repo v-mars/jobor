@@ -332,7 +332,7 @@ func RunTasksWithRPC(ctx context.Context, evt, trigger, executor string, t model
 	}
 	var realLogTag = fmt.Sprintf("%s_%d_%d", taskLog.Name, taskLog.Id, taskLog.TaskId)
 	defer func() {
-		redis.Rdb.Del(ctx, realLogTag)
+		_ = redis.Rdb.Del(context.Background(), realLogTag)
 	}()
 	//s.RunTaskIds = append(s.RunTaskIds, taskLog.TaskId)
 	//if runbyid != nil {
@@ -457,6 +457,7 @@ func RunTasksWithRPC(ctx context.Context, evt, trigger, executor string, t model
 	for {
 		msg, errChan := streamChan()
 		//hlog.Debugf("Task %s[%d] res stream.recv start", t.Name, t.Id)
+		//redis.Rdb.SetEx(context.Background(), realLogTag, taskLog.Resp, time.Second*86400)
 		select {
 		//case <-s.Abort:
 		case <-s.TaskCtx.Done():
@@ -470,7 +471,6 @@ func RunTasksWithRPC(ctx context.Context, evt, trigger, executor string, t model
 		case d := <-msg:
 			//hlog.Debugf("Task %s[%d] stream recv data: %s", t.Name, t.Id, d.GetResp())
 			taskLog.Resp += string(d.GetResp())
-			redis.Rdb.Set(ctx, realLogTag, taskLog.Resp, time.Hour*24)
 		case e := <-errChan:
 			if e == io.EOF {
 				hlog.Infof("Task %s[%d] stream recv finish", t.Name, t.Id)
