@@ -28,7 +28,7 @@ func TaskWorker(ctx context.Context, data string, taskId int64, lang string, str
 		preRes, exitCode, err := runner.RunPreCmd(ctx)
 		if err != nil {
 			err = fmt.Errorf("\n%s, Return exitCode:%5d", err, exitCode) // write exitCode,total 5 byte
-			resp := pbapi.StreamResponse{Resp: []byte(fmt.Sprintf("预执行结果：\n%s\n预执行错误：%s\n", preRes,
+			resp := pbapi.StreamResponse{Resp: []byte(fmt.Sprintf("预执行结果：\n%s\n预执行错误：%s", preRes,
 				err.Error()))}
 			err = stream.Send(&resp)
 			return err
@@ -69,6 +69,7 @@ func TaskWorker(ctx context.Context, data string, taskId int64, lang string, str
 			return nil
 		}
 		if n > 0 {
+			hlog.Debugf("worker out data: %s", string(buf[:n]))
 			//fmt.Println("worker out:", string(buf[:n]))
 			resp += string(buf[:n])
 			resp := pbapi.StreamResponse{Resp: buf[:n]}

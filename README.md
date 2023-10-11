@@ -1,5 +1,5 @@
 # Jobor分布式定时任务
-## ✨ 功能特性v3.0.2
+## ✨ 功能特性v3.0.3
 - 为简化使用和理解成本，之前v2版本的Master Raft模式已经移除，目前Master节点只支持单节点，如有需要请联系作者购买企业版
 - worker高可用，并且通过路由标识，worker可以部署在不同环境，实现不同环境worker的权限控制，worker的系统环境依赖（Python,Golang,执行依赖的文件）
 - 调度server与worker通过grpc通信
@@ -20,18 +20,18 @@ server: conf/config.yaml
 worker: conf/worker.yaml
 
 第二步，拉取依赖镜像：
-docker pull iocean/jobor:server-v3.0.2
+docker pull iocean/jobor:server-v3.0.3
 docker pull iocean/jobor:worker-v3.0.0
 docker pull iocean/jobor:worker-go-v3.0.0
-docker pull iocean/jobor:worker-py-v3.0.0
+docker pull iocean/jobor:worker-py-v3.0.1
 
 第三步，启动Master/Server和Worker服务：
 Server/Master:
-docker run -itd --name jobor-server --restart=always -v /etc/localtime:/etc/localtime -v ${HOST_DIR}/conf:/data/conf -v ${HOST_DIR}/log:/data/log --net=host iocean/jobor:server-v3.0.2
+docker run -itd --name jobor-server --restart=always -v /etc/localtime:/etc/localtime -v ${HOST_DIR}/conf:/data/conf -v ${HOST_DIR}/log:/data/log --net=host iocean/jobor:server-v3.0.3
 通用 Worker:
 docker run -itd --name jobor-worker --restart=always -v /etc/localtime:/etc/localtime -v ${HOST_DIR}/conf:/data/conf -v ${HOST_DIR}/log:/data/log --net=host iocean/jobor:worker-v3.0.0
 执行 Python Worker:
-docker run -itd --name jobor-worker-py --restart=always -v /etc/localtime:/etc/localtime -v ${HOST_DIR}/conf:/data/conf -v ${HOST_DIR}/log:/data/log --net=host iocean/jobor:worker-py-v3.0.0
+docker run -itd --name jobor-worker-py --restart=always -v /etc/localtime:/etc/localtime -v ${HOST_DIR}/conf:/data/conf -v ${HOST_DIR}/log:/data/log --net=host iocean/jobor:worker-py-v3.0.1
 执行 Golang Worker:
 docker run -itd --name jobor-worker-go --restart=always -v /etc/localtime:/etc/localtime -v ${HOST_DIR}/conf:/data/conf -v ${HOST_DIR}/log:/data/log --net=host iocean/jobor:worker-go-v3.0.0
 ```
@@ -68,7 +68,7 @@ password: admin
 /etc/mysql/conf.d/mysql.cnf
 
 [mysqld]
-sql_mode=STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION
+sql_mode=STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION
 
 ```
 

@@ -12,6 +12,7 @@ import (
 	"html/template"
 	"io"
 	"jobor/biz/dal/db"
+	"jobor/biz/dal/redis"
 	"jobor/biz/model"
 	"jobor/biz/pack/task_ssh"
 	"jobor/biz/response"
@@ -25,6 +26,7 @@ import (
 	"jobor/pkg/notify/lark"
 	"jobor/pkg/notify/wechat"
 	"jobor/pkg/utils"
+	"regexp"
 	"strconv"
 	"strings"
 	"sync"
@@ -253,6 +255,7 @@ func RunTasks(evt, trigger, executor string, t model.JoborTask) {
 	//RunTasksWithBroker(evt, trigger, t)
 }
 
+// RunTasksWithRPC Agent RPC mode run task
 func RunTasksWithRPC(ctx context.Context, evt, trigger, executor string, t model.JoborTask, runbyid *int, parentChild string) {
 	//if Raft.St.RaftNode.Raft.State() != raft.Leader && trigger == TriggerAuto {
 	//	return
@@ -327,6 +330,10 @@ func RunTasksWithRPC(ctx context.Context, evt, trigger, executor string, t model
 		s.Err = fmt.Errorf("create tasklog err: %s", s.Err)
 		return
 	}
+	var realLogTag = fmt.Sprintf("%s_%d_%d", taskLog.Name, taskLog.Id, taskLog.TaskId)
+	defer func() {
+		_ = redis.Rdb.Del(context.Background(), realLogTag)
+	}()
 	//s.RunTaskIds = append(s.RunTaskIds, taskLog.TaskId)
 	//if runbyid != nil {
 	//	CacheTask.TaskLogs[*runbyid].RunTaskIds = append(CacheTask.TaskLogs[*runbyid].RunTaskIds, taskLog.TaskId)
@@ -450,6 +457,7 @@ func RunTasksWithRPC(ctx context.Context, evt, trigger, executor string, t model
 	for {
 		msg, errChan := streamChan()
 		//hlog.Debugf("Task %s[%d] res stream.recv start", t.Name, t.Id)
+		//redis.Rdb.SetEx(context.Background(), realLogTag, taskLog.Resp, time.Second*86400)
 		select {
 		//case <-s.Abort:
 		case <-s.TaskCtx.Done():
@@ -479,6 +487,8 @@ func RunTasksWithRPC(ctx context.Context, evt, trigger, executor string, t model
 		}
 	}
 }
+
+// DealTaskResp 处理响应结果
 func DealTaskResp(t *model.JoborTask, taskLog *model.JoborLog, s *taskSession) {
 	if len(taskLog.Resp) > 3000 {
 		taskLog.Resp = fmt.Sprintf("%s\n……省略过多内容……\n%s", taskLog.Resp[0:1499], taskLog.Resp[len(taskLog.Resp)-1499:])
@@ -496,7 +506,7 @@ func DealTaskResp(t *model.JoborTask, taskLog *model.JoborLog, s *taskSession) {
 			hlog.Error(s.Err)
 			return s.Err
 		}
-		fmt.Println("GetRespCode:", t.ExpectCode, taskRespCode)
+		//fmt.Println("GetRespCode:", t.ExpectCode, taskRespCode)
 		s.TaskLog.ErrCode = taskRespCode
 		if t.ExpectCode != taskRespCode {
 			s.Err = fmt.Errorf("任务 %s[%d] 返回码： %d, 期望返回码：%d", t.Name, taskLog.Id, taskRespCode, t.ExpectCode)
@@ -516,6 +526,7 @@ func DealTaskResp(t *model.JoborTask, taskLog *model.JoborLog, s *taskSession) {
 	}
 }
 
+// runMultiTasks 执行多任务
 func runMultiTasks(ctx context.Context, trigger, executor string, RunParallel bool, runbyid *int, parentChild string, taskids ...int) error {
 	con := make(chan struct{}, TaskConcurrency)
 	for _, v := range taskids {
@@ -800,7 +811,7 @@ Worker：%s
 
 func (s *taskSession) GetRespCode() (int, error) {
 	if len(s.TaskLog.Resp) > 5 {
-		taskRespCode, err := strconv.Atoi(strings.TrimLeft(s.TaskLog.Resp[len(s.TaskLog.Resp)-5:], " "))
+		taskRespCode, err := strconv.Atoi(strings.Trim(strings.Trim(s.TaskLog.Resp[len(s.TaskLog.Resp)-5:], " "), "\n"))
 		if err != nil {
 			hlog.Errorf("change str to int failed: %s", err)
 			return DefaultExitCode, err
@@ -881,4 +892,13 @@ func ConvertSecond(spec string) string {
 	}
 
 	return ""
+}
+
+func StringStrip(str string) string {
+	if str == "" {
+		return ""
+	}
+	str = strings.TrimSpace(str)
+	reg := regexp.MustCompile(`[\W|_]{1,}`)
+	return reg.ReplaceAllString(str, "")
 }
