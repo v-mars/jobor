@@ -322,6 +322,11 @@ func RunTasksWithRPC(ctx context.Context, evt, trigger, executor string, t model
 			s.Err = fmt.Errorf("update Task pre/next time err: %s", s.Err)
 			hlog.Error(s.Err)
 		}
+		if s.Err = model.KeepLog(t, tx); s.Err != nil {
+			s.Err = fmt.Errorf("kepp Task log err: %s", s.Err)
+			hlog.Error(s.Err)
+			return
+		}
 		s.Err = s.Alarm()
 		s.Delete()
 	}()

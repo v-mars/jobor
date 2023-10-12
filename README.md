@@ -1,5 +1,5 @@
 # Jobor分布式定时任务
-## ✨ 功能特性v3.0.3
+## ✨ 功能特性v3.0.4
 - 为简化使用和理解成本，之前v2版本的Master Raft模式已经移除，目前Master节点只支持单节点，如有需要请联系作者购买企业版
 - worker高可用，并且通过路由标识，worker可以部署在不同环境，实现不同环境worker的权限控制，worker的系统环境依赖（Python,Golang,执行依赖的文件）
 - 调度server与worker通过grpc通信
@@ -7,6 +7,7 @@
 - 支持SSO/OIDC/Oauth协议用户认证
 - 支持多种任务脚本 [ api/restful请求, shell, python3 ] e.g
 - 基于Casbin实现的权限认证
+- 任务日志自动清理功能
 ## 提示
 Jobor V3已经修复已知所有Bug，并且新增功能：父子任务执行、执行节点组、worker节点支持agent、ssh两种模式、任务归属负责人、支持国产[**HTTP,RPC框架CloudWeGo（字节跳动）**](https://github.com/cloudwego/)、支持golang任务类型执行。
 
@@ -20,20 +21,20 @@ server: conf/config.yaml
 worker: conf/worker.yaml
 
 第二步，拉取依赖镜像：
-docker pull iocean/jobor:server-v3.0.3
-docker pull iocean/jobor:worker-v3.0.0
-docker pull iocean/jobor:worker-go-v3.0.0
-docker pull iocean/jobor:worker-py-v3.0.1
+docker pull iocean/jobor:server-v3.0.4
+docker pull iocean/jobor:worker-v3.0.4
+docker pull iocean/jobor:worker-go-v3.0.4
+docker pull iocean/jobor:worker-py-v3.0.4
 
 第三步，启动Master/Server和Worker服务：
 Server/Master:
-docker run -itd --name jobor-server --restart=always -v /etc/localtime:/etc/localtime -v ${HOST_DIR}/conf:/data/conf -v ${HOST_DIR}/log:/data/log --net=host iocean/jobor:server-v3.0.3
+docker run -itd --name jobor-server --restart=always --net=host -v /etc/localtime:/etc/localtime -v ${HOST_DIR}/conf:/data/conf -v ${HOST_DIR}/log:/data/log --net=host iocean/jobor:server-v3.0.4
 通用 Worker:
-docker run -itd --name jobor-worker --restart=always -v /etc/localtime:/etc/localtime -v ${HOST_DIR}/conf:/data/conf -v ${HOST_DIR}/log:/data/log --net=host iocean/jobor:worker-v3.0.0
+docker run -itd --name jobor-worker --restart=always --net=host -v /etc/localtime:/etc/localtime -v ${HOST_DIR}/conf:/data/conf -v ${HOST_DIR}/log:/data/log --net=host iocean/jobor:worker-v3.0.4
 执行 Python Worker:
-docker run -itd --name jobor-worker-py --restart=always -v /etc/localtime:/etc/localtime -v ${HOST_DIR}/conf:/data/conf -v ${HOST_DIR}/log:/data/log --net=host iocean/jobor:worker-py-v3.0.1
+docker run -itd --name jobor-worker-py --restart=always --net=host -v /etc/localtime:/etc/localtime -v ${HOST_DIR}/conf:/data/conf -v ${HOST_DIR}/log:/data/log --net=host iocean/jobor:worker-py-v3.0.4
 执行 Golang Worker:
-docker run -itd --name jobor-worker-go --restart=always -v /etc/localtime:/etc/localtime -v ${HOST_DIR}/conf:/data/conf -v ${HOST_DIR}/log:/data/log --net=host iocean/jobor:worker-go-v3.0.0
+docker run -itd --name jobor-worker-go --restart=always --net=host -v /etc/localtime:/etc/localtime -v ${HOST_DIR}/conf:/data/conf -v ${HOST_DIR}/log:/data/log --net=host iocean/jobor:worker-go-v3.0.4
 ```
 
 ## 构建

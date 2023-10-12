@@ -39,6 +39,32 @@ func (u *PutTaskReq) GetOwnerIdsInt() []int {
 	return arrayInt
 }
 
+// Scan 实现 sql.Scanner 接口，Scan 将 value 扫描至 Jsonb
+func (j *KeepLog) Scan(value interface{}) error {
+	var bytes []byte
+	switch v := value.(type) {
+	case []byte:
+		bytes = v
+	case string:
+		bytes = []byte(v)
+	default:
+		return errors.New(fmt.Sprint("Failed to unmarshal JSONB value:", value))
+	}
+	result := KeepLog{}
+	err := json.Unmarshal(bytes, &result)
+	*j = result
+	return err
+}
+
+// Value 实现 driver.Valuer 接口，Value 返回 json value
+func (j KeepLog) Value() (driver.Value, error) {
+	if &j == nil {
+		return nil, nil
+	}
+	bytes, err := json.Marshal(j)
+	return string(bytes), err
+}
+
 //type TaskData struct {
 //	Code string `json:"data"`
 //	Api  struct {
