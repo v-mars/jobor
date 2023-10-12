@@ -34,6 +34,8 @@ const (
 	TaskLogStatusCancel  = "cancel"
 
 	TaskLogExecutorTimed = "定时执行"
+	TaskLogKeepTypeCount = "count"
+	TaskLogKeepTypeDay   = "day"
 )
 
 type AlarmPolicy int
@@ -112,6 +114,7 @@ type JoborTask struct {
 	Deleted           bool           `gorm:"default:false;comment:逻辑删除" json:"deleted" form:"deleted"`
 	ExprZh            string         `gorm:"-" json:"expr_zh" form:"expr_zh"`
 	Owners            []User         `gorm:"many2many:jobor_task_owners;association_autoupdate:false;association_autocreate:false;joinForeignKey:task_id;JoinReferences:UserId;comment:拥有者;constraint:OnDelete:CASCADE;" json:"owners"`
+	KeepLog           task2.KeepLog  `gorm:"type:text;comment:保留日志数type: count、day" json:"keep_log" form:"keep_log"`
 	//RoutingKey        string         `gorm:"type:varchar(32);default:'default';comment:执行worker路由标识" json:"routing_key" form:"routing_key"`
 }
 

@@ -7,7 +7,7 @@ import (
 )
 
 var (
-	Ver       = "v3.0.1"
+	Ver       = "v3.0.4"
 	BuildDate = time.Now().Format("2006.01.02")
 )
 

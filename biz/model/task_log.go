@@ -276,3 +276,21 @@ func GetLogInfoByName(name string, isPanic bool) (task_log.LogResp, error) {
 	}
 	return u, nil
 }
+
+func KeepLog(t JoborTask, Db *gorm.DB) error {
+	var obj JoborLog
+	if t.KeepLog.KeepType == TaskLogKeepTypeCount && t.KeepLog.Val > 0 {
+		if err := Db.Table(NameLog).Delete(&obj,
+			fmt.Sprintf("task_id=? and id NOT IN (SELECT a.id from  ( SELECT id FROM %s WHERE task_id = ? ORDER BY id DESC LIMIT ? ) a)", NameLog),
+			t.Id, t.Id, t.KeepLog.Val).Error; err != nil {
+			return err
+		}
+	} else if t.KeepLog.KeepType == TaskLogKeepTypeDay && t.KeepLog.Val > 0 {
+		if err := Db.Table(NameLog).Delete(&obj,
+			"task_id=? and created_at<date_add(now(),interval -? day)", t.Id, t.KeepLog.Val).Error; err != nil {
+			return err
+		}
+	}
+
+	return nil
+}

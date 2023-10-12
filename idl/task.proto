@@ -50,6 +50,12 @@ message Api {
   map<string,string> header = 39[(api.query)="header",(api.body)="header"];
   map<string,string>  forms = 30[(api.query)="forms",(api.body)="forms"];
 }
+
+message KeepLog {
+  int64 val = 33[(api.query)="val",(api.body)="val,omitempty"];
+  string keep_type = 34[(api.query)="keep_type",(api.body)="keep_type,omitempty"];
+}
+
 message TaskData {
   string pre_cmd = 33[(api.query)="pre_cmd",(api.body)="pre_cmd,omitempty"];
   string content = 32[(api.query)="content",(api.body)="content,omitempty"];
@@ -180,6 +186,7 @@ message PostTaskReq {
   string updater = 21[(api.query)="updater",(api.body)="updater,omitempty"];
   bool deleted = 22[(api.query)="deleted",(api.go_tag)="json:\"deleted\""];
   repeated int64 owner_ids = 23[(api.query)="owner_ids,omitempty",(api.body)="owner_ids,omitempty",(api.go_tag)="gorm:\"-\" ignore:\"yes\""];
+  KeepLog keep_log = 24[(api.query)="keep_log",(api.body)="keep_log"];
 }
 
 message PutTaskReq {
@@ -209,6 +216,7 @@ message PutTaskReq {
   optional string updater = 21[(api.query)="updater",(api.body)="updater,omitempty"];
   optional bool deleted = 22[(api.query)="deleted",(api.go_tag)="json:\"deleted,omitempty\""];
   google.protobuf.ListValue owner_ids = 23[(api.query)="owner_ids,omitempty",(api.body)="owner_ids,omitempty",(api.go_tag)="gorm:\"-\" ignore:\"yes\""];
+  KeepLog keep_log = 24[(api.query)="keep_log",(api.body)="keep_log,omitempty",(api.go_tag)="to_str:\"yes\""];
 }
 
 // The request message containing the user's name.
