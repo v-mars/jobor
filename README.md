@@ -7,6 +7,7 @@
 - 支持SSO/OIDC/Oauth协议用户认证
 - 支持多种任务脚本 [ api/restful请求, shell, python3 ] e.g
 - 基于Casbin实现的权限认证
+- 任务日志自动清理功能
 ## 提示
 Jobor V3已经修复已知所有Bug，并且新增功能：父子任务执行、执行节点组、worker节点支持agent、ssh两种模式、任务归属负责人、支持国产[**HTTP,RPC框架CloudWeGo（字节跳动）**](https://github.com/cloudwego/)、支持golang任务类型执行。
 
