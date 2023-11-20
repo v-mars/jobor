@@ -11,6 +11,7 @@ import (
 	"jobor/biz/response"
 	"jobor/conf"
 	_ "jobor/docs"
+	"jobor/fs"
 	"net/http"
 	"strings"
 
@@ -127,4 +128,41 @@ func getPathRewriter(prefix string) app.PathRewriteFunc {
 		}
 		return path
 	}
+}
+
+func useEmbedWeb(h *server.Hertz) {
+	//var file embed.FS
+	var file = fs.DistFs
+	h.StaticFS("/", &app.FS{
+		Root:               "fs/dist",              // 根目录
+		IndexNames:         []string{"index.html"}, // 索引文件
+		GenerateIndexPages: true,                   // 生成索引页面
+		Compress:           false,                  // 压缩
+		AcceptByteRange:    false,                  // 接受字节范围
+		PathRewrite:        nil,                    // 路径重写
+		PathNotFound: func(ctx context.Context, c *app.RequestContext) {
+			path := string(c.Path())
+			// 这个函数是路径找不到绘执行这个，例如 /login /home
+			// css js 文件会在 Root 文件 里面找
+			// 下面匹配路径
+			switch {
+			case strings.HasSuffix(path, ".js"):
+				return
+			case strings.HasSuffix(path, ".css"):
+				return
+			default:
+				// 必须有这一步 react vue 项目 不是 '/'路径 刷新后找不到 报 404
+				// 上面匹配 js css 可以不要，样式文件 会在 Root 文件 里面找，找不到会执行上面的函数
+				data, err := file.ReadFile("fs/dist/index.html") // 读取react vue 项目的 index.html
+				if err != nil {
+					//result.HttpError(c, xerr.ErrMsg(xerr.FIleNotExist))
+					return
+				}
+				c.Data(200, "text/html; charset=utf-8", data)
+
+			}
+		}, // 路径未找到
+		CacheDuration:        0,  // 缓存持续时间
+		CompressedFileSuffix: "", // 压缩文件后缀
+	})
 }

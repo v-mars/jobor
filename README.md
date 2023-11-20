@@ -80,7 +80,6 @@ sql_mode=STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_
 ![avatar](./img/log3.png)
 ![avatar](./img/log-detail3.png)
 ![avatar](./img/worker3.png)
-![avatar](./img/audit.png)
 
 ## TODO 
 ### task
