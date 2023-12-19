@@ -44,9 +44,9 @@ func CasbinMw(skipper ...SkipperFunc) app.HandlerFunc {
 				c.Next(ctx)
 				return
 			}
-			var obj = c.Request.URI().Path() // path
+			var obj = string(c.Request.URI().Path()) // path
 			//var obj=c.Request.Request.URI().RequestURI() // path
-			var act = c.Request.Method() // method
+			var act = string(c.Request.Method()) // method
 			var sub = userValue.Username
 			isPass, err := casbin.Enforcer.Enforce(sub, dom, obj, act)
 			if err != nil {
