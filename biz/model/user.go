@@ -417,6 +417,7 @@ func GetUserinfoOrCreate(ui *user.Userinfo) (user.Userinfo, error) {
 		u.Username = row.Username
 		u.Nickname = row.Nickname
 		u.Email = row.Email
+		u.Phone = row.Phone
 		u.Userid = row.Userid
 		u.UserType = row.UserType
 		u.Status = row.Status
