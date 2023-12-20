@@ -409,11 +409,15 @@ func GetUserinfoOrCreate(ui *user.Userinfo) (user.Userinfo, error) {
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		return u, err
 	} else if errors.Is(err, gorm.ErrRecordNotFound) {
-		row = User{Username: u.Username, Nickname: u.Nickname, Email: u.Email, Status: true, UserType: Ldap}
+		row = User{Username: ui.Username, Nickname: ui.Nickname, Email: ui.Email, Status: true, UserType: Ldap}
 		if err = db.DB.Table(NameUser).Omit("id").Create(&row).Error; err != nil {
 			return u, err
 		}
 		u.Id = int64(row.Id)
+		u.Username = row.Username
+		u.Nickname = row.Nickname
+		u.Email = row.Email
+		u.Userid = row.Userid
 		u.UserType = row.UserType
 		u.Status = row.Status
 	}

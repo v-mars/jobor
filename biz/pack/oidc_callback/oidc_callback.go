@@ -303,7 +303,7 @@ func SsoCallback(ctx context.Context, c *app.RequestContext) {
 		return
 	}
 	//marshal, _ := json.Marshal(info)
-	hlog.CtxDebugf(ctx, "oidc callback userinfo:", string(claims))
+	hlog.CtxDebugf(ctx, "oidc callback userinfo: %s", string(claims))
 	u := user.Userinfo{}
 	//u.Username = gjson.Parse(string(claims)).Get("claims.username").String()
 	//u.Nickname = gjson.Parse(string(claims)).Get("claims.nickname").String()
