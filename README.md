@@ -21,14 +21,14 @@ server: conf/config.yaml
 worker: conf/worker.yaml
 
 第二步，拉取依赖镜像：
-docker pull iocean/jobor:server-v3.0.4
+docker pull iocean/jobor:server-v3.0.5
 docker pull iocean/jobor:worker-v3.0.4
 docker pull iocean/jobor:worker-go-v3.0.4
 docker pull iocean/jobor:worker-py-v3.0.4
 
 第三步，启动Master/Server和Worker服务：
 Server/Master:
-docker run -itd --name jobor-server --restart=always --net=host -v /etc/localtime:/etc/localtime -v ${HOST_DIR}/conf:/data/conf -v ${HOST_DIR}/log:/data/log --net=host iocean/jobor:server-v3.0.4
+docker run -itd --name jobor-server --restart=always --net=host -v /etc/localtime:/etc/localtime -v ${HOST_DIR}/conf:/data/conf -v ${HOST_DIR}/log:/data/log --net=host iocean/jobor:server-v3.0.5
 通用 Worker:
 docker run -itd --name jobor-worker --restart=always --net=host -v /etc/localtime:/etc/localtime -v ${HOST_DIR}/conf:/data/conf -v ${HOST_DIR}/log:/data/log --net=host iocean/jobor:worker-v3.0.4
 执行 Python Worker:
