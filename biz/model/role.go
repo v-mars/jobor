@@ -113,14 +113,36 @@ func AddRole(ctx context.Context, Db *gorm.DB, req *role.RolePost) (Role, error)
 		"id,name,path,method,dom").Scan(&row.Apis).Error; err != nil {
 		return row, err
 	}
+	var ok bool
+	var err error
+	if err = tx.Table(NameRole).Create(&row).Error; err != nil {
+		return row, err
+	}
 	hlog.Debugf("获取关联API成功, API count %d", len(row.Apis))
 	for _, v := range row.Apis {
-		if _, err := casbin.Enforcer.AddPolicy(row.Name, dom, v.Path, v.Method); err != nil {
+		if _, err := casbin.Enforcer.AddPolicy(row.Name, conf.Dom, v.Path, v.Method); err != nil {
 			return row, err
 		}
-		hlog.Debug("add casbin policy is success")
+		hlog.Debug("add casbin policy %s %s %s is %t", row.Name, v.Path, v.Method, ok)
 	}
-	return row, Db.Table(NameRole).Create(&row).Error
+	if row.ParentID != 0 {
+		var newParentRole Role
+		if err = tx.First(&newParentRole, row.ParentID).Error; err != nil {
+			return row, err
+		}
+		hlog.Debugf("start add casbin g parent role name %s, current role name %s", newParentRole.Name, row.Name)
+		ok, err = casbin.Enforcer.AddNamedGroupingPolicy("g", newParentRole.Name, row.Name, conf.Dom)
+		if err != nil {
+			return row, err
+		}
+		hlog.Debugf("add casbin g parent role name %s, current role name %s is %t", newParentRole.Name, row.Name, ok)
+	}
+	if err = tx.Commit().Error; err != nil {
+		hlog.Errorf("add 事务提交失败，%s", err)
+		return row, err
+	}
+	hlog.Debug("add 事务提交成功")
+	return row, nil
 }
 
 func ModRole(ctx context.Context, Db *gorm.DB, _id interface{}, req *role.RolePut) (Role, error) {
@@ -134,87 +156,99 @@ func ModRole(ctx context.Context, Db *gorm.DB, _id interface{}, req *role.RolePu
 	}
 	tx := Db.Begin()
 	defer func() { tx.Rollback() }()
-	var role Role
-	if err = tx.First(&role, _id).Error; err != nil {
-		return role, err
+	var roleObj Role
+	if err = tx.First(&roleObj, "role.id=?", _id).Error; err != nil {
+		return roleObj, err
 	}
 	if req.Path != nil {
 		if len(req.Path.Values) > 9 {
-			return role, fmt.Errorf("角色层级深度不能超过10级")
+			return roleObj, fmt.Errorf("角色层级深度不能超过10级")
 		}
 		mapData["path"] = db.IntArray(req.GetPathInt())
 	}
-
+	var ok bool
 	if req.ApiIds != nil {
 		var apis []Api
 		if err = tx.Model(&Api{}).Where("id in (?)", req.GetApiIdsInt()).Select("id,name,path,method,dom").Scan(&apis).Error; err != nil {
-			return role, err
+			return roleObj, err
 		}
 		hlog.Debug("get api list success")
 
 		var newStrArray []string
 		for _, v := range apis {
 			v := v
-			newStrArray = append(newStrArray, fmt.Sprintf("%s:%s:%s:%s", role.Name, dom, v.Path, v.Method))
-			if _, err = casbin.Enforcer.AddPolicy(role.Name, dom, v.Path, v.Method); err != nil {
-				return role, err
+			newStrArray = append(newStrArray, fmt.Sprintf("%s:%s:%s:%s", roleObj.Name, dom, v.Path, v.Method))
+			if ok, err = casbin.Enforcer.AddPolicy(roleObj.Name, dom, v.Path, v.Method); err != nil {
+				return roleObj, err
 			}
-			hlog.Debug("casbin new policy add success")
+			hlog.Debugf("casbin new policy %s %s %s add is %t", roleObj.Name, v.Path, v.Method, ok)
 		}
 
-		existsList := casbin.Enforcer.GetPermissionsForUser(role.Name, dom)
+		existsList := casbin.Enforcer.GetPermissionsForUser(roleObj.Name, dom)
 		for _, v := range existsList {
 			var strTmp = strings.Join(v, ":")
 			if len(v) == 4 && !utils.InOfStr(strTmp, newStrArray) {
-				if _, err = casbin.Enforcer.RemovePolicy(role.Name, dom, v[2], v[3]); err != nil {
-					return role, err
+				if ok, err = casbin.Enforcer.RemovePolicy(roleObj.Name, dom, v[2], v[3]); err != nil {
+					return roleObj, err
 				}
-				hlog.Debug("casbin old policy remove success")
+				hlog.Debug("casbin old policy %s %s %s remove is %t", roleObj.Name, v[2], v[3], ok)
 			}
 		}
 
-		if err = tx.Model(&role).Association("Apis").Replace(apis); err != nil {
-			return role, err
+		if err = tx.Model(&roleObj).Association("Apis").Replace(apis); err != nil {
+			return roleObj, err
 		}
 		hlog.Infof("role 关联 api 成功")
 	}
 
+	if req.ParentId != nil && *req.ParentId != 0 {
+		var newParentRole Role
+		if err = tx.First(&newParentRole, *req.ParentId).Error; err != nil {
+			return roleObj, err
+		}
+		if roleObj.ParentID != 0 && roleObj.ParentID != int(*req.ParentId) {
+			var oldParentRole Role
+			if err = tx.First(&oldParentRole, roleObj.ParentID).Error; err != nil {
+				return roleObj, err
+			}
+			hlog.Debugf("start remove casbin g old parent role name %s, current role name %s", oldParentRole.Name, roleObj.Name)
+			ok, err = casbin.Enforcer.RemoveFilteredNamedGroupingPolicy("g", 0, oldParentRole.Name, roleObj.Name, conf.Dom)
+			if err != nil {
+				return roleObj, err
+			}
+			hlog.Debugf("remove casbin g old parent role name %s, current role name %s is %t", oldParentRole.Name, roleObj.Name, ok)
+		}
+		hlog.Debugf("start add casbin g parent role name %s, current role name %s", newParentRole.Name, roleObj.Name)
+		ok, err = casbin.Enforcer.AddNamedGroupingPolicy("g", newParentRole.Name, roleObj.Name, conf.Dom)
+		if err != nil {
+			return roleObj, err
+		}
+		hlog.Debugf("add casbin g parent role name %s, current role name %s is %t", newParentRole.Name, roleObj.Name, ok)
+	} else if req.ParentId != nil && *req.ParentId == 0 && roleObj.ParentID != 0 {
+		var oldParentRole Role
+		if err = tx.First(&oldParentRole, roleObj.ParentID).Error; err != nil {
+			return roleObj, err
+		}
+		hlog.Debugf("start remove casbin g current role name %s", roleObj.Name)
+		ok, err = casbin.Enforcer.RemoveFilteredNamedGroupingPolicy("g", 0, oldParentRole.Name, roleObj.Name, conf.Dom)
+		if err != nil {
+			return roleObj, err
+		}
+		hlog.Debugf("remove casbin g current role name %s is %t", roleObj.Name, ok)
+	}
 	if err = tx.Table(NameRole).Where("id=?", _id).Updates(mapData).Error; err != nil {
-		return role, err
+		return roleObj, err
 	}
 
-	if req.ParentId != nil && *req.ParentId != 0 {
-		var parentRole Role
-		if err = tx.First(&parentRole, *req.ParentId).Error; err != nil {
-			return role, err
-		}
-		if role.ParentID != 0 && role.ParentID != int(*req.ParentId) {
-			_, err = casbin.Enforcer.RemoveFilteredNamedGroupingPolicy("g", 1, role.Name, parentRole.Name, conf.Dom)
-			if err != nil {
-				return role, err
-			}
-		}
-		_, err = casbin.Enforcer.AddGroupingPolicy(parentRole.Name, role.Name, conf.Dom)
-		if err != nil {
-			return role, err
-		}
-	} else {
-		if role.ParentID != 0 {
-			_, err = casbin.Enforcer.RemoveFilteredNamedGroupingPolicy("g", 1, role.Name, "", conf.Dom)
-			if err != nil {
-				return role, err
-			}
-		}
-	}
 	if err = tx.Commit().Error; err != nil {
 		hlog.Errorf("事务提交失败，%s", err)
-		return role, err
+		return roleObj, err
 	}
 	hlog.Debug("事务提交成功")
-	if err = Db.First(&role, _id).Error; err != nil {
-		return role, err
+	if err = Db.First(&roleObj, _id).Error; err != nil {
+		return roleObj, err
 	}
-	return role, nil
+	return roleObj, nil
 }
 
 func DelRole(ctx context.Context, Db *gorm.DB, _ids []interface{}) (Role, error) {

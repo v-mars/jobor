@@ -167,10 +167,12 @@ func AddUser(ctx context.Context, Db *gorm.DB, req *user.PostUserReq) (User, err
 		return row, err
 	}
 	for _, v := range row.Roles {
-		_, err := casbin.Enforcer.AddGroupingPolicy(row.Username, v.Name, dom) // user role dom
+		hlog.Debugf("start add casbin policy username %s, role name %s", row.Username, v.Name)
+		ok, err := casbin.Enforcer.AddGroupingPolicy(row.Username, v.Name, dom) // user role dom
 		if err != nil {
 			return row, err
 		}
+		hlog.Debugf("add casbin policy username %s, role name %s is %t", row.Username, v.Name, ok)
 	}
 	hlog.CtxDebugf(ctx, "user %s casbin get role is success", row.Nickname)
 	if err := tx.Commit().Error; err != nil {
@@ -201,10 +203,12 @@ func ModUser(ctx context.Context, Db *gorm.DB, _id interface{}, req *user.PutUse
 		var newStrArray []string
 		for _, v := range userObj.Roles {
 			newStrArray = append(newStrArray, v.Name)
-			_, err = casbin.Enforcer.AddGroupingPolicy(userObj.Username, v.Name, dom) // user role dom
+			hlog.Debugf("start add casbin policy username %s, role name %s", userObj.Username, v.Name)
+			ok, err := casbin.Enforcer.AddGroupingPolicy(userObj.Username, v.Name, dom) // user role dom
 			if err != nil {
 				return userObj, err
 			}
+			hlog.Debugf("add casbin policy username %s, role name %s is %t", userObj.Username, v.Name, ok)
 		}
 		hlog.CtxDebugf(ctx, "user %s casbin add  group policy is success", userObj.Nickname)
 		existsList, err := casbin.Enforcer.GetRolesForUser(userObj.Username, dom)
@@ -214,10 +218,12 @@ func ModUser(ctx context.Context, Db *gorm.DB, _id interface{}, req *user.PutUse
 		hlog.CtxDebugf(ctx, "user %s casbin get role is success", userObj.Nickname)
 		diff := utils.Difference(existsList, newStrArray)
 		for _, v := range diff {
-			_, err = casbin.Enforcer.RemoveGroupingPolicy(userObj.Username, v, dom)
+			hlog.Debugf("start remove casbin policy username %s, role name %s", userObj.Username, v)
+			ok, err := casbin.Enforcer.RemoveGroupingPolicy(userObj.Username, v, dom)
 			if err != nil {
 				return userObj, err
 			}
+			hlog.Debugf("add casbin policy username %s, role name %s is %t", userObj.Username, v, ok)
 		}
 		hlog.CtxDebugf(ctx, "user %s casbin remove  group policy is success", userObj.Nickname)
 		if err = tx.Model(&userObj).Association("Roles").Replace(userObj.Roles); err != nil {
