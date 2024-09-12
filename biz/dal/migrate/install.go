@@ -11,7 +11,7 @@ import (
 	"jobor/biz/model"
 	"jobor/biz/response"
 	"jobor/conf"
-	FS "jobor/fs"
+	FS "jobor/fsembed"
 	"jobor/kitex_gen/audit"
 	"strings"
 )

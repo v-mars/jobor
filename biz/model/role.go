@@ -184,7 +184,7 @@ func ModRole(ctx context.Context, Db *gorm.DB, _id interface{}, req *role.RolePu
 			hlog.Debugf("casbin new policy %s %s %s add is %t", roleObj.Name, v.Path, v.Method, ok)
 		}
 
-		existsList := casbin.Enforcer.GetPermissionsForUser(roleObj.Name, dom)
+		existsList, _ := casbin.Enforcer.GetPermissionsForUser(roleObj.Name, dom)
 		for _, v := range existsList {
 			var strTmp = strings.Join(v, ":")
 			if len(v) == 4 && !utils.InOfStr(strTmp, newStrArray) {

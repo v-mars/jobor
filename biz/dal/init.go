@@ -27,7 +27,7 @@ var (
 	NoLogin = []string{
 		"/login", "/404", "/static", "/favicon.ico", "/air", "/dashboard", "/hostid", "/license",
 		"/jobor", "/iconfont", "/index.html", "/vite.svg", "/assets",
-		"/favicon.ico", "/ping", "/swagger/", "/api/v1/swagger/*", "/debug/pprof",
+		"/favicon.ico", "/ping", "/swagger/", "/api/v1/swagger/*", "/api/v1/jobor/debug/pprof",
 		"/metrics", "/routes", "/reverse", "/air", "/api/v1/login", "/fs/", "/api/v1/login-init ",
 		oidc_callback.CallbackPath,
 		oidc_callback.GotoRedirect,

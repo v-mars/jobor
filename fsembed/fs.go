@@ -1,4 +1,4 @@
-package fs
+package fsembed
 
 import "embed"
 
@@ -6,4 +6,5 @@ import "embed"
 var SqlFs embed.FS
 
 //go:embed dist/*
+//go:embed dist/assets/_*
 var DistFs embed.FS
