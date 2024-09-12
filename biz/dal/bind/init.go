@@ -1,6 +1,9 @@
 package bind
 
-import "github.com/cloudwego/hertz/pkg/app/server/binding"
+import (
+	"github.com/bytedance/go-tagexpr/v2/binding"
+	binding2 "github.com/cloudwego/hertz/pkg/app/server/binding"
+)
 
 type BindError struct {
 	ErrType, FailField, Msg string
@@ -55,7 +58,8 @@ func Init() {
 	binding.SetLooseZeroMode(true)
 
 	// 使用标准库
-	binding.UseStdJSONUnmarshaler()
+	bindConfig := binding2.NewBindConfig()
+	bindConfig.UseStdJSONUnmarshaler()
 
 	// 使用gjson
 	//binding.UseGJSONUnmarshaler()
